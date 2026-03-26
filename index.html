@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firdevs & Hasan Çağlar — Nişan</title>
+<link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold:    #c9a96e;
+  --gold2:   #e8d5b0;
+  --gold3:   #a07840;
+  --dark:    #0e0b08;
+  --dark2:   #1a1410;
+  --cream:   #f5efe6;
+  --glass:   rgba(255,255,255,0.05);
+  --gb:      rgba(255,255,255,0.12);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cormorant Garamond', serif;
+  background: var(--dark);
+  color: var(--cream);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* full page bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1;
+  background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
+  filter: brightness(0.22) saturate(0.8);
+}
+
+/* ── GRAIN ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ════════════════════════════════
+   HERO SECTION
+════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 60px 20px 80px;
+  overflow: hidden;
+}
+
+/* layered background */
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,169,110,0.06) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(14,11,8,0.88) 0%, rgba(26,20,16,0.75) 50%, rgba(14,11,8,0.92) 100%);
+}
+
+/* subtle decorative rings */
+.hero-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(201,169,110,0.08);
+  pointer-events: none;
+}
+.hero-ring-1 { width: 600px; height: 600px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.hero-ring-2 { width: 900px; height: 900px; top: 50%; left: 50%; transform: translate(-50%,-50%); border-color: rgba(201,169,110,0.04); }
+.hero-ring-3 { width: 1200px; height: 1200px; top: 50%; left: 50%; transform: translate(-50%,-50%); border-color: rgba(201,169,110,0.025); }
+
+.hero-content { position: relative; z-index: 1; }
+
+/* ornament line */
+.ornament {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  margin-bottom: 28px;
+  opacity: 0; animation: fadeUp .8s ease .1s forwards;
+}
+.ornament-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); opacity: .5; }
+.ornament-line.r { background: linear-gradient(to left, transparent, var(--gold)); }
+.ornament-text { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); opacity: .8; }
+
+/* names */
+.names {
+  font-family: 'Luxurious Script', cursive;
+  font-size: clamp(56px, 13vw, 110px);
+  line-height: 1.05;
+  color: var(--cream);
+  opacity: 0; animation: fadeUp .9s ease .2s forwards;
+}
+.names .ampersand { color: var(--gold2); display: block; font-size: .75em; margin: -8px 0; }
+.names .name2 { color: var(--gold2); }
+
+/* subtitle */
+.hero-subtitle {
+  margin-top: 20px;
+  font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+  opacity: 0; animation: fadeUp .8s ease .35s forwards;
+  color: rgba(245,239,230,0.45);
+}
+
+/* thin gold divider */
+.hero-divider {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  margin: 32px auto 0;
+  opacity: 0; animation: fadeUp .8s ease .45s forwards;
+}
+
+/* date */
+.event-date {
+  margin-top: 32px;
+  font-size: 18px; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--gold); opacity: 0;
+  animation: fadeUp .8s ease .5s forwards;
+}
+.event-date span {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 32px; font-weight: 400;
+  font-style: italic;
+  letter-spacing: 1px; display: block;
+  color: var(--cream); margin-top: 6px;
+}
+
+/* ════════════════════════════════
+   SADE SAYAÇ (SIMPLE CLOCK)
+════════════════════════════════ */
+.clock-section {
+  margin-top: 40px;
+  opacity: 0; animation: fadeUp .8s ease .65s forwards;
+}
+
+.simple-clock {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  flex-wrap: wrap;
+}
+
+.time-unit {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+
+.time-unit span {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(36px, 6.5vw, 48px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gold2);
+  background: rgba(201,169,110,0.07);
+  border: 1px solid rgba(201,169,110,0.2);
+  border-radius: 10px;
+  padding: 10px 16px;
+  min-width: 72px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+.unit-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); opacity: .7;
+}
+
+.time-sep {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 300;
+  color: var(--gold); opacity: .5;
+  margin-top: -24px;
+}
+
+@media(max-width: 480px) {
+  .time-unit span { min-width: 55px; padding: 10px 12px; }
+  .simple-clock { gap: 8px; }
+  .time-sep { margin-top: -20px; font-size: 28px; }
+}
+
+/* upload button (shown when countdown ends) */
+.upload-reveal {
+  display: none;
+  flex-direction: column; align-items: center; gap: 14px;
+  opacity: 0; animation: fadeUp .8s ease forwards;
+}
+.upload-reveal.show { display: flex; }
+
+.btn-upload-main {
+  display: inline-block;
+  padding: 16px 48px;
+  border-radius: 40px;
+  border: 1px solid rgba(201,169,110,0.4);
+  background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(201,169,110,0.05));
+  color: var(--gold2);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .3s, border-color .3s, transform .2s;
+  backdrop-filter: blur(10px);
+}
+.btn-upload-main:hover {
+  background: linear-gradient(135deg, rgba(201,169,110,0.28), rgba(201,169,110,0.12));
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.upload-reveal-sub { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,239,230,0.35); }
+
+/* scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: fadeUp .8s ease 1.2s forwards;
+}
+.scroll-hint span { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: .35; }
+.scroll-arrow {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  opacity: .4;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: .2; transform: scaleY(.8); }
+  50% { opacity: .6; transform: scaleY(1); }
+}
+
+/* ════════════════════════════════
+   LOCATION SECTION
+════════════════════════════════ */
+.location-section {
+  position: relative; z-index: 1;
+  padding: 80px 20px 100px;
+  max-width: 860px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 48px;
+}
+
+.section-ornament {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.section-ornament-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  opacity: .4;
+}
+.section-label {
+  font-size: 18px; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--gold); opacity: .7;
+}
+.section-title {
+  font-family: 'Luxurious Script', cursive;
+  font-size: clamp(36px, 7vw, 56px);
+  color: var(--cream); text-align: center;
+  line-height: 1.1;
+}
+
+/* venue card */
+.venue-card {
+  width: 100%;
+  background: var(--glass);
+  border: 1px solid var(--gb);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+
+/* google map embed */
+.map-embed {
+  width: 100%;
+  height: 320px;
+  border: none;
+  display: block;
+  filter: grayscale(30%) sepia(20%) contrast(1.05);
+}
+
+.venue-info {
+  padding: 24px 28px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+
+.venue-details { flex: 1; min-width: 200px; }
+.venue-name {
+
+  font-size: 28px; color: var(--gold2);
+  margin-bottom: 6px; line-height: 1.2;
+}
+.venue-address {
+  font-size: 13px; opacity: .55; line-height: 1.6;
+  letter-spacing: .5px;
+}
+.venue-time {
+  margin-top: 10px;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); opacity: .8;
+}
+
+.btn-directions {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 30px;
+  border: 1px solid rgba(201,169,110,0.3);
+  background: rgba(201,169,110,0.08);
+  color: var(--gold2);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+  text-decoration: none; white-space: nowrap;
+  transition: background .3s, border-color .3s;
+  align-self: flex-start;
+}
+.btn-directions:hover { background: rgba(201,169,110,0.18); border-color: var(--gold); }
+.btn-directions svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* decorative bottom */
+.page-bottom {
+  padding: 0 20px 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  position: relative; z-index: 1;
+}
+.bottom-ornament {
+  display: flex; align-items: center; gap: 16px;
+}
+.bottom-ornament::before, .bottom-ornament::after {
+  content: ''; width: 80px; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,169,110,0.3));
+}
+.bottom-ornament::after { background: linear-gradient(to left, transparent, rgba(201,169,110,0.3)); }
+.bottom-ornament span { font-size: 18px; color: var(--gold); opacity: .5; }
+.bottom-text { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: .25; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* scroll reveal */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .9s ease, transform .9s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ring hero-ring-1"></div>
+  <div class="hero-ring hero-ring-2"></div>
+  <div class="hero-ring hero-ring-3"></div>
+
+  <div class="hero-content">
+    <div class="ornament">
+      <div class="ornament-line"></div>
+      <div class="ornament-text">Nişan Davetiyesi</div>
+      <div class="ornament-line r"></div>
+    </div>
+
+    <div class="names">
+      Firdevs
+      <span class="ampersand">&</span>
+      <span class="name2">Hasan Çağlar</span>
+    </div>
+
+    <div class="hero-subtitle">Nişan Törenimize Davetlisiniz!</div>
+
+    <div class="hero-divider"></div>
+
+    <div class="event-date">
+      Tarih
+      <span>18 Nisan 2026</span>
+    </div>
+
+    <div class="clock-section">
+      <div class="simple-clock" id="simpleClock">
+        <div class="time-unit">
+          <span id="c-days">00</span>
+          <div class="unit-label">Gün</div>
+        </div>
+        <div class="time-sep">:</div>
+        <div class="time-unit">
+          <span id="c-hours">00</span>
+          <div class="unit-label">Saat</div>
+        </div>
+        <div class="time-sep">:</div>
+        <div class="time-unit">
+          <span id="c-minutes">00</span>
+          <div class="unit-label">Dakika</div>
+        </div>
+        <div class="time-sep">:</div>
+        <div class="time-unit">
+          <span id="c-seconds">00</span>
+          <div class="unit-label">Saniye</div>
+        </div>
+      </div>
+
+      <div class="upload-reveal" id="uploadReveal">
+        <a class="btn-upload-main" href="upload.html">Anı Yükle</a>
+        <div class="upload-reveal-sub">Güzel anlarınızı bizimle paylaşın</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="location-section">
+
+  <div class="section-ornament reveal">
+    <div class="section-ornament-line"></div>
+    <div class="section-label">Konum</div>
+  </div>
+
+  <div class="venue-card reveal">
+    <iframe
+      class="map-embed"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps?q=37.419844226281434,29.35717707176527&z=16&output=embed">
+    </iframe>
+
+    <div class="venue-info">
+      <div class="venue-details">
+        <div class="venue-name">Olbia Davet Evi</div>
+        <div class="venue-address">
+          Acıpayam, Denizli
+        </div>
+      </div>
+
+      <a class="btn-directions"
+         href="https://maps.app.goo.gl/fdeYkqWp4wdWEgp96"
+         target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        Yol Tarifi Al
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<div class="page-bottom reveal">
+  <div class="bottom-ornament"><span>♡</span></div>
+  <div class="bottom-text">Firdevs & Hasan Çağlar · 2026</div>
+</div>
+
+<script>
+/* ── TARGET DATE: 25 Mart 2026 20:30 (Test İçin) ── */
+const TARGET = new Date('2026-03-26T21:48:00').getTime();
+
+function pad2(n) { return String(n).padStart(2,'0'); }
+
+function tick() {
+  const now  = Date.now();
+  const diff = TARGET - now;
+
+  if (diff <= 0) {
+    // countdown bittiğinde sayacı gizle, butonu göster
+    const clock = document.getElementById('simpleClock');
+    if(clock) clock.style.display = 'none';
+    
+    const r = document.getElementById('uploadReveal');
+    if(r) r.classList.add('show');
+    return;
+  }
+
+  const totalSec = Math.floor(diff / 1000);
+  const s = totalSec % 60;
+  const m = Math.floor(totalSec / 60) % 60;
+  const h = Math.floor(totalSec / 3600) % 24;
+  const d = Math.floor(totalSec / 86400);
+
+  // Değerleri HTML'e yazdır
+  document.getElementById('c-days').textContent = pad2(d);
+  document.getElementById('c-hours').textContent = pad2(h);
+  document.getElementById('c-minutes').textContent = pad2(m);
+  document.getElementById('c-seconds').textContent = pad2(s);
+}
+
+// Sayfa yüklendiğinde başlat ve saniyede bir güncelle
+tick();
+setInterval(tick, 1000);
+
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.15 });
+revealEls.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
