@@ -32,12 +32,15 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-/* full page bg */
-body::before {
-  content: '';
+
+/* ── SITE BG (fixed, full page) ── */
+.site-bg {
   position: fixed; inset: 0; z-index: -1;
   background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
-  filter: brightness(0.22) saturate(0.8);
+  filter: brightness(0.75);
+  /* iOS Safari fix: translate3d forces GPU layer, prevents scroll jump */
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
 }
 
 /* ── GRAIN ── */
@@ -62,16 +65,12 @@ body::after {
 }
 
 /* layered background */
+/* hero-bg is now just the overlay; actual bg is .site-bg fixed div */
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
-  background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
-}
-.hero-bg::after {
-  content: '';
-  position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,169,110,0.06) 0%, transparent 70%),
-    linear-gradient(160deg, rgba(14,11,8,0.88) 0%, rgba(26,20,16,0.75) 50%, rgba(14,11,8,0.92) 100%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,169,110,0.07) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(14,11,8,0.72) 0%, rgba(26,20,16,0.55) 50%, rgba(14,11,8,0.78) 100%);
 }
 
 /* subtle decorative rings */
@@ -354,6 +353,8 @@ body::after {
 </head>
 <body>
 
+<div class="site-bg"></div>
+
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-ring hero-ring-1"></div>
@@ -458,7 +459,7 @@ body::after {
 </div>
 
 <script>
-/* ── TARGET DATE: 25 Mart 2026 20:30 (Test İçin) ── */
+/* ── TARGET DATE: 18 Nisan 2026 15:00 ── */
 const TARGET = new Date('2026-04-18T15:00:00').getTime();
 
 function pad2(n) { return String(n).padStart(2,'0'); }
