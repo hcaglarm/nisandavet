@@ -6,7 +6,7 @@
 <title>Firdevs & Hasan Çağlar — Nişan</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
 
 <style>
 /* ─── RESET & BASE ─────────────────────────────── */
@@ -607,6 +607,12 @@ textarea.field { resize: none; height: 72px; }
 </div>
 
 <script>
+/* ── INIT GUARD: wait for Supabase SDK + DOM ── */
+function initApp() {
+  if (typeof window.supabase === 'undefined') {
+    setTimeout(initApp, 50); return;
+  }
+
 /* ── CONFIG ─────────────────────────────────── */
 const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
@@ -744,14 +750,9 @@ dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.
 fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
 
 function handleFiles(files) {
-  const allowedTypes = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
-  const allowedExts  = ["jpg","jpeg","png","webp","heic","heif"];
-
+  const allowed = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
   files.forEach(f => {
-    // iOS Safari bazen type="" döndürür — uzantıya göre kontrol et
-    const ext = f.name.split('.').pop().toLowerCase();
-    const typeOk = allowedTypes.includes(f.type) || (f.type === "" && allowedExts.includes(ext));
-    if (!typeOk) return showToast("Desteklenmeyen format: " + f.name, "err");
+    if (!allowed.includes(f.type)) return showToast("Desteklenmeyen format: " + f.name, "err");
     if (f.size > 10 * 1024 * 1024) return showToast(f.name + " çok büyük! (Max 10MB)", "err");
     if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
   });
@@ -790,11 +791,8 @@ async function startUpload() {
     label.textContent = `Yükleniyor… ${done + 1}/${total}`;
     fill.style.width = Math.round((done / total) * 100) + "%";
     pct.textContent  = Math.round((done / total) * 100) + "%";
-    const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif" };
-    const ext2 = file.name.split('.').pop().toLowerCase();
-    const contentType = file.type || mimeMap[ext2] || "image/jpeg";
-    const { error } = await client.storage.from("photos").upload(fileName, file, { contentType });
-    if (error) { showToast("Yükleme hatası: " + (error.message || file.name), "err"); console.error(error); continue; }
+    const { error } = await client.storage.from("photos").upload(fileName, file, { contentType: file.type });
+    if (error) { showToast("Hata: " + file.name, "err"); continue; }
     const { data: pub } = client.storage.from("photos").getPublicUrl(fileName);
     await client.from("photos").insert([{ url: pub.publicUrl, name, comment }]);
     done++;
@@ -954,6 +952,15 @@ function confirmUpload() {
 
 /* ── INIT ────────────────────────────────────── */
 loadImages();
+
+} // end initApp
+
+/* start when DOM is ready */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 </script>
 
 <!-- CONFIRM MODAL -->
