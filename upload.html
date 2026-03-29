@@ -775,6 +775,8 @@ async function startUpload() {
 
   // Snapshot files immediately — prevent any async mutation
   const filesToUpload = [...selectedFiles];
+  // Debug: göster kaç dosya var
+  showToast("Dosya sayısı: " + filesToUpload.length + " | İsim: " + name, "ok");
   if (!filesToUpload.length) return;
 
   const btn         = document.getElementById("uploadBtn");
@@ -1023,7 +1025,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v2.9</div>
+">v3.0</div>
 
 </body>
 </html>
