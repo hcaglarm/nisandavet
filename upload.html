@@ -811,7 +811,7 @@ async function startUpload() {
       continue;
     }
 
-    // Retry logic: try up to 3 times with increasing delay
+    // Retry logic — fresh Blob each attempt to avoid detached ArrayBuffer
     let storageErr = null;
     let fileName   = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
@@ -820,9 +820,11 @@ async function startUpload() {
         label.textContent = `Tekrar deneniyor… (${attempt}/3)`;
         await new Promise(r => setTimeout(r, attempt * 600));
       }
+      // Wrap in new Blob each time — prevents detached ArrayBuffer issue
+      const blob = new Blob([fileData.slice(0)], { type: contentType });
       const res = await getClient().storage
         .from("photos")
-        .upload(fileName, fileData, { contentType, upsert: false });
+        .upload(fileName, blob, { contentType, upsert: false });
       storageErr = res.error;
       if (!storageErr) break;
     }
@@ -1036,7 +1038,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v3.1</div>
+">v3.2</div>
 
 </body>
 </html>
