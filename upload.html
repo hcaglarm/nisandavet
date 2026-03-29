@@ -793,19 +793,30 @@ async function startUpload() {
   for (const file of filesToUpload) {
     const ext         = file.name.split('.').pop().toLowerCase();
     const contentType = file.type || mimeMap[ext] || "image/jpeg";
-    const fileName    = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9.]/g, "");
 
     label.textContent = `Yükleniyor… ${done + 1}/${total}`;
     fill.style.width  = Math.round((done / total) * 100) + "%";
     pct.textContent   = Math.round((done / total) * 100) + "%";
 
-    const { error: storageErr } = await getClient().storage
-      .from("photos")
-      .upload(fileName, file, { contentType, upsert: false });
+    // Retry logic: try up to 3 times with increasing delay
+    let storageErr = null;
+    let fileName   = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      fileName = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9.]/g, "");
+      if (attempt > 1) {
+        label.textContent = `Tekrar deneniyor… (${attempt}/3)`;
+        await new Promise(r => setTimeout(r, attempt * 600));
+      }
+      const res = await getClient().storage
+        .from("photos")
+        .upload(fileName, file, { contentType, upsert: false });
+      storageErr = res.error;
+      if (!storageErr) break;
+    }
 
     if (storageErr) {
-      console.error("Storage error:", storageErr);
-      showToast("Hata: " + (storageErr.message || storageErr.error || JSON.stringify(storageErr)), "err");
+      const msg = storageErr.message || storageErr.error || storageErr.statusCode || JSON.stringify(storageErr);
+      showToast("Yükleme hatası: " + msg, "err");
       continue;
     }
 
@@ -815,7 +826,6 @@ async function startUpload() {
       .insert([{ url: pub.publicUrl, name, comment }]);
 
     if (dbErr) {
-      console.error("DB error:", dbErr);
       showToast("Kayıt hatası: " + dbErr.message, "err");
       continue;
     }
@@ -1013,7 +1023,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v2.8</div>
+">v2.9</div>
 
 </body>
 </html>
