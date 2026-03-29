@@ -482,19 +482,6 @@ textarea.field { resize: none; height: 72px; }
 }
 .btn-cancel:hover { background: rgba(255,255,255,0.1); }
 
-
-/* ─── PHOTO PROTECTION ───────────────────────── */
-.slide img, .grid-item img, .lightbox img {
-  -webkit-user-select: none; user-select: none;
-  -webkit-touch-callout: none; /* iOS uzun bas menüsünü engeller */
-  pointer-events: none;        /* sürükleme + sağ tık engeli */
-}
-/* pointer-events:none koyunca click de çalışmaz,
-   bu yüzden click'i parent'a taşıdık zaten (grid-item, lightbox-nav vs.) */
-.slide, .grid-item, .lightbox-img-wrap {
-  -webkit-user-select: none; user-select: none;
-}
-
 </style>
 </head>
 <body>
@@ -757,9 +744,14 @@ dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.
 fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
 
 function handleFiles(files) {
-  const allowed = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
+  const allowedTypes = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
+  const allowedExts  = ["jpg","jpeg","png","webp","heic","heif"];
+
   files.forEach(f => {
-    if (!allowed.includes(f.type)) return showToast("Desteklenmeyen format: " + f.name, "err");
+    // iOS Safari bazen type="" döndürür — uzantıya göre kontrol et
+    const ext = f.name.split('.').pop().toLowerCase();
+    const typeOk = allowedTypes.includes(f.type) || (f.type === "" && allowedExts.includes(ext));
+    if (!typeOk) return showToast("Desteklenmeyen format: " + f.name, "err");
     if (f.size > 10 * 1024 * 1024) return showToast(f.name + " çok büyük! (Max 10MB)", "err");
     if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
   });
@@ -798,8 +790,11 @@ async function startUpload() {
     label.textContent = `Yükleniyor… ${done + 1}/${total}`;
     fill.style.width = Math.round((done / total) * 100) + "%";
     pct.textContent  = Math.round((done / total) * 100) + "%";
-    const { error } = await client.storage.from("photos").upload(fileName, file, { contentType: file.type });
-    if (error) { showToast("Hata: " + file.name, "err"); continue; }
+    const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif" };
+    const ext2 = file.name.split('.').pop().toLowerCase();
+    const contentType = file.type || mimeMap[ext2] || "image/jpeg";
+    const { error } = await client.storage.from("photos").upload(fileName, file, { contentType });
+    if (error) { showToast("Yükleme hatası: " + (error.message || file.name), "err"); console.error(error); continue; }
     const { data: pub } = client.storage.from("photos").getPublicUrl(fileName);
     await client.from("photos").insert([{ url: pub.publicUrl, name, comment }]);
     done++;
@@ -956,15 +951,6 @@ function confirmUpload() {
   closeConfirm();
   startUpload();
 }
-
-
-/* ── PHOTO PROTECTION ────────────────────────── */
-document.addEventListener('contextmenu', e => {
-  if (e.target.tagName === 'IMG') e.preventDefault();
-});
-document.addEventListener('dragstart', e => {
-  if (e.target.tagName === 'IMG') e.preventDefault();
-});
 
 /* ── INIT ────────────────────────────────────── */
 loadImages();
