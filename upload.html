@@ -746,9 +746,14 @@ fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); 
 
 function handleFiles(files) {
   const allowed = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
+  const allowedExt = ["jpg","jpeg","png","webp","heic","heif"];
   files.forEach(f => {
-    if (!allowed.includes(f.type)) return showToast("Desteklenmeyen format: " + f.name, "err");
-    if (f.size > 10 * 1024 * 1024) return showToast(f.name + " çok büyük! (Max 10MB)", "err");
+    // Android/Samsung often sends empty or wrong MIME type — also check extension
+    const ext = f.name.split('.').pop().toLowerCase();
+    const mimeOk = allowed.includes(f.type);
+    const extOk  = allowedExt.includes(ext);
+    if (!mimeOk && !extOk) return showToast("Desteklenmeyen format: " + f.name, "err");
+    if (f.size > 30 * 1024 * 1024) return showToast(f.name + " çok büyük! (Max 30MB)", "err");
     if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
   });
   renderChips();
@@ -797,18 +802,30 @@ async function startUpload() {
 
   for (const file of filesToUpload) {
     const ext         = file.name.split('.').pop().toLowerCase();
-    const contentType = file.type || mimeMap[ext] || "image/jpeg";
+    // Samsung/Android often sends empty type — fall back to extension map, then jpeg
+    const contentType = (file.type && file.type !== "application/octet-stream")
+      ? file.type
+      : (mimeMap[ext] || "image/jpeg");
 
     label.textContent = `Yükleniyor… ${done + 1}/${total}`;
     fill.style.width  = Math.round((done / total) * 100) + "%";
     pct.textContent   = Math.round((done / total) * 100) + "%";
 
-    // Pre-read file as ArrayBuffer to avoid mobile stream issues
+    // Read file — try arrayBuffer first, fall back to FileReader for older Android WebViews
     let fileData;
     try {
-      fileData = await file.arrayBuffer();
+      if (typeof file.arrayBuffer === "function") {
+        fileData = await file.arrayBuffer();
+      } else {
+        fileData = await new Promise((res, rej) => {
+          const fr = new FileReader();
+          fr.onload  = () => res(fr.result);
+          fr.onerror = () => rej(fr.error);
+          fr.readAsArrayBuffer(file);
+        });
+      }
     } catch(e) {
-      showToast("Dosya okunamadı: " + e.message, "err");
+      showToast("Dosya okunamadı: " + (e.message || e), "err");
       continue;
     }
     if (!fileData || fileData.byteLength === 0) {
@@ -820,10 +837,10 @@ async function startUpload() {
     let storageErr = null;
     let fileName   = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
-      fileName = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9.]/g, "");
+      fileName = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "");
       if (attempt > 1) {
         label.textContent = `Tekrar deneniyor… (${attempt}/3)`;
-        await new Promise(r => setTimeout(r, attempt * 600));
+        await new Promise(r => setTimeout(r, attempt * 800));
       }
       // Wrap in new Blob each time — prevents detached ArrayBuffer issue
       const blob = new Blob([fileData.slice(0)], { type: contentType });
@@ -836,7 +853,7 @@ async function startUpload() {
 
     if (storageErr) {
       const msg = storageErr.message || storageErr.error || storageErr.statusCode || JSON.stringify(storageErr);
-      showToast("Yükleme hatası: " + msg, "err");
+      showToast(`Yükleme hatası (${done+1}/${total}): ` + msg, "err");
       continue;
     }
 
