@@ -613,14 +613,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const ADMIN_PASSWORD = "nisanadmin2026"; // İstediğiniz şifreyle değiştirin
 
-let _client = null;
-function getClient() {
-  if (!_client) {
-    if (typeof window.supabase === 'undefined') return null;
-    _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
-  return _client;
-}
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ── STATE ───────────────────────────────────── */
 let images        = [];
@@ -792,7 +785,10 @@ async function startUpload() {
     label.textContent = `Yükleniyor… ${done + 1}/${total}`;
     fill.style.width = Math.round((done / total) * 100) + "%";
     pct.textContent  = Math.round((done / total) * 100) + "%";
-    const { error } = await getClient().storage.from("photos").upload(fileName, file, { contentType: file.type });
+    const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif" };
+    const ext2 = file.name.split('.').pop().toLowerCase();
+    const contentType = file.type || mimeMap[ext2] || "image/jpeg";
+    const { error } = await getClient().storage.from("photos").upload(fileName, file, { contentType });
     if (error) { showToast("Hata: " + file.name, "err"); continue; }
     const { data: pub } = getClient().storage.from("photos").getPublicUrl(fileName);
     await getClient().from("photos").insert([{ url: pub.publicUrl, name, comment }]);
@@ -952,15 +948,7 @@ function confirmUpload() {
 }
 
 /* ── INIT ────────────────────────────────────── */
-function waitAndInit() {
-  if (typeof window.supabase === 'undefined') {
-    setTimeout(waitAndInit, 50);
-    return;
-  }
-  loadImages();
-  checkAdminRoute();
-}
-document.addEventListener('DOMContentLoaded', waitAndInit);
+loadImages();
 </script>
 
 <!-- CONFIRM MODAL -->
