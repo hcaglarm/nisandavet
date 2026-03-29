@@ -775,8 +775,6 @@ async function startUpload() {
 
   // Snapshot files immediately — prevent any async mutation
   const filesToUpload = [...selectedFiles];
-  // Debug: göster kaç dosya var
-  showToast("Dosya sayısı: " + filesToUpload.length + " | İsim: " + name, "ok");
   if (!filesToUpload.length) return;
 
   const btn         = document.getElementById("uploadBtn");
@@ -800,6 +798,19 @@ async function startUpload() {
     fill.style.width  = Math.round((done / total) * 100) + "%";
     pct.textContent   = Math.round((done / total) * 100) + "%";
 
+    // Pre-read file as ArrayBuffer to avoid mobile stream issues
+    let fileData;
+    try {
+      fileData = await file.arrayBuffer();
+    } catch(e) {
+      showToast("Dosya okunamadı: " + e.message, "err");
+      continue;
+    }
+    if (!fileData || fileData.byteLength === 0) {
+      showToast("Dosya boş geldi, tekrar seçin.", "err");
+      continue;
+    }
+
     // Retry logic: try up to 3 times with increasing delay
     let storageErr = null;
     let fileName   = null;
@@ -811,7 +822,7 @@ async function startUpload() {
       }
       const res = await getClient().storage
         .from("photos")
-        .upload(fileName, file, { contentType, upsert: false });
+        .upload(fileName, fileData, { contentType, upsert: false });
       storageErr = res.error;
       if (!storageErr) break;
     }
@@ -1025,7 +1036,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v3.0</div>
+">v3.1</div>
 
 </body>
 </html>
