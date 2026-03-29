@@ -6,7 +6,7 @@
 <title>Firdevs & Hasan Çağlar — Nişan</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
 /* ─── RESET & BASE ─────────────────────────────── */
@@ -607,19 +607,20 @@ textarea.field { resize: none; height: 72px; }
 </div>
 
 <script>
-/* ── INIT GUARD: wait for Supabase SDK + DOM ── */
-function initApp() {
-  if (typeof window.supabase === 'undefined') {
-    setTimeout(initApp, 50); return;
-  }
-
 /* ── CONFIG ─────────────────────────────────── */
 const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
 
 const ADMIN_PASSWORD = "nisanadmin2026"; // İstediğiniz şifreyle değiştirin
 
-const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let _client = null;
+function getClient() {
+  if (!_client) {
+    if (typeof window.supabase === 'undefined') return null;
+    _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  return _client;
+}
 
 /* ── STATE ───────────────────────────────────── */
 let images        = [];
@@ -721,9 +722,9 @@ async function deletePhoto(id, url) {
   // Extract filename from URL for storage deletion
   const parts = url.split('/photos/');
   if (parts[1]) {
-    await client.storage.from('photos').remove([parts[1]]);
+    await getClient().storage.from('photos').remove([parts[1]]);
   }
-  await client.from('photos').delete().eq('id', id);
+  await getClient().from('photos').delete().eq('id', id);
   // Remove from UI immediately
   document.getElementById('apc-' + id)?.remove();
   images = images.filter(i => i.id !== id);
@@ -791,10 +792,10 @@ async function startUpload() {
     label.textContent = `Yükleniyor… ${done + 1}/${total}`;
     fill.style.width = Math.round((done / total) * 100) + "%";
     pct.textContent  = Math.round((done / total) * 100) + "%";
-    const { error } = await client.storage.from("photos").upload(fileName, file, { contentType: file.type });
+    const { error } = await getClient().storage.from("photos").upload(fileName, file, { contentType: file.type });
     if (error) { showToast("Hata: " + file.name, "err"); continue; }
-    const { data: pub } = client.storage.from("photos").getPublicUrl(fileName);
-    await client.from("photos").insert([{ url: pub.publicUrl, name, comment }]);
+    const { data: pub } = getClient().storage.from("photos").getPublicUrl(fileName);
+    await getClient().from("photos").insert([{ url: pub.publicUrl, name, comment }]);
     done++;
     fill.style.width = Math.round((done / total) * 100) + "%";
     pct.textContent  = Math.round((done / total) * 100) + "%";
@@ -815,7 +816,7 @@ function showToast(msg, type) {
 
 /* ── LOAD & RENDER ───────────────────────────── */
 async function loadImages() {
-  const { data } = await client.from("photos").select("*").order("created_at", { ascending: false });
+  const { data } = await getClient().from("photos").select("*").order("created_at", { ascending: false });
   if (!data) return;
   const isFirst = images.length === 0;
   if (!isFirst) data.forEach(r => { if (!images.find(x => x.id === r.id)) newlyAddedIds.add(r.id); });
@@ -928,7 +929,7 @@ document.addEventListener("keydown", e => {
 });
 
 /* ── REALTIME ────────────────────────────────── */
-client.channel("photos-changes")
+getClient().channel("photos-changes")
   .on("postgres_changes", { event: "INSERT", schema: "public", table: "photos" }, () => { loadImages(); })
   .subscribe();
 
@@ -951,16 +952,15 @@ function confirmUpload() {
 }
 
 /* ── INIT ────────────────────────────────────── */
-loadImages();
-
-} // end initApp
-
-/* start when DOM is ready */
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
+function waitAndInit() {
+  if (typeof window.supabase === 'undefined') {
+    setTimeout(waitAndInit, 50);
+    return;
+  }
+  loadImages();
+  checkAdminRoute();
 }
+document.addEventListener('DOMContentLoaded', waitAndInit);
 </script>
 
 <!-- CONFIRM MODAL -->
