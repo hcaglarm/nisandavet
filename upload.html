@@ -805,7 +805,7 @@ async function startUpload() {
 
     if (storageErr) {
       console.error("Storage error:", storageErr);
-      showToast("Yükleme hatası: " + storageErr.message, "err");
+      showToast("Hata: " + (storageErr.message || storageErr.error || JSON.stringify(storageErr)), "err");
       continue;
     }
 
@@ -1013,7 +1013,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v2.7</div>
+">v2.8</div>
 
 </body>
 </html>
