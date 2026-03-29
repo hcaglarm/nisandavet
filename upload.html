@@ -777,6 +777,11 @@ async function startUpload() {
   const filesToUpload = [...selectedFiles];
   if (!filesToUpload.length) return;
 
+  // Wait for Supabase auth/session to be fully ready before any storage call
+  try {
+    await getClient().auth.getSession();
+  } catch(e) { /* anon kullanımda hata gelmez, yine de yakala */ }
+
   const btn         = document.getElementById("uploadBtn");
   const progressWrap = document.getElementById("progressWrap");
   const fill        = document.getElementById("progressFill");
@@ -1038,7 +1043,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v3.2</div>
+">v3.3</div>
 
 </body>
 </html>
