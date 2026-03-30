@@ -510,10 +510,10 @@ textarea.field { resize: none; height: 72px; }
       <textarea class="field" id="uploaderComment" placeholder="Bir mesaj bırakın… (opsiyonel)"></textarea>
     </div>
     <div class="drop-zone" id="dropZone">
-      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
+      <input type="file" id="fileInput" accept="image/*" multiple>
       <div class="drop-zone-label">
         <strong>Fotoğraf seç</strong><br>
-        Birden fazla seçebilirsiniz · Max 10MB/adet
+        Birden fazla seçebilirsiniz · Max 30MB/adet
       </div>
     </div>
     <div class="file-chips" id="fileChips"></div>
@@ -526,6 +526,7 @@ textarea.field { resize: none; height: 72px; }
       <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
     </div>
     <div class="toast" id="toast"></div>
+    <div id="errorLog" style="display:none;margin-top:14px;padding:14px 14px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,120,120,0.4);border-radius:12px;font-size:11.5px;font-family:monospace;color:#f4a4a4;line-height:1.7;word-break:break-all;max-height:280px;overflow-y:auto;"></div>
   </div>
 
   <!-- GALLERY HEADER -->
@@ -745,15 +746,16 @@ dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.
 fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
 
 function handleFiles(files) {
-  const allowed = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
-  const allowedExt = ["jpg","jpeg","png","webp","heic","heif"];
+  clearErrorLog();
+  const allowedExt = ["jpg","jpeg","png","webp","heic","heif","gif","bmp","tiff","tif","avif"];
   files.forEach(f => {
-    // Android/Samsung often sends empty or wrong MIME type — also check extension
-    const ext = f.name.split('.').pop().toLowerCase();
-    const mimeOk = allowed.includes(f.type);
+    const ext = (f.name.split('.').pop() || "").toLowerCase();
+    const mimeOk = (f.type || "").startsWith("image/");
     const extOk  = allowedExt.includes(ext);
-    if (!mimeOk && !extOk) return showToast("Desteklenmeyen format: " + f.name, "err");
-    if (f.size > 30 * 1024 * 1024) return showToast(f.name + " çok büyük! (Max 30MB)", "err");
+    // Log what we received for debugging
+    logInfo("Seçilen: " + f.name + " | tip: " + (f.type||"(boş)") + " | boyut: " + (f.size/1024).toFixed(0) + " KB");
+    if (!mimeOk && !extOk) { logError("Format reddedildi: " + f.name + " (tip=" + f.type + ", ext=" + ext + ")"); return; }
+    if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); return; }
     if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
   });
   renderChips();
@@ -796,73 +798,129 @@ async function startUpload() {
   btn.disabled = true;
   progressWrap.style.display = "block";
 
-  const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif" };
+  const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   let done = 0;
   const total = filesToUpload.length;
+  logInfo("Toplam " + total + " dosya yüklenecek. İsim: " + name);
 
   for (const file of filesToUpload) {
-    const ext         = file.name.split('.').pop().toLowerCase();
-    // Samsung/Android often sends empty type — fall back to extension map, then jpeg
-    const contentType = (file.type && file.type !== "application/octet-stream")
+    const ext         = (file.name.split('.').pop() || "").toLowerCase();
+    const contentType = (file.type && !file.type.includes("octet-stream"))
       ? file.type
       : (mimeMap[ext] || "image/jpeg");
 
-    label.textContent = `Yükleniyor… ${done + 1}/${total}`;
+    label.textContent = "Yükleniyor… " + (done + 1) + "/" + total;
     fill.style.width  = Math.round((done / total) * 100) + "%";
     pct.textContent   = Math.round((done / total) * 100) + "%";
 
-    // Read file — try arrayBuffer first, fall back to FileReader for older Android WebViews
+    logInfo("━ Dosya " + (done+1) + ": " + file.name + " | contentType: " + contentType + " | " + (file.size/1024).toFixed(0) + " KB");
+
+    // Read as ArrayBuffer via FileReader (most compatible with Android)
     let fileData;
     try {
-      if (typeof file.arrayBuffer === "function") {
-        fileData = await file.arrayBuffer();
-      } else {
-        fileData = await new Promise((res, rej) => {
-          const fr = new FileReader();
-          fr.onload  = () => res(fr.result);
-          fr.onerror = () => rej(fr.error);
-          fr.readAsArrayBuffer(file);
-        });
-      }
+      fileData = await new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload  = () => res(fr.result);
+        fr.onerror = () => rej(new Error("FileReader error: " + fr.error));
+        fr.readAsArrayBuffer(file);
+      });
     } catch(e) {
-      showToast("Dosya okunamadı: " + (e.message || e), "err");
+      logError("Okuma hatası: " + (e.message || e));
+      showToast("Dosya okunamadı!", "err");
       continue;
     }
     if (!fileData || fileData.byteLength === 0) {
+      logError("Dosya boş okundu (byteLength=0)");
       showToast("Dosya boş geldi, tekrar seçin.", "err");
       continue;
     }
+    logInfo("  Okundu: " + fileData.byteLength + " byte");
 
-    // Retry logic — fresh Blob each attempt to avoid detached ArrayBuffer
-    let storageErr = null;
-    let fileName   = null;
+    // Try fetch first, then XHR fallback (Samsung Chrome sometimes blocks fetch CORS)
+    let uploadOk = false;
+    let publicUrl = null;
+    let fileName  = null;
+
     for (let attempt = 1; attempt <= 3; attempt++) {
-      fileName = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "");
+      fileName = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       if (attempt > 1) {
-        label.textContent = `Tekrar deneniyor… (${attempt}/3)`;
-        await new Promise(r => setTimeout(r, attempt * 800));
+        label.textContent = "Tekrar deneniyor… (" + attempt + "/3)";
+        await new Promise(r => setTimeout(r, attempt * 1200));
       }
-      // Wrap in new Blob each time — prevents detached ArrayBuffer issue
-      const blob = new Blob([fileData.slice(0)], { type: contentType });
-      const res = await getClient().storage
-        .from("photos")
-        .upload(fileName, blob, { contentType, upsert: false });
-      storageErr = res.error;
-      if (!storageErr) break;
+      const uploadUrl = SUPABASE_URL + "/storage/v1/object/photos/" + encodeURIComponent(fileName);
+      logInfo("  Upload attempt " + attempt + " → " + uploadUrl.slice(0,60) + "…");
+
+      // Try fetch
+      let fetchOk = false;
+      try {
+        const blob = new Blob([fileData], { type: contentType });
+        const res = await fetch(uploadUrl, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY,
+            "Content-Type": contentType,
+            "x-upsert": "false"
+          },
+          body: blob
+        });
+        if (res.ok) {
+          fetchOk = true; uploadOk = true;
+          publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
+          logInfo("  fetch OK ✓");
+          break;
+        } else {
+          let errText = "";
+          try { const j = await res.json(); errText = j.message || j.error || JSON.stringify(j); } catch(_) { errText = String(res.status); }
+          logError("  fetch HTTP " + res.status + ": " + errText);
+        }
+      } catch(fetchErr) {
+        logError("  fetch exception: " + (fetchErr.message || fetchErr));
+      }
+
+      if (fetchOk) break;
+
+      // XHR fallback
+      logInfo("  XHR fallback deneniyor…");
+      try {
+        const xhrResult = await new Promise((res, rej) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", uploadUrl);
+          xhr.setRequestHeader("apikey", SUPABASE_KEY);
+          xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
+          xhr.setRequestHeader("Content-Type", contentType);
+          xhr.setRequestHeader("x-upsert", "false");
+          xhr.onload  = () => res({ status: xhr.status, body: xhr.responseText });
+          xhr.onerror = () => rej(new Error("XHR network error"));
+          xhr.ontimeout = () => rej(new Error("XHR timeout"));
+          xhr.timeout = 60000;
+          xhr.send(new Blob([fileData], { type: contentType }));
+        });
+        if (xhrResult.status >= 200 && xhrResult.status < 300) {
+          uploadOk = true;
+          publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
+          logInfo("  XHR OK ✓ (status " + xhrResult.status + ")");
+          break;
+        } else {
+          logError("  XHR HTTP " + xhrResult.status + ": " + xhrResult.body.slice(0,200));
+        }
+      } catch(xhrErr) {
+        logError("  XHR exception: " + (xhrErr.message || xhrErr));
+      }
     }
 
-    if (storageErr) {
-      const msg = storageErr.message || storageErr.error || storageErr.statusCode || JSON.stringify(storageErr);
-      showToast(`Yükleme hatası (${done+1}/${total}): ` + msg, "err");
+    if (!uploadOk) {
+      showToast("Yükleme başarısız — hata detayına bakın", "err");
       continue;
     }
 
-    const { data: pub } = getClient().storage.from("photos").getPublicUrl(fileName);
-
+    // Insert record into DB
+    logInfo("  DB kaydı yapılıyor…");
     const { error: dbErr } = await getClient().from("photos")
-      .insert([{ url: pub.publicUrl, name, comment }]);
+      .insert([{ url: publicUrl, name, comment }]);
 
     if (dbErr) {
+      logError("DB hatası: " + dbErr.message);
       showToast("Kayıt hatası: " + dbErr.message, "err");
       continue;
     }
@@ -892,7 +950,34 @@ async function startUpload() {
 function showToast(msg, type) {
   const t = document.getElementById("toast");
   t.textContent = msg; t.className = "toast show " + (type || "ok");
-  setTimeout(() => t.classList.remove("show"), 3000);
+  setTimeout(() => t.classList.remove("show"), type === "err" ? 12000 : 3000);
+  if (type === "err") logError(msg);
+}
+
+function logError(msg) {
+  _appendLog("⚠ " + msg, "#f4a4a4");
+}
+
+function logInfo(msg) {
+  _appendLog("ℹ " + msg, "rgba(232,213,176,0.7)");
+}
+
+function _appendLog(msg, color) {
+  const el = document.getElementById("errorLog");
+  if (!el) return;
+  el.style.display = "block";
+  const d = document.createElement("div");
+  d.style.cssText = "margin-bottom:3px;color:" + color;
+  d.textContent = msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearErrorLog() {
+  const el = document.getElementById("errorLog");
+  if (!el) return;
+  el.style.display = "none";
+  el.innerHTML = "";
 }
 
 /* ── LOAD & RENDER ───────────────────────────── */
@@ -1060,7 +1145,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v3.4</div>
+">v3.5</div>
 
 </body>
 </html>
