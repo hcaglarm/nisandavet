@@ -177,6 +177,8 @@ textarea.field { resize: none; height: 72px; }
 .slide img {
   width: 100%; height: 420px; object-fit: cover; object-position: center;
   display: block; cursor: default;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 .slide-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
@@ -234,6 +236,8 @@ textarea.field { resize: none; height: 72px; }
   width: 100%; height: 100%; object-fit: cover;
   transition: transform .4s ease;
   display: block;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 .grid-item:hover img { transform: scale(1.06); }
 .grid-overlay {
@@ -262,7 +266,7 @@ textarea.field { resize: none; height: 72px; }
   position: relative; max-width: 95vw; max-height: 80vh;
   display: flex; align-items: center; justify-content: center;
 }
-.lightbox img { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; }
+.lightbox img { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .lightbox-info { margin-top: 16px; text-align: center; }
 .lightbox-name { font-family: 'Luxurious Script', cursive; font-size: 22px; color: var(--gold2); }
 .lightbox-comment { font-size: 13px; opacity: .6; margin-top: 4px; max-width: 400px; }
@@ -1059,6 +1063,14 @@ function updateLightbox() {
   document.getElementById("lbComment").textContent = img.comment || "";
 }
 document.getElementById("lightbox").addEventListener("click", e => { if (e.target === document.getElementById("lightbox")) closeLightbox(); });
+
+/* ── BLOCK SAVE/CONTEXT-MENU ON GALLERY IMAGES ── */
+["slider", "photoGrid", "lightbox"].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener("contextmenu", e => { if (e.target.tagName === "IMG") e.preventDefault(); });
+  el.addEventListener("dragstart",   e => { if (e.target.tagName === "IMG") e.preventDefault(); });
+});
 let lbTouchX = 0;
 document.getElementById("lightbox").addEventListener("touchstart", e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
 document.getElementById("lightbox").addEventListener("touchend", e => {
@@ -1141,7 +1153,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.1</div>
+">v4.2</div>
 
 </body>
 </html>
