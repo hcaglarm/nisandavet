@@ -745,13 +745,15 @@ dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover
 dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("dragover"); handleFiles([...e.dataTransfer.files]); });
 fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
 
-function readFileSequential(f) {
-  // Wrap FileReader in a Promise — sequential calls avoid Android parallel-read bugs
+function readBlob(blob) {
+  // Clone the file as a Blob before reading — prevents Android GC invalidating File handles
+  // across async await boundaries. Use slice(0) to force a true copy.
   return new Promise((resolve) => {
+    const copy = blob.slice(0, blob.size, blob.type || "image/jpeg");
     const fr = new FileReader();
     fr.onload  = () => resolve({ ok: true,  buffer: fr.result });
     fr.onerror = () => resolve({ ok: false, error: fr.error });
-    fr.readAsArrayBuffer(f);
+    fr.readAsArrayBuffer(copy);
   });
 }
 
@@ -759,8 +761,9 @@ async function handleFiles(files) {
   clearErrorLog();
   const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   const allowedExt = Object.keys(mimeMap);
-  let readError = false;
 
+  // Snapshot metadata synchronously BEFORE any await — file handles may expire after yield
+  const queue = [];
   for (const f of files) {
     const ext = (f.name.split('.').pop() || "").toLowerCase();
     const mimeOk = (f.type || "").startsWith("image/");
@@ -769,28 +772,32 @@ async function handleFiles(files) {
     if (!mimeOk && !extOk) { logError("Format reddedildi: " + f.name); continue; }
     if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
     if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
-
     const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (mimeMap[ext] || "image/jpeg");
-    const entry = { file: f, buffer: null, contentType, name: f.name, size: f.size };
-
-    // Read sequentially — avoids Android parallel FileReader bug
-    const result = await readFileSequential(f);
-    if (result.ok) {
-      entry.buffer = result.buffer;
-      logInfo("  Hazır: " + f.name + " (" + result.buffer.byteLength + " byte)");
-    } else {
-      logError("Okuma hatası (seçim anında): " + f.name + " — " + result.error);
-      readError = true;
-      // Still add entry — retry at upload time
-    }
-    selectedFiles.push(entry);
+    queue.push({ file: f, buffer: null, contentType, name: f.name, size: f.size });
   }
 
+  // Add to selectedFiles immediately so chips appear while reading
+  queue.forEach(e => selectedFiles.push(e));
   renderChips();
   document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
 
+  // Now read sequentially — each file cloned as Blob to survive await boundaries
+  let readError = false;
+  for (const entry of queue) {
+    logInfo("  Okuma başlıyor: " + entry.name);
+    const result = await readBlob(entry.file);
+    if (result.ok && result.buffer.byteLength > 0) {
+      entry.buffer = result.buffer;
+      logInfo("  Hazır: " + entry.name + " (" + result.buffer.byteLength + " byte)");
+    } else {
+      logError("Okuma hatası: " + entry.name + " — " + (result.error || "boş buffer"));
+      readError = true;
+      // Keep entry — retry at upload time
+    }
+  }
+
   if (readError) {
-    showErrorModal("Bazı fotoğraflar seçilirken okunamadı. Bağlantınızı kontrol edip tekrar deneyin.");
+    showErrorModal("Bazı fotoğraflar okunurken sorun oluştu. Lütfen tekrar deneyin.");
   }
 }
 
@@ -847,12 +854,10 @@ async function startUpload() {
     if (!fileData || fileData.byteLength === 0) {
       logInfo("  Buffer boş, yükleme anında tekrar okunuyor: " + entry.name);
       label.textContent = "Dosya okunuyor… " + (done + 1) + "/" + total;
-      const retryOk = await new Promise((res) => {
-        const fr = new FileReader();
-        fr.onload  = () => { entry.buffer = fr.result; res(true); };
-        fr.onerror = () => { logError("Yeniden okuma başarısız: " + entry.name + " — " + fr.error); res(false); };
-        fr.readAsArrayBuffer(entry.file);
-      });
+      const retryResult = await readBlob(entry.file);
+      const retryOk = retryResult.ok && retryResult.buffer && retryResult.buffer.byteLength > 0;
+      if (retryOk) entry.buffer = retryResult.buffer;
+      else logError("Yeniden okuma başarısız: " + entry.name + " — " + (retryResult.error || "boş"));
       if (!retryOk || !entry.buffer || entry.buffer.byteLength === 0) {
         showToast(entry.name + " okunamadı, atlanıyor.", "err");
         showErrorModal("Fotoğraf yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.");
@@ -1192,7 +1197,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v3.9</div>
+">v4.0</div>
 
 </body>
 </html>
