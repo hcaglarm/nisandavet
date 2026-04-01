@@ -745,25 +745,15 @@ dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover
 dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("dragover"); handleFiles([...e.dataTransfer.files]); });
 fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
 
-function readBlob(blob) {
-  // Clone the file as a Blob before reading — prevents Android GC invalidating File handles
-  // across async await boundaries. Use slice(0) to force a true copy.
-  return new Promise((resolve) => {
-    const copy = blob.slice(0, blob.size, blob.type || "image/jpeg");
-    const fr = new FileReader();
-    fr.onload  = () => resolve({ ok: true,  buffer: fr.result });
-    fr.onerror = () => resolve({ ok: false, error: fr.error });
-    fr.readAsArrayBuffer(copy);
-  });
-}
-
-async function handleFiles(files) {
+function handleFiles(files) {
+  // Best practice: never read files at selection time.
+  // Store File objects and stream them directly to fetch at upload time.
+  // Android keeps File handles valid as long as the object is referenced in JS.
   clearErrorLog();
-  const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
+  const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
+                    heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   const allowedExt = Object.keys(mimeMap);
 
-  // Snapshot metadata synchronously BEFORE any await — file handles may expire after yield
-  const queue = [];
   for (const f of files) {
     const ext = (f.name.split('.').pop() || "").toLowerCase();
     const mimeOk = (f.type || "").startsWith("image/");
@@ -773,32 +763,12 @@ async function handleFiles(files) {
     if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
     if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
     const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (mimeMap[ext] || "image/jpeg");
-    queue.push({ file: f, buffer: null, contentType, name: f.name, size: f.size });
+    // Store File reference only — no pre-reading
+    selectedFiles.push({ file: f, contentType, name: f.name, size: f.size });
   }
 
-  // Add to selectedFiles immediately so chips appear while reading
-  queue.forEach(e => selectedFiles.push(e));
   renderChips();
   document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
-
-  // Now read sequentially — each file cloned as Blob to survive await boundaries
-  let readError = false;
-  for (const entry of queue) {
-    logInfo("  Okuma başlıyor: " + entry.name);
-    const result = await readBlob(entry.file);
-    if (result.ok && result.buffer.byteLength > 0) {
-      entry.buffer = result.buffer;
-      logInfo("  Hazır: " + entry.name + " (" + result.buffer.byteLength + " byte)");
-    } else {
-      logError("Okuma hatası: " + entry.name + " — " + (result.error || "boş buffer"));
-      readError = true;
-      // Keep entry — retry at upload time
-    }
-  }
-
-  if (readError) {
-    showErrorModal("Bazı fotoğraflar okunurken sorun oluştu. Lütfen tekrar deneyin.");
-  }
 }
 
 function renderChips() {
@@ -842,35 +812,15 @@ async function startUpload() {
   logInfo("Toplam " + total + " dosya yüklenecek. İsim: " + name);
 
   for (const entry of filesToUpload) {
-    const { buffer: fileData, contentType } = entry;
+    const { file, contentType } = entry;
 
     label.textContent = "Yükleniyor… " + (done + 1) + "/" + total;
     fill.style.width  = Math.round((done / total) * 100) + "%";
     pct.textContent   = Math.round((done / total) * 100) + "%";
-
     logInfo("━ Dosya " + (done+1) + ": " + entry.name + " | " + contentType + " | " + (entry.size/1024).toFixed(0) + " KB");
 
-    // Buffer was read at selection time; if missing (mobile network glitch), retry now
-    if (!fileData || fileData.byteLength === 0) {
-      logInfo("  Buffer boş, yükleme anında tekrar okunuyor: " + entry.name);
-      label.textContent = "Dosya okunuyor… " + (done + 1) + "/" + total;
-      const retryResult = await readBlob(entry.file);
-      const retryOk = retryResult.ok && retryResult.buffer && retryResult.buffer.byteLength > 0;
-      if (retryOk) entry.buffer = retryResult.buffer;
-      else logError("Yeniden okuma başarısız: " + entry.name + " — " + (retryResult.error || "boş"));
-      if (!retryOk || !entry.buffer || entry.buffer.byteLength === 0) {
-        showToast(entry.name + " okunamadı, atlanıyor.", "err");
-        showErrorModal("Fotoğraf yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.");
-        continue;
-      }
-      logInfo("  Yeniden okundu: " + entry.buffer.byteLength + " byte ✓");
-    } else {
-      logInfo("  Buffer: " + fileData.byteLength + " byte ✓");
-    }
-    // Use whichever buffer succeeded
-    const resolvedBuffer = entry.buffer;
-
-    // Try fetch first, then XHR fallback (Samsung Chrome sometimes blocks fetch CORS)
+    // Best practice: stream File directly — no FileReader, no ArrayBuffer.
+    // fetch/XHR accept File/Blob natively; this is the most reliable path on Android.
     let uploadOk = false;
     let publicUrl = null;
     let fileName  = null;
@@ -882,12 +832,10 @@ async function startUpload() {
         await new Promise(r => setTimeout(r, attempt * 1200));
       }
       const uploadUrl = SUPABASE_URL + "/storage/v1/object/photos/" + encodeURIComponent(fileName);
-      logInfo("  Upload attempt " + attempt + " → " + uploadUrl.slice(0,60) + "…");
+      logInfo("  Attempt " + attempt + ": " + entry.name);
 
-      // Try fetch
-      let fetchOk = false;
+      // Primary: fetch with File streamed directly as body
       try {
-        const blob = new Blob([resolvedBuffer], { type: contentType });
         const res = await fetch(uploadUrl, {
           method: "POST",
           headers: {
@@ -896,55 +844,51 @@ async function startUpload() {
             "Content-Type": contentType,
             "x-upsert": "false"
           },
-          body: blob
+          body: file  // File extends Blob — browsers stream it directly, no memory copy
         });
         if (res.ok) {
-          fetchOk = true; uploadOk = true;
+          uploadOk = true;
           publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
           logInfo("  fetch OK ✓");
           break;
-        } else {
-          let errText = "";
-          try { const j = await res.json(); errText = j.message || j.error || JSON.stringify(j); } catch(_) { errText = String(res.status); }
-          logError("  fetch HTTP " + res.status + ": " + errText);
         }
+        let errText = "";
+        try { const j = await res.json(); errText = j.message || j.error || JSON.stringify(j); } catch(_) { errText = String(res.status); }
+        logError("  fetch HTTP " + res.status + ": " + errText);
       } catch(fetchErr) {
-        logError("  fetch exception: " + (fetchErr.message || fetchErr));
+        logError("  fetch err: " + (fetchErr.message || fetchErr));
       }
 
-      if (fetchOk) break;
-
-      // XHR fallback
-      logInfo("  XHR fallback deneniyor…");
+      // Fallback: XHR with File streamed directly
+      logInfo("  XHR fallback…");
       try {
-        const xhrResult = await new Promise((res, rej) => {
+        const xhrResult = await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           xhr.open("POST", uploadUrl);
           xhr.setRequestHeader("apikey", SUPABASE_KEY);
           xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
           xhr.setRequestHeader("Content-Type", contentType);
           xhr.setRequestHeader("x-upsert", "false");
-          xhr.onload  = () => res({ status: xhr.status, body: xhr.responseText });
-          xhr.onerror = () => rej(new Error("XHR network error"));
-          xhr.ontimeout = () => rej(new Error("XHR timeout"));
-          xhr.timeout = 60000;
-          xhr.send(new Blob([resolvedBuffer], { type: contentType }));
+          xhr.onload    = () => resolve({ status: xhr.status, body: xhr.responseText });
+          xhr.onerror   = () => reject(new Error("XHR network error"));
+          xhr.ontimeout = () => reject(new Error("XHR timeout"));
+          xhr.timeout   = 90000;
+          xhr.send(file);  // File streamed directly — no ArrayBuffer needed
         });
         if (xhrResult.status >= 200 && xhrResult.status < 300) {
           uploadOk = true;
           publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
           logInfo("  XHR OK ✓ (status " + xhrResult.status + ")");
           break;
-        } else {
-          logError("  XHR HTTP " + xhrResult.status + ": " + xhrResult.body.slice(0,200));
         }
+        logError("  XHR HTTP " + xhrResult.status + ": " + xhrResult.body.slice(0, 200));
       } catch(xhrErr) {
-        logError("  XHR exception: " + (xhrErr.message || xhrErr));
+        logError("  XHR err: " + (xhrErr.message || xhrErr));
       }
     }
 
     if (!uploadOk) {
-      showToast("Yükleme başarısız — hata detayına bakın", "err");
+      showErrorModal("Fotoğraf yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.");
       continue;
     }
 
@@ -1197,7 +1141,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.0</div>
+">v4.1</div>
 
 </body>
 </html>
