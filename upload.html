@@ -745,37 +745,53 @@ dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover
 dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("dragover"); handleFiles([...e.dataTransfer.files]); });
 fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
 
-function handleFiles(files) {
+function readFileSequential(f) {
+  // Wrap FileReader in a Promise — sequential calls avoid Android parallel-read bugs
+  return new Promise((resolve) => {
+    const fr = new FileReader();
+    fr.onload  = () => resolve({ ok: true,  buffer: fr.result });
+    fr.onerror = () => resolve({ ok: false, error: fr.error });
+    fr.readAsArrayBuffer(f);
+  });
+}
+
+async function handleFiles(files) {
   clearErrorLog();
   const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   const allowedExt = Object.keys(mimeMap);
-  files.forEach(f => {
+  let readError = false;
+
+  for (const f of files) {
     const ext = (f.name.split('.').pop() || "").toLowerCase();
     const mimeOk = (f.type || "").startsWith("image/");
     const extOk  = allowedExt.includes(ext);
     logInfo("Seçilen: " + f.name + " | tip: " + (f.type||"(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
-    if (!mimeOk && !extOk) { logError("Format reddedildi: " + f.name); return; }
-    if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); return; }
+    if (!mimeOk && !extOk) { logError("Format reddedildi: " + f.name); continue; }
+    if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
+    if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
+
     const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (mimeMap[ext] || "image/jpeg");
-    if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) return;
-    // READ IMMEDIATELY — Android revokes file access after async delay
     const entry = { file: f, buffer: null, contentType, name: f.name, size: f.size };
+
+    // Read sequentially — avoids Android parallel FileReader bug
+    const result = await readFileSequential(f);
+    if (result.ok) {
+      entry.buffer = result.buffer;
+      logInfo("  Hazır: " + f.name + " (" + result.buffer.byteLength + " byte)");
+    } else {
+      logError("Okuma hatası (seçim anında): " + f.name + " — " + result.error);
+      readError = true;
+      // Still add entry — retry at upload time
+    }
     selectedFiles.push(entry);
-    const fr = new FileReader();
-    fr.onload  = () => {
-      entry.buffer = fr.result;
-      logInfo("  Hazır: " + f.name + " (" + fr.result.byteLength + " byte)");
-    };
-    fr.onerror = () => {
-      logError("Okuma hatası (seçim anında): " + f.name + " — " + fr.error);
-      selectedFiles = selectedFiles.filter(x => x !== entry);
-      renderChips();
-      document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
-    };
-    fr.readAsArrayBuffer(f);
-  });
+  }
+
   renderChips();
   document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
+
+  if (readError) {
+    showErrorModal("Bazı fotoğraflar seçilirken okunamadı. Bağlantınızı kontrol edip tekrar deneyin.");
+  }
 }
 
 function renderChips() {
@@ -839,6 +855,7 @@ async function startUpload() {
       });
       if (!retryOk || !entry.buffer || entry.buffer.byteLength === 0) {
         showToast(entry.name + " okunamadı, atlanıyor.", "err");
+        showErrorModal("Fotoğraf yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.");
         continue;
       }
       logInfo("  Yeniden okundu: " + entry.buffer.byteLength + " byte ✓");
@@ -1113,6 +1130,12 @@ getClient().channel("photos-changes")
 
 
 /* ── CONFIRM MODAL ───────────────────────────── */
+function showErrorModal(msg) {
+  if (msg) document.getElementById("errorOverlayMsg").textContent = msg;
+  document.getElementById("errorOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
 function showConfirm() {
   const name = document.getElementById("uploaderName").value.trim();
   if (!name) { showToast("İsminizi yazın lütfen", "err"); return; }
@@ -1148,6 +1171,18 @@ loadImages();
 </div>
 
 
+<!-- ERROR MODAL -->
+<div class="confirm-overlay" id="errorOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" style="border-color:rgba(244,164,164,0.4);background:rgba(244,164,164,0.08);">⚠</div>
+    <div class="confirm-title" style="color:#f4a4a4;font-size:22px;">Bir sorun oluştu</div>
+    <div class="confirm-text" id="errorOverlayMsg">Fotoğraf yüklenirken bir hata meydana geldi. Lütfen tekrar deneyin.</div>
+    <div class="confirm-actions" style="justify-content:center;">
+      <button class="btn-confirm" onclick="location.reload()" style="max-width:200px;">Sayfayı Yenile</button>
+    </div>
+  </div>
+</div>
+
 <!-- VERSION FOOTER -->
 <div style="
   text-align: center;
@@ -1157,7 +1192,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v3.8</div>
+">v3.9</div>
 
 </body>
 </html>
