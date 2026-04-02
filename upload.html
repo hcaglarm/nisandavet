@@ -815,102 +815,127 @@ async function startUpload() {
   const total = filesToUpload.length;
   logInfo("Toplam " + total + " dosya yüklenecek. İsim: " + name);
 
-  // Single helper — try fetch, fall back to XHR, return {ok, publicUrl, error}
-  async function attemptUpload(uploadUrl, file, contentType) {
-    // 1. fetch
-    try {
-      const res = await fetch(uploadUrl, {
-        method: "POST",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": "Bearer " + SUPABASE_KEY,
-          "Content-Type": contentType,
-          "x-upsert": "false"
-        },
-        body: file
-      });
-      if (res.ok) return { ok: true };
-      let errText = "";
-      try { const j = await res.json(); errText = j.message || j.error || JSON.stringify(j); } catch(_) { errText = String(res.status); }
-      // HTTP error (4xx/5xx) — no point retrying with XHR, same server will reject
-      if (res.status >= 400 && res.status < 500) return { ok: false, fatal: true, error: "HTTP " + res.status + ": " + errText };
-      logError("  fetch HTTP " + res.status + " — XHR fallback deneniyor");
-    } catch(fetchErr) {
-      logError("  fetch err: " + (fetchErr.message || fetchErr) + " — XHR fallback deneniyor");
-    }
-
-    // 2. XHR fallback (network-level fetch failures only)
-    try {
-      const xhrResult = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", uploadUrl);
-        xhr.setRequestHeader("apikey", SUPABASE_KEY);
-        xhr.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
-        xhr.setRequestHeader("Content-Type", contentType);
-        xhr.setRequestHeader("x-upsert", "false");
-        xhr.onload    = () => resolve({ status: xhr.status, body: xhr.responseText });
-        xhr.onerror   = () => reject(new Error("XHR network error"));
-        xhr.ontimeout = () => reject(new Error("XHR timeout"));
-        xhr.timeout   = 120000;
-        xhr.send(file);
-      });
-      if (xhrResult.status >= 200 && xhrResult.status < 300) return { ok: true };
-      return { ok: false, error: "XHR HTTP " + xhrResult.status + ": " + xhrResult.body.slice(0, 120) };
-    } catch(xhrErr) {
-      return { ok: false, error: xhrErr.message || String(xhrErr) };
-    }
-  }
-
-  const MAX_ATTEMPTS = 4;
-  const BACKOFF_MS   = [0, 2000, 5000, 10000]; // wait before attempt 1,2,3,4
-
-  for (const entry of filesToUpload) {
-    const { file, contentType } = entry;
-
-    label.textContent = "Yükleniyor… " + (done + 1) + "/" + total;
-    fill.style.width  = Math.round((done / total) * 100) + "%";
-    pct.textContent   = Math.round((done / total) * 100) + "%";
-    logInfo("━ Dosya " + (done+1) + "/" + total + ": " + entry.name + " (" + (entry.size/1024).toFixed(0) + " KB)");
-
-    // fileName fixed per file — same name on retry so partial uploads don't pile up
-    const fileName  = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + entry.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  // ── Upload one file with retry + XHR fallback ──────────────────────────────
+  // Returns { ok, fileName, publicUrl } or { ok: false, error }
+  async function uploadFile(file, contentType) {
+    const fileName  = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const uploadUrl = SUPABASE_URL + "/storage/v1/object/photos/" + encodeURIComponent(fileName);
     const publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
 
-    let uploadOk = false;
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      if (BACKOFF_MS[attempt - 1] > 0) {
-        label.textContent = "Tekrar deneniyor… (" + attempt + "/" + MAX_ATTEMPTS + ")";
-        logInfo("  " + BACKOFF_MS[attempt-1]/1000 + "s bekleniyor…");
-        await new Promise(r => setTimeout(r, BACKOFF_MS[attempt - 1]));
+    const ATTEMPTS = [0, 1500, 3000]; // backoff ms before each attempt (max 3 tries)
+
+    for (let i = 0; i < ATTEMPTS.length; i++) {
+      if (ATTEMPTS[i] > 0) {
+        label.textContent = "Tekrar deneniyor… (" + (i+1) + "/" + ATTEMPTS.length + ")";
+        await new Promise(r => setTimeout(r, ATTEMPTS[i]));
       }
-      logInfo("  Attempt " + attempt + "/" + MAX_ATTEMPTS);
-      const result = await attemptUpload(uploadUrl, file, contentType);
-      if (result.ok) { uploadOk = true; logInfo("  ✓ Yüklendi"); break; }
-      if (result.fatal) { logError("  Kalıcı hata, deneme durduruldu: " + result.error); break; }
-      logError("  Attempt " + attempt + " başarısız: " + (result.error || "bilinmeyen hata"));
+      logInfo("  attempt " + (i+1) + "/" + ATTEMPTS.length + " — " + file.name);
+
+      // Try fetch first
+      let networkFail = false;
+      try {
+        const res = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": contentType, "x-upsert": "false" },
+          body: file
+        });
+        if (res.ok) { logInfo("  fetch ✓"); return { ok: true, fileName, publicUrl }; }
+        let e = ""; try { const j = await res.json(); e = j.message||j.error||JSON.stringify(j); } catch(_){ e = res.status; }
+        if (res.status >= 400 && res.status < 500) return { ok: false, error: "HTTP " + res.status + ": " + e }; // fatal
+        logError("  fetch " + res.status + " — XHR fallback");
+        networkFail = true;
+      } catch(err) {
+        logError("  fetch err: " + (err.message||err) + " — XHR fallback");
+        networkFail = true;
+      }
+
+      // XHR fallback on network-level failures only
+      if (networkFail) {
+        try {
+          const r = await new Promise((res, rej) => {
+            const x = new XMLHttpRequest();
+            x.open("POST", uploadUrl);
+            x.setRequestHeader("apikey", SUPABASE_KEY);
+            x.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
+            x.setRequestHeader("Content-Type", contentType);
+            x.setRequestHeader("x-upsert", "false");
+            x.onload    = () => res({ status: x.status, body: x.responseText });
+            x.onerror   = () => rej(new Error("XHR network error"));
+            x.ontimeout = () => rej(new Error("XHR timeout"));
+            x.timeout   = 90000;
+            x.send(file);
+          });
+          if (r.status >= 200 && r.status < 300) { logInfo("  XHR ✓"); return { ok: true, fileName, publicUrl }; }
+          logError("  XHR " + r.status + ": " + r.body.slice(0,120));
+        } catch(err) {
+          logError("  XHR err: " + (err.message||err));
+        }
+      }
     }
-
-    if (!uploadOk) {
-      logError("Dosya yüklenemedi: " + entry.name);
-      continue; // try remaining files — show error at the end
-    }
-
-    // Insert record into DB
-    const { error: dbErr } = await getClient().from("photos")
-      .insert([{ url: publicUrl, name, comment }]);
-
-    if (dbErr) {
-      logError("DB hatası: " + dbErr.message);
-      continue;
-    }
-
-    done++;
-    fill.style.width = Math.round((done / total) * 100) + "%";
-    pct.textContent  = Math.round((done / total) * 100) + "%";
+    return { ok: false, error: "Tüm denemeler başarısız" };
   }
 
-  setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 800);
+  // ── Phase 1: upload all files in parallel ───────────────────────────────
+  label.textContent = "Yükleniyor…";
+  logInfo("Phase 1: " + total + " dosya paralel yükleniyor");
+
+  const uploadResults = await Promise.all(
+    filesToUpload.map((entry, idx) => {
+      logInfo("↑ başlatıldı: " + entry.name);
+      return uploadFile(entry.file, entry.contentType)
+        .then(r => ({ ...r, entry }));
+    })
+  );
+
+  const failed = uploadResults.filter(r => !r.ok);
+  const succeeded = uploadResults.filter(r => r.ok);
+
+  logInfo("Phase 1 sonuç: " + succeeded.length + " başarılı, " + failed.length + " başarısız");
+  failed.forEach(r => logError("Başarısız: " + r.entry.name + (r.error ? " — " + r.error : "")));
+
+  // ── Phase 2: all-or-nothing — roll back if any failed ───────────────────
+  if (failed.length > 0) {
+    // Clean up successfully uploaded files so storage stays tidy
+    if (succeeded.length > 0) {
+      logInfo("Rollback: " + succeeded.length + " dosya siliniyor…");
+      await Promise.allSettled(
+        succeeded.map(r =>
+          getClient().storage.from("photos").remove([r.fileName])
+        )
+      );
+    }
+    setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 300);
+    btn.disabled = false;
+    showErrorModal("Fotoğraflar yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.");
+    return;
+  }
+
+  // ── Phase 3: all succeeded — write DB records ───────────────────────────
+  fill.style.width = "90%"; label.textContent = "Kaydediliyor…";
+  logInfo("Phase 3: DB kayıtları yazılıyor");
+
+  const dbResults = await Promise.all(
+    uploadResults.map(r =>
+      getClient().from("photos")
+        .insert([{ url: r.publicUrl, name, comment }])
+        .then(({ error }) => ({ ok: !error, entry: r.entry, fileName: r.fileName, error }))
+    )
+  );
+
+  const dbFailed = dbResults.filter(r => !r.ok);
+  if (dbFailed.length > 0) {
+    dbFailed.forEach(r => logError("DB hatası: " + r.entry.name + " — " + r.error?.message));
+    // Roll back all storage
+    await Promise.allSettled(uploadResults.map(r => getClient().storage.from("photos").remove([r.fileName])));
+    setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 300);
+    btn.disabled = false;
+    showErrorModal("Kayıt sırasında bir sorun oluştu. Lütfen tekrar deneyin.");
+    return;
+  }
+
+  // ── All done ─────────────────────────────────────────────────────────────
+  fill.style.width = "100%";
+  setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 600);
 
   selectedFiles = [];
   renderChips();
@@ -918,18 +943,8 @@ async function startUpload() {
   document.getElementById("uploaderComment").value = "";
   btn.disabled = false;
 
-  if (done === total) {
-    // All succeeded
-    showToast("Yüklendi! Sayfa yenileniyor…", "ok");
-    setTimeout(() => location.reload(), 1500);
-  } else if (done > 0) {
-    // Partial success
-    showToast(done + "/" + total + " fotoğraf yüklendi.", "ok");
-    setTimeout(() => location.reload(), 2000);
-  } else {
-    // All failed
-    showErrorModal("Fotoğraflar yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.");
-  }
+  showToast(total + " fotoğraf yüklendi! Sayfa yenileniyor…", "ok");
+  setTimeout(() => location.reload(), 1500);
 }
 
 function showToast(msg, type) {
@@ -1156,7 +1171,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.3</div>
+">v4.4</div>
 
 </body>
 </html>
