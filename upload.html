@@ -118,6 +118,16 @@ textarea.field { resize: none; height: 72px; }
 .drop-zone input[type="file"] { display: none; }
 .drop-zone-label { font-size: 13px; opacity: .6; }
 .drop-zone-label strong { color: var(--gold2); opacity: 1; font-weight: 500; }
+.drop-zone-actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.btn-pick {
+  padding: 8px 18px; border-radius: 20px;
+  border: 1px solid rgba(201,169,110,0.4);
+  background: rgba(201,169,110,0.1); color: var(--gold2);
+  font-family: 'Cormorant Garamond', serif; font-size: 13px;
+  letter-spacing: 1px; cursor: pointer; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-pick:active { background: rgba(201,169,110,0.25); }
 
 .file-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .chip {
@@ -513,11 +523,16 @@ textarea.field { resize: none; height: 72px; }
     <div class="form-row">
       <textarea class="field" id="uploaderComment" placeholder="Bir mesaj bırakın… (opsiyonel)"></textarea>
     </div>
+    <!-- Hidden file input — position:absolute left:-9999px iOS uyumluluğu için -->
+    <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" multiple style="display:none; position:absolute; left:-9999px;">
+
     <div class="drop-zone" id="dropZone">
-      <input type="file" id="fileInput" accept="image/*" multiple>
       <div class="drop-zone-label">
         <strong>Fotoğraf seç</strong><br>
-        Birden fazla seçebilirsiniz · Max 30MB/adet
+        Birden fazla seçebilirsiniz · Max 50MB/adet
+      </div>
+      <div class="drop-zone-actions">
+        <button type="button" class="btn-pick" id="btnGallery">🖼 Galeriden Seç</button>
       </div>
     </div>
     <div class="file-chips" id="fileChips"></div>
@@ -626,7 +641,7 @@ let images        = [];
 let current       = 0;
 let lbIndex       = 0;
 let storyTimer    = null;
-let selectedFiles = []; // each entry: { file, buffer: ArrayBuffer|null, contentType, name, size }
+let selectedFiles = []; // each entry: { buffer: ArrayBuffer, contentType, name, size }
 let newlyAddedIds = new Set();
 let currentView   = 'slider';
 let adminAuthed   = false;
@@ -741,25 +756,42 @@ function setView(v) {
 }
 
 /* ── DROP ZONE ───────────────────────────────── */
-const dropZone = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-dropZone.addEventListener("click", () => fileInput.click());
-dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("dragover"); });
-dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("dragover"); handleFiles([...e.dataTransfer.files]); });
-fileInput.addEventListener("change", () => { handleFiles([...fileInput.files]); });
+const dropZone   = document.getElementById("dropZone");
+const fileInput  = document.getElementById("fileInput");
 
-function handleFiles(files) {
-  // Best practice: never read files at selection time.
-  // Store File objects and stream them directly to fetch at upload time.
-  // Android keeps File handles valid as long as the object is referenced in JS.
+// Galeri butonu — doğrudan butonla tetikleme (iOS Safari uyumlu)
+document.getElementById("btnGallery").addEventListener("click", function(e) {
+  e.stopPropagation();
+  fileInput.value = ""; // Aynı dosyayı tekrar seçebilmek için temizle
+  fileInput.click();
+});
+
+// Masaüstü drag-and-drop
+dropZone.addEventListener("dragover",  e => { e.preventDefault(); dropZone.classList.add("dragover"); });
+dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  handleFiles([...e.dataTransfer.files]);
+});
+
+fileInput.addEventListener("change", () => { if (fileInput.files.length) handleFiles([...fileInput.files]); });
+
+async function handleFiles(files) {
+  // iOS/Android'de en kritik kural: File nesnesini upload anına KADAR bekletme.
+  // Async işlemler arasında File handle geçersizleşebilir.
+  // Seçim anında hemen ArrayBuffer'a oku — böylece upload sırasında her zaman geçerli.
   clearErrorLog();
   const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
                     heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   const allowedExt = Object.keys(mimeMap);
 
+  // Okuma sırasında butonu geçici devre dışı bırak
+  const uploadBtn = document.getElementById("uploadBtn");
+  uploadBtn.disabled = true;
+
   for (const f of files) {
-    const ext = (f.name.split('.').pop() || "").toLowerCase();
+    const ext    = (f.name.split('.').pop() || "").toLowerCase();
     const mimeOk = (f.type || "").startsWith("image/");
     const extOk  = allowedExt.includes(ext);
     logInfo("Seçilen: " + f.name + " | tip: " + (f.type||"(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
@@ -767,12 +799,19 @@ function handleFiles(files) {
     if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
     if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
     const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (mimeMap[ext] || "image/jpeg");
-    // Store File reference only — no pre-reading
-    selectedFiles.push({ file: f, contentType, name: f.name, size: f.size });
+
+    // Hemen ArrayBuffer'a oku — File referansı saklamıyoruz
+    try {
+      const buffer = await f.arrayBuffer();
+      logInfo("  ✓ belleğe okundu (" + (buffer.byteLength/1024).toFixed(0) + " KB)");
+      selectedFiles.push({ buffer, contentType, name: f.name, size: f.size });
+    } catch(err) {
+      logError("Okunamadı: " + f.name + " — " + (err.message||err));
+    }
   }
 
   renderChips();
-  document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
+  uploadBtn.disabled = selectedFiles.length === 0;
 }
 
 function renderChips() {
@@ -817,10 +856,14 @@ async function startUpload() {
 
   // ── Upload one file with retry + XHR fallback ──────────────────────────────
   // Returns { ok, fileName, publicUrl } or { ok: false, error }
-  async function uploadFile(file, contentType) {
-    const fileName  = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  async function uploadFile(entry) {
+    const { buffer, contentType, name } = entry;
+    const fileName  = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const uploadUrl = SUPABASE_URL + "/storage/v1/object/photos/" + encodeURIComponent(fileName);
     const publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
+
+    // ArrayBuffer'dan Blob oluştur — File nesnesine bağımlılık yok
+    const blob = new Blob([buffer], { type: contentType });
 
     const ATTEMPTS = [0, 1500, 3000]; // backoff ms before each attempt (max 3 tries)
 
@@ -829,7 +872,7 @@ async function startUpload() {
         label.textContent = "Tekrar deneniyor… (" + (i+1) + "/" + ATTEMPTS.length + ")";
         await new Promise(r => setTimeout(r, ATTEMPTS[i]));
       }
-      logInfo("  attempt " + (i+1) + "/" + ATTEMPTS.length + " — " + file.name);
+      logInfo("  attempt " + (i+1) + "/" + ATTEMPTS.length + " — " + name);
 
       // Try fetch first
       let networkFail = false;
@@ -837,7 +880,7 @@ async function startUpload() {
         const res = await fetch(uploadUrl, {
           method: "POST",
           headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": contentType, "x-upsert": "false" },
-          body: file
+          body: blob
         });
         if (res.ok) { logInfo("  fetch ✓"); return { ok: true, fileName, publicUrl }; }
         let e = ""; try { const j = await res.json(); e = j.message||j.error||JSON.stringify(j); } catch(_){ e = res.status; }
@@ -863,7 +906,7 @@ async function startUpload() {
             x.onerror   = () => rej(new Error("XHR network error"));
             x.ontimeout = () => rej(new Error("XHR timeout"));
             x.timeout   = 90000;
-            x.send(file);
+            x.send(blob); // Blob gönder, File değil
           });
           if (r.status >= 200 && r.status < 300) { logInfo("  XHR ✓"); return { ok: true, fileName, publicUrl }; }
           logError("  XHR " + r.status + ": " + r.body.slice(0,120));
@@ -875,17 +918,26 @@ async function startUpload() {
     return { ok: false, error: "Tüm denemeler başarısız" };
   }
 
-  // ── Phase 1: upload all files in parallel ───────────────────────────────
-  label.textContent = "Yükleniyor…";
-  logInfo("Phase 1: " + total + " dosya paralel yükleniyor");
+  // ── Phase 1: upload files sequentially ─────────────────────────────────────
+  // Paralel yerine sıralı: mobil bağlantılarda çok daha güvenilir.
+  logInfo("Phase 1: " + total + " dosya sıralı yükleniyor");
 
-  const uploadResults = await Promise.all(
-    filesToUpload.map((entry, idx) => {
-      logInfo("↑ başlatıldı: " + entry.name);
-      return uploadFile(entry.file, entry.contentType)
-        .then(r => ({ ...r, entry }));
-    })
-  );
+  const uploadResults = [];
+  for (let idx = 0; idx < total; idx++) {
+    const entry = filesToUpload[idx];
+    label.textContent = (total > 1 ? (idx + 1) + "/" + total + " — " : "") + "Yükleniyor…";
+    const pctVal = Math.round((idx / total) * 85);
+    fill.style.width = pctVal + "%";
+    pct.textContent  = pctVal + "%";
+    logInfo("↑ başlatıldı: " + entry.name);
+
+    const result = await uploadFile(entry);
+    uploadResults.push({ ...result, entry });
+
+    const pctValAfter = Math.round(((idx + 1) / total) * 85);
+    fill.style.width = pctValAfter + "%";
+    pct.textContent  = pctValAfter + "%";
+  }
 
   const failed = uploadResults.filter(r => !r.ok);
   const succeeded = uploadResults.filter(r => r.ok);
@@ -1171,7 +1223,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.4</div>
+">v4.5</div>
 
 </body>
 </html>
