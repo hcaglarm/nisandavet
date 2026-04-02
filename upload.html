@@ -1068,7 +1068,7 @@ function renderSlider() {
     </div>`;
   }).join("");
   dotsEl.innerHTML = images.map((_, i) => `<div class="dot ${i === current ? "active" : ""}" onclick="goTo(${i})"></div>`).join("");
-  goTo(current < images.length ? current : 0, true);
+  goTo(current < images.length ? current : 0);
 }
 
 function renderGrid() {
@@ -1088,7 +1088,9 @@ function escHtml(s) {
 }
 
 /* ── SLIDER ──────────────────────────────────── */
-function goTo(idx, skipAnim) {
+const SLIDE_MS = 6000;
+
+function goTo(idx) {
   if (!images.length) return;
   current = (idx + images.length) % images.length;
   document.getElementById("slides").style.transform = `translateX(-${current * 100}%)`;
@@ -1098,13 +1100,20 @@ function goTo(idx, skipAnim) {
 function nextSlide() { goTo(current + 1); }
 function prevSlide() { goTo(current - 1); }
 
-setInterval(() => { if (images.length > 0) goTo(current + 1); }, 6000);
-
 function startStory() {
+  if (storyTimer) { clearTimeout(storyTimer); storyTimer = null; }
   const fill = document.getElementById("storyFill");
-  clearInterval(storyTimer);
-  fill.style.transition = "none"; fill.style.width = "0%";
-  requestAnimationFrame(() => { fill.style.transition = "width 6s linear"; fill.style.width = "100%"; });
+  fill.style.transition = "none";
+  fill.style.width = "0%";
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fill.style.transition = `width ${SLIDE_MS}ms linear`;
+      fill.style.width = "100%";
+    });
+  });
+  if (images.length > 1) {
+    storyTimer = setTimeout(() => goTo(current + 1), SLIDE_MS);
+  }
 }
 
 /* ── SWIPE ───────────────────────────────────── */
@@ -1223,7 +1232,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.5</div>
+">v4.6</div>
 
 </body>
 </html>
