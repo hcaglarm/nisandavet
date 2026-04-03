@@ -630,7 +630,7 @@ let images        = [];
 let current       = 0;
 let lbIndex       = 0;
 let storyTimer    = null;
-let selectedFiles = []; // each entry: { buffer: ArrayBuffer, contentType, name, size }
+let selectedFiles = []; // each entry: { dataUrl: string, contentType, name, size }
 let newlyAddedIds = new Set();
 let currentView   = 'slider';
 let adminAuthed   = false;
@@ -766,24 +766,26 @@ dropZone.addEventListener("drop", e => {
 fileInput.addEventListener("change", () => { if (fileInput.files.length) handleFiles([...fileInput.files]); });
 
 async function handleFiles(files) {
-  // KRİTİK: Tüm dosyaları Promise.all ile AYNI ANDA oku.
-  // for-await döngüsü kullanırsak ilk dosya okunurken diğerlerinin
-  // iOS/Android izinleri expire olur → "permission problems" hatası.
+  // iOS/Android'de en güvenilir okuma yöntemi:
+  // 1. Tüm FileReader'ları HİÇ AWAIT OLMADAN synchronous olarak başlat
+  // 2. Sonra Promise.all ile bekle
+  // arrayBuffer() Promise tabanlı olduğu için iOS izin penceresi kapanabilir;
+  // FileReader callback tabanlıdır ve çok daha stabil çalışır.
   clearErrorLog();
+
   const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
                     heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   const allowedExt = Object.keys(mimeMap);
-
-  const uploadBtn = document.getElementById("uploadBtn");
+  const uploadBtn  = document.getElementById("uploadBtn");
   uploadBtn.disabled = true;
 
-  // Filtrele — sadece geçerli dosyaları async okumaya gönder
+  // Önce synchronous filtre — await yok, File referanslarına hemen erişiyoruz
   const candidates = [];
   for (const f of files) {
     const ext    = (f.name.split('.').pop() || "").toLowerCase();
     const mimeOk = (f.type || "").startsWith("image/");
     const extOk  = allowedExt.includes(ext);
-    logInfo("Seçilen: " + f.name + " | tip: " + (f.type||"(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
+    logInfo("Seçilen: " + f.name + " | " + (f.type||"(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
     if (!mimeOk && !extOk) { logError("Format reddedildi: " + f.name); continue; }
     if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
     if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
@@ -791,20 +793,28 @@ async function handleFiles(files) {
     candidates.push({ f, contentType });
   }
 
-  // Hepsini paralel oku — izinler expire olmadan hepsi başlıyor
-  const readResults = await Promise.allSettled(
-    candidates.map(({ f, contentType }) =>
-      f.arrayBuffer().then(buffer => ({ ok: true, buffer, contentType, name: f.name, size: f.size }))
-    )
+  if (!candidates.length) { uploadBtn.disabled = selectedFiles.length === 0; return; }
+
+  // Tüm FileReader'ları tek seferde, synchronous olarak başlat (await YOK)
+  const readPromises = candidates.map(({ f, contentType }) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = e => resolve({ dataUrl: e.target.result, contentType, name: f.name, size: f.size });
+      reader.onerror = () => reject(new Error(reader.error?.message || "Okuma başarısız"));
+      reader.readAsDataURL(f); // synchronous başlatma
+    })
   );
 
-  for (let i = 0; i < readResults.length; i++) {
-    const r = readResults[i];
-    if (r.status === "fulfilled" && r.value.ok) {
-      logInfo("  ✓ belleğe okundu (" + (r.value.buffer.byteLength / 1024).toFixed(0) + " KB)");
+  // Hepsi başladıktan sonra bekle
+  const results = await Promise.allSettled(readPromises);
+
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    if (r.status === "fulfilled") {
+      logInfo("  ✓ okundu: " + r.value.name + " (" + (r.value.size/1024).toFixed(0) + " KB)");
       selectedFiles.push(r.value);
     } else {
-      logError("Okunamadı: " + candidates[i].f.name + " — " + (r.reason?.message || r.reason || "bilinmeyen hata"));
+      logError("Okunamadı: " + candidates[i].f.name + " — " + (r.reason?.message || r.reason));
     }
   }
 
@@ -855,13 +865,20 @@ async function startUpload() {
   // ── Upload one file with retry + XHR fallback ──────────────────────────────
   // Returns { ok, fileName, publicUrl } or { ok: false, error }
   async function uploadFile(entry) {
-    const { buffer, contentType, name } = entry;
+    const { dataUrl, contentType, name } = entry;
     const fileName  = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const uploadUrl = SUPABASE_URL + "/storage/v1/object/photos/" + encodeURIComponent(fileName);
     const publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
 
-    // ArrayBuffer'dan Blob oluştur — File nesnesine bağımlılık yok
-    const blob = new Blob([buffer], { type: contentType });
+    // dataUrl → Blob (synchronous, hızlı)
+    function dataUrlToBlob(dataUrl, type) {
+      const base64 = dataUrl.split(",")[1];
+      const binary = atob(base64);
+      const bytes  = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new Blob([bytes], { type });
+    }
+    const blob = dataUrlToBlob(dataUrl, contentType);
 
     const ATTEMPTS = [0, 1500, 3000]; // backoff ms before each attempt (max 3 tries)
 
@@ -1230,7 +1247,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.7</div>
+">v4.8</div>
 
 </body>
 </html>
