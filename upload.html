@@ -113,21 +113,13 @@ textarea.field { resize: none; height: 72px; }
   border: 1.5px dashed rgba(201,169,110,0.35); border-radius: 14px;
   padding: 28px 20px; text-align: center; cursor: pointer;
   transition: background .3s, border-color .3s; margin-bottom: 14px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
 }
 .drop-zone.dragover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
 .drop-zone input[type="file"] { display: none; }
 .drop-zone-label { font-size: 13px; opacity: .6; }
 .drop-zone-label strong { color: var(--gold2); opacity: 1; font-weight: 500; }
-.drop-zone-actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
-.btn-pick {
-  padding: 8px 18px; border-radius: 20px;
-  border: 1px solid rgba(201,169,110,0.4);
-  background: rgba(201,169,110,0.1); color: var(--gold2);
-  font-family: 'Cormorant Garamond', serif; font-size: 13px;
-  letter-spacing: 1px; cursor: pointer; transition: all .2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn-pick:active { background: rgba(201,169,110,0.25); }
 
 .file-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .chip {
@@ -528,11 +520,8 @@ textarea.field { resize: none; height: 72px; }
 
     <div class="drop-zone" id="dropZone">
       <div class="drop-zone-label">
-        <strong>Fotoğraf seç</strong><br>
+        <strong>Fotoğraf seçmek için dokunun</strong><br>
         Birden fazla seçebilirsiniz · Max 50MB/adet
-      </div>
-      <div class="drop-zone-actions">
-        <button type="button" class="btn-pick" id="btnGallery">🖼 Galeriden Seç</button>
       </div>
     </div>
     <div class="file-chips" id="fileChips"></div>
@@ -759,10 +748,9 @@ function setView(v) {
 const dropZone   = document.getElementById("dropZone");
 const fileInput  = document.getElementById("fileInput");
 
-// Galeri butonu — doğrudan butonla tetikleme (iOS Safari uyumlu)
-document.getElementById("btnGallery").addEventListener("click", function(e) {
-  e.stopPropagation();
-  fileInput.value = ""; // Aynı dosyayı tekrar seçebilmek için temizle
+// Tüm drop zone tıklanabilir — iOS'ta en güvenilir yöntem
+dropZone.addEventListener("click", function() {
+  fileInput.value = "";
   fileInput.click();
 });
 
@@ -778,18 +766,19 @@ dropZone.addEventListener("drop", e => {
 fileInput.addEventListener("change", () => { if (fileInput.files.length) handleFiles([...fileInput.files]); });
 
 async function handleFiles(files) {
-  // iOS/Android'de en kritik kural: File nesnesini upload anına KADAR bekletme.
-  // Async işlemler arasında File handle geçersizleşebilir.
-  // Seçim anında hemen ArrayBuffer'a oku — böylece upload sırasında her zaman geçerli.
+  // KRİTİK: Tüm dosyaları Promise.all ile AYNI ANDA oku.
+  // for-await döngüsü kullanırsak ilk dosya okunurken diğerlerinin
+  // iOS/Android izinleri expire olur → "permission problems" hatası.
   clearErrorLog();
   const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
                     heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
   const allowedExt = Object.keys(mimeMap);
 
-  // Okuma sırasında butonu geçici devre dışı bırak
   const uploadBtn = document.getElementById("uploadBtn");
   uploadBtn.disabled = true;
 
+  // Filtrele — sadece geçerli dosyaları async okumaya gönder
+  const candidates = [];
   for (const f of files) {
     const ext    = (f.name.split('.').pop() || "").toLowerCase();
     const mimeOk = (f.type || "").startsWith("image/");
@@ -799,14 +788,23 @@ async function handleFiles(files) {
     if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
     if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
     const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (mimeMap[ext] || "image/jpeg");
+    candidates.push({ f, contentType });
+  }
 
-    // Hemen ArrayBuffer'a oku — File referansı saklamıyoruz
-    try {
-      const buffer = await f.arrayBuffer();
-      logInfo("  ✓ belleğe okundu (" + (buffer.byteLength/1024).toFixed(0) + " KB)");
-      selectedFiles.push({ buffer, contentType, name: f.name, size: f.size });
-    } catch(err) {
-      logError("Okunamadı: " + f.name + " — " + (err.message||err));
+  // Hepsini paralel oku — izinler expire olmadan hepsi başlıyor
+  const readResults = await Promise.allSettled(
+    candidates.map(({ f, contentType }) =>
+      f.arrayBuffer().then(buffer => ({ ok: true, buffer, contentType, name: f.name, size: f.size }))
+    )
+  );
+
+  for (let i = 0; i < readResults.length; i++) {
+    const r = readResults[i];
+    if (r.status === "fulfilled" && r.value.ok) {
+      logInfo("  ✓ belleğe okundu (" + (r.value.buffer.byteLength / 1024).toFixed(0) + " KB)");
+      selectedFiles.push(r.value);
+    } else {
+      logError("Okunamadı: " + candidates[i].f.name + " — " + (r.reason?.message || r.reason || "bilinmeyen hata"));
     }
   }
 
@@ -1232,7 +1230,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.6</div>
+">v4.7</div>
 
 </body>
 </html>
