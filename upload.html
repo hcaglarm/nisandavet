@@ -744,9 +744,8 @@ function setView(v) {
   document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
 }
 
-/* ── DROP ZONE ───────────────────────────────── */
-const dropZone   = document.getElementById("dropZone");
-// ── DROP ZONE & FILE READING ──────────────────────────────────────────────
+
+/* ── DROP ZONE & FILE READING ──────────────────────────────────────────────
 // KRİTİK: iOS/Android, dosya iznini "change" event handler'ı return eder etmez
 // iptal eder. async function, Promise, await — hepsi yeni microtask demek,
 // izin o anda gidiyor. Tek güvenli yol: FileReader'ı hiç indirection olmadan,
@@ -783,6 +782,7 @@ function startReading(fileList) {
   let remaining = toRead.length;
 
   function onAllDone() {
+    fileInput.value = ""; // Okuma bitti, şimdi güvenle sıfırla
     renderChips();
     document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
   }
@@ -815,8 +815,8 @@ const fileInput = document.getElementById("fileInput");
 fileInput.addEventListener("change", function() {
   if (!this.files || !this.files.length) return;
   startReading(this.files);
-  // Aynı dosyayı chip'ten silip tekrar seçebilmek için input'u temizle
-  this.value = "";
+  // NOT: this.value = "" buraya taşındı → onAllDone() içinde yapılıyor
+  // FileReaders tamamlanmadan önce value sıfırlanırsa FileList geçersizleşebilir
 });
 
 // Masaüstü drag-and-drop
@@ -1253,7 +1253,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v5.1</div>
+">v5.2</div>
 
 </body>
 </html>
