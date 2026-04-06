@@ -516,14 +516,13 @@ textarea.field { resize: none; height: 72px; }
       <textarea class="field" id="uploaderComment" placeholder="Bir mesaj bırakın… (opsiyonel)"></textarea>
     </div>
     <!-- Hidden file input — position:absolute left:-9999px iOS uyumluluğu için -->
-    <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" multiple style="display:none; position:absolute; left:-9999px;">
-
-    <div class="drop-zone" id="dropZone">
+    <label class="drop-zone" id="dropZone" for="fileInput">
+      <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" multiple>
       <div class="drop-zone-label">
         <strong>Fotoğraf seçmek için dokunun</strong><br>
         Birden fazla seçebilirsiniz · Max 50MB/adet
       </div>
-    </div>
+    </label>
     <div class="file-chips" id="fileChips"></div>
     <button class="btn-upload" id="uploadBtn" onclick="showConfirm()" disabled>Yükle</button>
     <div class="progress-wrap" id="progressWrap" style="display:none">
@@ -807,16 +806,16 @@ function startReading(fileList) {
   });
 }
 
-// Drop zone — tüm alan tıklanabilir
+// Drop zone — label elementi native olarak file picker'ı açıyor, JS click() gerekmez
 const dropZone  = document.getElementById("dropZone");
 const fileInput = document.getElementById("fileInput");
-
-dropZone.addEventListener("click", function() { fileInput.value = ""; fileInput.click(); });
 
 // change handler: this.files'a anında eriş, hiç başka fonksiyona geçme
 fileInput.addEventListener("change", function() {
   if (!this.files || !this.files.length) return;
-  startReading(this.files); // sync fonksiyon, izin hâlâ geçerli
+  startReading(this.files);
+  // Aynı dosyayı chip'ten silip tekrar seçebilmek için input'u temizle
+  this.value = "";
 });
 
 // Masaüstü drag-and-drop
@@ -1253,7 +1252,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.9</div>
+">v5.0</div>
 
 </body>
 </html>
