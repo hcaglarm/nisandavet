@@ -110,6 +110,7 @@ h1 em { font-style: normal; color: var(--gold2); }
 textarea.field { resize: none; height: 72px; }
 
 .drop-zone {
+  display: block;
   border: 1.5px dashed rgba(201,169,110,0.35); border-radius: 14px;
   padding: 28px 20px; text-align: center; cursor: pointer;
   transition: background .3s, border-color .3s; margin-bottom: 14px;
@@ -516,7 +517,7 @@ textarea.field { resize: none; height: 72px; }
       <textarea class="field" id="uploaderComment" placeholder="Bir mesaj bırakın… (opsiyonel)"></textarea>
     </div>
     <!-- Hidden file input — position:absolute left:-9999px iOS uyumluluğu için -->
-    <label class="drop-zone" id="dropZone" for="fileInput">
+    <label class="drop-zone" id="dropZone">
       <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" multiple>
       <div class="drop-zone-label">
         <strong>Fotoğraf seçmek için dokunun</strong><br>
@@ -1252,7 +1253,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v5.0</div>
+">v5.1</div>
 
 </body>
 </html>
