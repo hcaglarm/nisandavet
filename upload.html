@@ -746,81 +746,87 @@ function setView(v) {
 
 /* ── DROP ZONE ───────────────────────────────── */
 const dropZone   = document.getElementById("dropZone");
-const fileInput  = document.getElementById("fileInput");
+// ── DROP ZONE & FILE READING ──────────────────────────────────────────────
+// KRİTİK: iOS/Android, dosya iznini "change" event handler'ı return eder etmez
+// iptal eder. async function, Promise, await — hepsi yeni microtask demek,
+// izin o anda gidiyor. Tek güvenli yol: FileReader'ı hiç indirection olmadan,
+// doğrudan event handler'ın synchronous call stack'inde başlatmak.
 
-// Tüm drop zone tıklanabilir — iOS'ta en güvenilir yöntem
-dropZone.addEventListener("click", function() {
-  fileInput.value = "";
-  fileInput.click();
+const MIME_MAP = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
+                   heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
+
+function startReading(fileList) {
+  // Bu fonksiyon SYNC çağrılıyor, içinde hiç await/Promise yok
+  clearErrorLog();
+  document.getElementById("uploadBtn").disabled = true;
+
+  // Validation — tamamen synchronous
+  const toRead = [];
+  for (let i = 0; i < fileList.length; i++) {
+    const f   = fileList[i];
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    const ok  = (f.type || "").startsWith("image/") || Object.keys(MIME_MAP).includes(ext);
+    logInfo("Seçilen: " + f.name + " | " + (f.type || "(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
+    if (!ok)                                            { logError("Format reddedildi: " + f.name); continue; }
+    if (f.size > 50 * 1024 * 1024)                     { logError(f.name + " çok büyük (max 50MB)"); continue; }
+    if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
+    toRead.push(f);
+  }
+
+  if (!toRead.length) {
+    document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
+    return;
+  }
+
+  // Her dosya için FileReader'ı HEMEN, SYNCHRONOUS başlat
+  // Hiç Promise, hiç await yok — saf callback
+  let remaining = toRead.length;
+
+  function onAllDone() {
+    renderChips();
+    document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
+  }
+
+  toRead.forEach(function(f) {
+    const ext         = (f.name.split(".").pop() || "").toLowerCase();
+    const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (MIME_MAP[ext] || "image/jpeg");
+    const reader      = new FileReader();
+
+    reader.onload = function(evt) {
+      logInfo("  ✓ okundu: " + f.name);
+      selectedFiles.push({ dataUrl: evt.target.result, contentType, name: f.name, size: f.size });
+      if (--remaining === 0) onAllDone();
+    };
+
+    reader.onerror = function() {
+      logError("Okunamadı: " + f.name + " — " + (reader.error ? reader.error.message : "bilinmeyen hata"));
+      if (--remaining === 0) onAllDone();
+    };
+
+    reader.readAsDataURL(f); // synchronous başlatma
+  });
+}
+
+// Drop zone — tüm alan tıklanabilir
+const dropZone  = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+
+dropZone.addEventListener("click", function() { fileInput.value = ""; fileInput.click(); });
+
+// change handler: this.files'a anında eriş, hiç başka fonksiyona geçme
+fileInput.addEventListener("change", function() {
+  if (!this.files || !this.files.length) return;
+  startReading(this.files); // sync fonksiyon, izin hâlâ geçerli
 });
 
 // Masaüstü drag-and-drop
-dropZone.addEventListener("dragover",  e => { e.preventDefault(); dropZone.classList.add("dragover"); });
-dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-dropZone.addEventListener("drop", e => {
+dropZone.addEventListener("dragover",  function(e) { e.preventDefault(); dropZone.classList.add("dragover"); });
+dropZone.addEventListener("dragleave", function()  { dropZone.classList.remove("dragover"); });
+dropZone.addEventListener("drop", function(e) {
   e.preventDefault();
   dropZone.classList.remove("dragover");
-  handleFiles([...e.dataTransfer.files]);
+  if (e.dataTransfer.files.length) startReading(e.dataTransfer.files);
 });
-
-fileInput.addEventListener("change", () => { if (fileInput.files.length) handleFiles([...fileInput.files]); });
-
-async function handleFiles(files) {
-  // iOS/Android'de en güvenilir okuma yöntemi:
-  // 1. Tüm FileReader'ları HİÇ AWAIT OLMADAN synchronous olarak başlat
-  // 2. Sonra Promise.all ile bekle
-  // arrayBuffer() Promise tabanlı olduğu için iOS izin penceresi kapanabilir;
-  // FileReader callback tabanlıdır ve çok daha stabil çalışır.
-  clearErrorLog();
-
-  const mimeMap = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
-                    heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
-  const allowedExt = Object.keys(mimeMap);
-  const uploadBtn  = document.getElementById("uploadBtn");
-  uploadBtn.disabled = true;
-
-  // Önce synchronous filtre — await yok, File referanslarına hemen erişiyoruz
-  const candidates = [];
-  for (const f of files) {
-    const ext    = (f.name.split('.').pop() || "").toLowerCase();
-    const mimeOk = (f.type || "").startsWith("image/");
-    const extOk  = allowedExt.includes(ext);
-    logInfo("Seçilen: " + f.name + " | " + (f.type||"(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
-    if (!mimeOk && !extOk) { logError("Format reddedildi: " + f.name); continue; }
-    if (f.size > 50 * 1024 * 1024) { logError(f.name + " çok büyük (max 50MB)"); continue; }
-    if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
-    const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (mimeMap[ext] || "image/jpeg");
-    candidates.push({ f, contentType });
-  }
-
-  if (!candidates.length) { uploadBtn.disabled = selectedFiles.length === 0; return; }
-
-  // Tüm FileReader'ları tek seferde, synchronous olarak başlat (await YOK)
-  const readPromises = candidates.map(({ f, contentType }) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload  = e => resolve({ dataUrl: e.target.result, contentType, name: f.name, size: f.size });
-      reader.onerror = () => reject(new Error(reader.error?.message || "Okuma başarısız"));
-      reader.readAsDataURL(f); // synchronous başlatma
-    })
-  );
-
-  // Hepsi başladıktan sonra bekle
-  const results = await Promise.allSettled(readPromises);
-
-  for (let i = 0; i < results.length; i++) {
-    const r = results[i];
-    if (r.status === "fulfilled") {
-      logInfo("  ✓ okundu: " + r.value.name + " (" + (r.value.size/1024).toFixed(0) + " KB)");
-      selectedFiles.push(r.value);
-    } else {
-      logError("Okunamadı: " + candidates[i].f.name + " — " + (r.reason?.message || r.reason));
-    }
-  }
-
-  renderChips();
-  uploadBtn.disabled = selectedFiles.length === 0;
-}
 
 function renderChips() {
   document.getElementById("fileChips").innerHTML = selectedFiles.map((e, i) => `
@@ -1247,7 +1253,7 @@ loadImages();
   color: rgba(255,255,255,0.15);
   position: relative; z-index: 2;
   user-select: none;
-">v4.8</div>
+">v4.9</div>
 
 </body>
 </html>
