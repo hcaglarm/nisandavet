@@ -3,1257 +3,941 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Firdevs & Hasan Çağlar — Nişan</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<title>Firdevs & Hasan Çağlar — Anı Galerisi</title>
+<link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Pinyon+Script&display=swap" rel="stylesheet">
 
 <style>
-/* ─── RESET & BASE ─────────────────────────────── */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --cream: #f5efe6;
-  --gold:  #c9a96e;
-  --gold2: #e8d5b0;
-  --dark:  #1a1410;
-  --glass: rgba(255,255,255,0.07);
-  --glass-border: rgba(255,255,255,0.15);
-  --radius: 20px;
+  --gold:    #c9a96e;
+  --gold2:   #e8d5b0;
+  --gold3:   #a07840;
+  --dark:    #0e0b08;
+  --dark2:   #1a1410;
+  --cream:   #f5efe6;
+  --glass:   rgba(255,255,255,0.05);
+  --gb:      rgba(255,255,255,0.12);
 }
+
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Cormorant Garamond', serif;
+  background: var(--dark);
   color: var(--cream);
   min-height: 100vh;
-  background: var(--dark);
   overflow-x: hidden;
 }
 
-/* ─── BG ─────────────────────────────────────── */
-.bg {
-  position: fixed; inset: 0; z-index: 0;
+.site-bg {
+  position: fixed; inset: 0; z-index: -1;
   background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
+  filter: brightness(0.75);
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
 }
-.bg::after {
+
+body::after {
   content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg, rgba(26,20,16,0.82) 0%, rgba(26,20,16,0.65) 50%, rgba(26,20,16,0.88) 100%);
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.grain {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+/* ── PAGE HEADER ── */
+.page-header {
+  position: relative; z-index: 1;
+  padding: 60px 20px 40px;
+  text-align: center;
 }
 
-/* ─── LAYOUT ─────────────────────────────────── */
-.page {
-  position: relative; z-index: 2;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 40px 16px 60px;
-  display: flex; flex-direction: column; align-items: center; gap: 28px;
+.back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); opacity: .65;
+  text-decoration: none;
+  transition: opacity .3s;
+  margin-bottom: 32px;
 }
+.back-link:hover { opacity: 1; }
+.back-link svg { width: 14px; height: 14px; }
 
-/* ─── HEADER ─────────────────────────────────── */
-.header { text-align: center; }
-.header-ornament {
-  font-size: 13px; letter-spacing: 5px; text-transform: uppercase;
-  color: var(--gold); opacity: .8; margin-bottom: 10px;
-  display: flex; align-items: center; justify-content: center; gap: 12px;
+.ornament {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  margin-bottom: 20px;
 }
-.header-ornament::before, .header-ornament::after {
-  content: ''; width: 40px; height: 1px; background: var(--gold); opacity:.5;
-}
-h1 {
+.ornament-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); opacity: .5; }
+.ornament-line.r { background: linear-gradient(to left, transparent, var(--gold)); }
+.ornament-text { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); opacity: .8; }
+
+.page-title {
   font-family: 'Luxurious Script', cursive;
-  font-size: clamp(44px, 9vw, 68px);
-  font-weight: 400; letter-spacing: 0px; line-height: 1.2;
+  font-size: clamp(44px, 10vw, 80px);
+  line-height: 1.1;
+  color: var(--cream);
 }
-h1 em { font-style: normal; color: var(--gold2); }
-.subtitle { margin-top: 10px; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; opacity: .5; }
-
-/* ─── DIVIDER ─────────────────────────────────── */
-.divider {
-  width: 1px; height: 40px;
-  background: linear-gradient(to bottom, transparent, var(--gold), transparent); opacity: .5;
+.page-sub {
+  margin-top: 12px;
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(245,239,230,.4);
 }
 
-/* ─── GLASS CARD ─────────────────────────────── */
-.card {
-  width: 100%;
+/* ── MAIN CONTENT ── */
+.main-content {
+  position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto;
+  padding: 0 20px 80px;
+  display: flex; flex-direction: column; gap: 56px;
+}
+
+/* ── UPLOAD CARD ── */
+.upload-card {
   background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  padding: 28px 24px;
+  border: 1px solid var(--gb);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  padding: 36px 32px;
 }
 
-/* ─── UPLOAD SECTION ─────────────────────────── */
-.upload-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gold2); margin-bottom: 18px; text-align: center;
+.card-label {
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--gold); opacity: .7;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 12px;
 }
-.form-row { display: flex; gap: 12px; margin-bottom: 12px; }
-.form-row input { flex: 1; }
-.field {
-  width: 100%; background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
-  padding: 12px 16px; color: var(--cream);
-  font-family: 'Cormorant Garamond', serif; font-size: 14px;
-  transition: border-color .3s; outline: none;
+.card-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, rgba(201,169,110,0.3), transparent);
 }
-.field::placeholder { color: rgba(255,255,255,0.3); }
-.field:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
-textarea.field { resize: none; height: 72px; }
 
+/* drop zone */
 .drop-zone {
+  border: 1.5px dashed rgba(201,169,110,0.3);
+  border-radius: 16px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .3s, background .3s;
+  position: relative;
+  overflow: hidden;
+}
+.drop-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(201,169,110,0.06);
+}
+.drop-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.drop-icon {
+  width: 48px; height: 48px; margin: 0 auto 14px;
+  color: var(--gold); opacity: .5;
+}
+.drop-title {
+  font-size: 16px; letter-spacing: 2px;
+  color: var(--gold2); margin-bottom: 6px;
+}
+.drop-sub { font-size: 12px; letter-spacing: 1px; opacity: .4; }
+
+/* preview */
+.preview-wrap {
+  display: none;
+  margin-top: 16px;
+  position: relative;
+  border-radius: 12px; overflow: hidden;
+  max-height: 280px;
+}
+.preview-wrap img {
+  width: 100%; height: 280px; object-fit: cover; display: block;
+  border-radius: 12px;
+}
+.preview-clear {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(14,11,8,.8); border: 1px solid rgba(201,169,110,.3);
+  color: var(--gold2); border-radius: 50%;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px;
+  transition: background .2s;
+}
+.preview-clear:hover { background: rgba(14,11,8,1); }
+
+/* form fields */
+.form-fields {
+  margin-top: 24px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.field-group { display: flex; flex-direction: column; gap: 8px; }
+.field-label {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); opacity: .7;
+}
+.field-required { color: var(--gold); margin-left: 2px; }
+
+.field-input, .field-textarea {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,169,110,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  letter-spacing: .5px;
+  outline: none;
+  transition: border-color .3s, background .3s;
+  width: 100%;
+}
+.field-input::placeholder, .field-textarea::placeholder { opacity: .35; }
+.field-input:focus, .field-textarea:focus {
+  border-color: rgba(201,169,110,0.6);
+  background: rgba(255,255,255,0.07);
+}
+.field-textarea { resize: vertical; min-height: 80px; }
+
+/* submit button */
+.btn-submit {
+  margin-top: 8px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%;
+  padding: 16px 32px;
+  border-radius: 40px;
+  border: 1px solid rgba(201,169,110,0.4);
+  background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(201,169,110,0.05));
+  color: var(--gold2);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer;
+  transition: background .3s, border-color .3s, transform .2s, opacity .3s;
+  backdrop-filter: blur(10px);
+}
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(201,169,110,0.28), rgba(201,169,110,0.12));
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.btn-submit:disabled { opacity: .45; cursor: not-allowed; }
+
+/* status messages */
+.status-msg {
+  display: none;
+  margin-top: 14px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px; letter-spacing: .5px;
+  text-align: center;
+}
+.status-msg.success {
   display: block;
-  border: 1.5px dashed rgba(201,169,110,0.35); border-radius: 14px;
-  padding: 28px 20px; text-align: center; cursor: pointer;
-  transition: background .3s, border-color .3s; margin-bottom: 14px;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none; -webkit-user-select: none;
+  background: rgba(100,180,100,0.1);
+  border: 1px solid rgba(100,180,100,0.3);
+  color: #9de89d;
 }
-.drop-zone.dragover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
-.drop-zone input[type="file"] { display: none; }
-.drop-zone-label { font-size: 13px; opacity: .6; }
-.drop-zone-label strong { color: var(--gold2); opacity: 1; font-weight: 500; }
-
-.file-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.chip {
-  font-size: 11px; background: rgba(201,169,110,0.15);
-  border: 1px solid rgba(201,169,110,0.3); border-radius: 30px;
-  padding: 4px 10px; color: var(--gold2); display: flex; align-items: center; gap: 5px;
+.status-msg.error {
+  display: block;
+  background: rgba(200,80,80,0.1);
+  border: 1px solid rgba(200,80,80,0.3);
+  color: #f09090;
 }
-.chip button { background: none; border: none; cursor: pointer; color: var(--gold); font-size: 12px; line-height: 1; padding: 0; }
 
-.btn-upload {
-  width: 100%; padding: 14px; border-radius: 14px; border: none;
-  background: linear-gradient(135deg, #c9a96e, #a07840); color: #fff;
-  font-family: 'Cormorant Garamond', serif; font-size: 14px;
-  font-weight: 500; letter-spacing: 1px; cursor: pointer;
-  transition: opacity .3s, transform .2s;
+/* progress bar */
+.progress-bar-wrap {
+  display: none;
+  margin-top: 14px;
+  height: 3px;
+  background: rgba(201,169,110,0.15);
+  border-radius: 3px;
+  overflow: hidden;
 }
-.btn-upload:hover:not(:disabled) { opacity: .85; transform: translateY(-1px); }
-.btn-upload:disabled { opacity: .4; cursor: not-allowed; }
-
-.progress-wrap { margin-top: 14px; }
-.progress-label { display: flex; justify-content: space-between; font-size: 11px; opacity: .5; margin-bottom: 6px; }
-.progress-bar-bg { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
 .progress-bar-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(to right, var(--gold), var(--gold2));
-  border-radius: 10px; transition: width .4s ease;
+  height: 100%;
+  background: linear-gradient(to right, var(--gold3), var(--gold));
+  border-radius: 3px;
+  width: 0%;
+  transition: width .3s ease;
 }
-.toast { text-align: center; font-size: 13px; margin-top: 10px; opacity: 0; transition: opacity .4s; }
-.toast.show { opacity: 1; }
-.toast.ok { color: #9de0b2; }
-.toast.err { color: #f4a4a4; }
 
-/* ─── GALLERY HEADER ────────────────────────── */
+/* ── GALLERY SECTION ── */
+.gallery-section { display: flex; flex-direction: column; gap: 28px; }
+
 .gallery-header {
-  width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: -10px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
 }
-.gallery-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold2); }
-.gallery-right { display: flex; align-items: center; gap: 14px; }
-.photo-count { font-size: 12px; opacity: .45; letter-spacing: 2px; }
+.gallery-title-wrap { display: flex; flex-direction: column; gap: 4px; }
+.gallery-title {
+  font-family: 'Luxurious Script', cursive;
+  font-size: clamp(28px, 6vw, 44px);
+  color: var(--cream); line-height: 1;
+}
+.gallery-count {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); opacity: .55;
+}
 
 /* view toggle */
-.view-toggle { display: flex; gap: 4px; }
-.view-btn {
-  width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);
-  font-size: 13px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .2s;
+.view-toggle {
+  display: flex;
+  border: 1px solid rgba(201,169,110,0.2);
+  border-radius: 30px;
+  overflow: hidden;
 }
-.view-btn.active { background: rgba(201,169,110,0.2); border-color: var(--gold); color: var(--gold); }
+.view-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(245,239,230,.4);
+  background: transparent;
+  border: none; cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.view-btn svg { width: 14px; height: 14px; }
+.view-btn.active {
+  background: rgba(201,169,110,0.15);
+  color: var(--gold2);
+}
+.view-btn:hover:not(.active) { color: var(--gold); }
 
-/* ─── SLIDER ─────────────────────────────────── */
-.slider-card { padding: 16px; overflow: hidden; }
-.slider-wrap { position: relative; }
-.slider { overflow: hidden; border-radius: 14px; position: relative; background: rgba(0,0,0,0.3); }
-.slides { display: flex; transition: transform .7s cubic-bezier(.4,0,.2,1); }
-.slide { min-width: 100%; position: relative; }
-.slide img {
-  width: 100%; height: 420px; object-fit: cover; object-position: center;
-  display: block; cursor: default;
-  user-select: none; -webkit-user-select: none;
-  -webkit-touch-callout: none;
+/* ── SLIDESHOW ── */
+.slideshow-wrap {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--gb);
+  user-select: none;
+}
+
+.slide-track {
+  display: flex;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+
+.slide-item {
+  flex: 0 0 100%;
+  position: relative;
+}
+.slide-item img {
+  width: 100%; height: 420px; object-fit: cover; display: block;
 }
 .slide-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 40px 18px 16px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  border-radius: 0 0 14px 14px;
+  padding: 20px 24px;
+  background: linear-gradient(to top, rgba(14,11,8,.85), transparent);
 }
-.slide-name { font-family: 'Luxurious Script', cursive; font-size: 17px; color: var(--gold2); margin-bottom: 2px; line-height: 1.2; }
-.slide-comment { font-size: 11px; opacity: .65; line-height: 1.4; }
+.slide-name {
+  font-family: 'Luxurious Script', cursive;
+  font-size: 22px; color: var(--gold2); line-height: 1;
+}
+.slide-comment {
+  margin-top: 4px;
+  font-size: 13px; font-style: italic; opacity: .65;
+  letter-spacing: .3px;
+}
+.slide-date {
+  margin-top: 6px;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: .35;
+}
 
-.nav-btn {
+/* nav buttons */
+.slide-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15);
-  color: white; font-size: 16px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 10; transition: background .3s; backdrop-filter: blur(4px);
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(14,11,8,.55);
+  border: 1px solid rgba(201,169,110,.25);
+  border-radius: 50%; cursor: pointer;
+  color: var(--gold2);
+  transition: background .25s, border-color .25s;
+  z-index: 2;
 }
-.nav-btn:hover { background: rgba(0,0,0,0.7); }
-.nav-btn.prev { left: 10px; }
-.nav-btn.next { right: 10px; }
+.slide-nav:hover { background: rgba(14,11,8,.85); border-color: var(--gold); }
+.slide-nav.prev { left: 14px; }
+.slide-nav.next { right: 14px; }
+.slide-nav svg { width: 16px; height: 16px; }
 
-.fullscreen-btn {
-  position: absolute; top: 10px; right: 10px;
-  width: 32px; height: 32px; border-radius: 8px;
-  background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15);
-  color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 10; backdrop-filter: blur(4px); transition: background .3s;
+/* dots */
+.slide-dots {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 14px;
 }
-.fullscreen-btn:hover { background: rgba(0,0,0,0.7); }
-
-.dots { display: flex; justify-content: center; gap: 5px; margin-top: 12px; }
 .dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: rgba(255,255,255,0.25); cursor: pointer;
-  transition: background .3s, transform .3s;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(201,169,110,.25);
+  cursor: pointer; transition: background .3s, transform .3s;
 }
 .dot.active { background: var(--gold); transform: scale(1.4); }
 
-.story-bar { height: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
-.story-fill { height: 100%; width: 0%; background: var(--gold); transition: none; }
-
-/* ─── GRID ───────────────────────────────────── */
-.grid-card { padding: 16px; }
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+/* counter badge */
+.slide-counter {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.2);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 11px; letter-spacing: 2px; color: var(--gold); opacity: .8;
+  z-index: 2;
 }
+
+/* empty state */
+.gallery-empty {
+  text-align: center;
+  padding: 60px 24px;
+  background: var(--glass);
+  border: 1px solid var(--gb);
+  border-radius: 20px;
+}
+.gallery-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: .3; }
+.gallery-empty-text {
+  font-size: 14px; letter-spacing: 1px; opacity: .4;
+  line-height: 1.7;
+}
+
+/* ── GRID ── */
+.gallery-grid {
+  display: none;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.gallery-grid.visible { display: grid; }
+
 .grid-item {
-  position: relative; overflow: hidden; border-radius: 8px;
-  aspect-ratio: 1; cursor: pointer;
-  background: rgba(0,0,0,0.3);
+  position: relative; overflow: hidden;
+  border-radius: 14px; aspect-ratio: 1;
+  cursor: pointer;
+  border: 1px solid rgba(201,169,110,.1);
 }
 .grid-item img {
   width: 100%; height: 100%; object-fit: cover;
-  transition: transform .4s ease;
   display: block;
-  user-select: none; -webkit-user-select: none;
-  -webkit-touch-callout: none;
+  transition: transform .4s ease;
 }
 .grid-item:hover img { transform: scale(1.06); }
-.grid-overlay {
+.grid-item-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  background: linear-gradient(to top, rgba(14,11,8,.8) 0%, transparent 50%);
   opacity: 0; transition: opacity .3s;
-  display: flex; align-items: flex-end; padding: 8px;
-  border-radius: 8px;
+  display: flex; align-items: flex-end; padding: 12px;
 }
-.grid-item:hover .grid-overlay { opacity: 1; }
-.grid-name { font-family: 'Luxurious Script', cursive; font-size: 13px; color: var(--gold2); line-height: 1; }
+.grid-item:hover .grid-item-overlay { opacity: 1; }
+.grid-item-name {
+  font-family: 'Luxurious Script', cursive;
+  font-size: 16px; color: var(--gold2); line-height: 1;
+}
 
-.grid-empty { text-align: center; padding: 40px 0; opacity: .4; font-size: 14px; grid-column: 1/-1; }
-
-/* ─── EMPTY SLIDER STATE ──────────────────────── */
-.empty-state { text-align: center; padding: 50px 20px; opacity: .4; font-size: 14px; line-height: 1.8; }
-
-/* ─── FULLSCREEN LIGHTBOX ────────────────────── */
+/* ── LIGHTBOX ── */
 .lightbox {
-  display: none; position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.96);
-  flex-direction: column; align-items: center; justify-content: center;
-}
-.lightbox.open { display: flex; }
-.lightbox-img-wrap {
-  position: relative; max-width: 95vw; max-height: 80vh;
-  display: flex; align-items: center; justify-content: center;
-}
-.lightbox img { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-.lightbox-info { margin-top: 16px; text-align: center; }
-.lightbox-name { font-family: 'Luxurious Script', cursive; font-size: 22px; color: var(--gold2); }
-.lightbox-comment { font-size: 13px; opacity: .6; margin-top: 4px; max-width: 400px; }
-.lightbox-close {
-  position: absolute; top: 20px; right: 20px;
-  width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-  color: white; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.lightbox-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
-  color: white; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.lightbox-nav.prev { left: 16px; }
-.lightbox-nav.next { right: 16px; }
-
-/* new badge */
-.new-badge {
-  position: absolute; top: 10px; left: 10px;
-  background: var(--gold); color: var(--dark);
-  font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 20px; z-index: 5;
-  animation: badgePop .4s ease;
-}
-@keyframes badgePop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-/* realtime indicator */
-.realtime-dot {
-  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-  background: #6ee7a0; margin-right: 6px; animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.3); } }
-
-/* ─── ADMIN MODAL ────────────────────────────── */
-.admin-overlay {
-  display: none; position: fixed; inset: 0; z-index: 2000;
-  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-  overflow-y: auto;
-}
-.admin-overlay.open { display: block; }
-.admin-panel {
-  max-width: 900px; margin: 40px auto; padding: 16px;
-}
-.admin-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px;
-}
-.admin-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold2);
-}
-.admin-close {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-  color: white; font-size: 16px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-
-/* admin tabs */
-.admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-.admin-tab {
-  padding: 8px 18px; border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.5); font-family: 'Cormorant Garamond', serif;
-  font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all .2s;
-}
-.admin-tab.active { background: rgba(201,169,110,0.2); border-color: var(--gold); color: var(--gold); }
-
-/* admin photo grid */
-.admin-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;
-}
-.admin-photo-card {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px; overflow: hidden; transition: border-color .2s;
-}
-.admin-photo-card:hover { border-color: rgba(255,255,255,0.25); }
-.admin-photo-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
-.admin-photo-info { padding: 10px 12px; }
-.admin-photo-name { font-family: 'Luxurious Script', cursive; font-size: 16px; color: var(--gold2); }
-.admin-photo-comment { font-size: 11px; opacity: .55; margin-top: 2px; line-height: 1.4; }
-.admin-photo-date { font-size: 10px; opacity: .35; margin-top: 4px; letter-spacing: 1px; }
-.admin-photo-actions { padding: 0 12px 12px; }
-.btn-delete {
-  width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(244,100,100,0.3);
-  background: rgba(244,100,100,0.1); color: #f4a4a4;
-  font-family: 'Cormorant Garamond', serif; font-size: 12px;
-  letter-spacing: 1px; cursor: pointer; transition: all .2s;
-}
-.btn-delete:hover { background: rgba(244,100,100,0.25); border-color: rgba(244,100,100,0.6); }
-
-/* admin guests */
-.guest-list { display: flex; flex-direction: column; gap: 10px; }
-.guest-card {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px; padding: 14px 16px;
-  display: flex; align-items: flex-start; gap: 14px;
-}
-.guest-avatar {
-  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
-  background: rgba(201,169,110,0.2); border: 1px solid rgba(201,169,110,0.3);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Luxurious Script', cursive; font-size: 20px; color: var(--gold2);
-}
-.guest-info { flex: 1; min-width: 0; }
-.guest-name { font-family: 'Luxurious Script', cursive; font-size: 20px; color: var(--gold2); line-height: 1.2; }
-.guest-meta { font-size: 11px; opacity: .45; margin-top: 3px; letter-spacing: 1px; }
-.guest-comment { font-size: 13px; opacity: .7; margin-top: 5px; font-style: italic; line-height: 1.4; }
-.guest-thumb-row { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
-.guest-thumb { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; cursor: pointer; opacity: .85; transition: opacity .2s; }
-.guest-thumb:hover { opacity: 1; }
-
-/* admin login */
-.admin-login { max-width: 320px; margin: 60px auto; text-align: center; }
-.admin-login-title { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold2); margin-bottom: 20px; }
-.admin-login input { margin-bottom: 12px; }
-.btn-login {
-  width: 100%; padding: 13px; border-radius: 12px; border: none;
-  background: linear-gradient(135deg, #c9a96e, #a07840); color: #fff;
-  font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 500;
-  letter-spacing: 1px; cursor: pointer; transition: opacity .2s;
-}
-.btn-login:hover { opacity: .85; }
-
-/* ─── ANIMATIONS ─────────────────────────────── */
-@keyframes fadeUp { from { opacity:0; transform: translateY(18px); } to { opacity:1; transform: translateY(0); } }
-.page > * { animation: fadeUp .6s ease both; }
-.page > *:nth-child(1) { animation-delay: .05s; }
-.page > *:nth-child(2) { animation-delay: .1s; }
-.page > *:nth-child(3) { animation-delay: .15s; }
-.page > *:nth-child(4) { animation-delay: .2s; }
-.page > *:nth-child(5) { animation-delay: .25s; }
-.page > *:nth-child(6) { animation-delay: .3s; }
-.page > *:nth-child(7) { animation-delay: .35s; }
-
-/* ─── RESPONSIVE ─────────────────────────────── */
-@media(max-width:480px){
-  .form-row { flex-direction: column; }
-  .slide img { height: 280px; }
-  .nav-btn { display: none; }
-  .photo-grid { grid-template-columns: repeat(2, 1fr); }
-  .admin-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* ─── CONFIRM MODAL ──────────────────────────── */
-.confirm-overlay {
   display: none;
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(8px);
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(14,11,8,.93);
+  backdrop-filter: blur(12px);
   align-items: center; justify-content: center;
+  flex-direction: column;
   padding: 20px;
 }
-.confirm-overlay.open { display: flex; }
-
-.confirm-box {
-  background: #1e1812;
-  border: 1px solid rgba(201,169,110,0.2);
-  border-radius: 20px;
-  padding: 32px 28px;
-  max-width: 400px; width: 100%;
-  text-align: center;
-  animation: fadeUp .3s ease;
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 100%; max-height: 75vh;
+  border-radius: 12px;
+  object-fit: contain;
+  border: 1px solid rgba(201,169,110,.15);
 }
-.confirm-icon {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: rgba(201,169,110,0.1);
-  border: 1px solid rgba(201,169,110,0.25);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 18px;
-  font-size: 20px;
+.lightbox-caption {
+  margin-top: 16px; text-align: center;
 }
-.confirm-title {
+.lightbox-name {
   font-family: 'Luxurious Script', cursive;
   font-size: 26px; color: var(--gold2);
-  margin-bottom: 12px; line-height: 1.2;
 }
-.confirm-text {
-  font-size: 14px; line-height: 1.7;
-  color: rgba(245,239,230,0.65);
-  margin-bottom: 8px;
+.lightbox-comment {
+  font-size: 14px; font-style: italic; opacity: .55; margin-top: 4px;
 }
-.confirm-names {
-  font-family: 'Luxurious Script', cursive;
-  font-size: 18px; color: var(--gold);
-  margin-bottom: 20px;
+.lightbox-close {
+  position: absolute; top: 20px; right: 20px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(201,169,110,.2);
+  color: var(--cream); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
 }
-.confirm-note {
-  font-size: 12px; opacity: .45;
-  margin-bottom: 24px; line-height: 1.6;
-}
-.confirm-actions {
-  display: flex; gap: 10px;
-}
-.btn-confirm {
-  flex: 1; padding: 13px;
-  border-radius: 12px; border: none;
-  background: linear-gradient(135deg, #c9a96e, #a07840);
-  color: #fff;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px; font-weight: 500; letter-spacing: 1px;
-  cursor: pointer; transition: opacity .2s, transform .2s;
-}
-.btn-confirm:hover { opacity: .85; transform: translateY(-1px); }
-.btn-cancel {
-  flex: 1; padding: 13px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  color: rgba(245,239,230,0.55);
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px; letter-spacing: 1px;
-  cursor: pointer; transition: background .2s;
-}
-.btn-cancel:hover { background: rgba(255,255,255,0.1); }
+.lightbox-close:hover { background: rgba(255,255,255,.15); }
 
+/* loading spinner */
+.spinner-wrap {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 2px solid rgba(201,169,110,.15);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* page bottom */
+.page-bottom {
+  padding: 0 20px 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  position: relative; z-index: 1;
+}
+.bottom-ornament {
+  display: flex; align-items: center; gap: 16px;
+}
+.bottom-ornament::before, .bottom-ornament::after {
+  content: ''; width: 80px; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,169,110,0.3));
+}
+.bottom-ornament::after { background: linear-gradient(to left, transparent, rgba(201,169,110,0.3)); }
+.bottom-ornament span { font-size: 18px; color: var(--gold); opacity: .5; }
+.bottom-text { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: .25; }
+
+/* reveal */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .9s ease, transform .9s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 520px) {
+  .upload-card { padding: 24px 18px; }
+  .slide-item img { height: 280px; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
 
-<div class="bg"></div>
-<div class="grain"></div>
+<div class="site-bg"></div>
 
-<div class="page">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-ornament">Nişan Kutlaması</div>
-    <h1>Firdevs &amp;<br><em>Hasan Çağlar</em></h1>
-    <div class="subtitle">Anılarınızı bizimle paylaşın</div>
+<!-- HEADER -->
+<header class="page-header">
+  <div style="position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; animation: fadeUp .8s ease .1s both;">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Davete Dön
+    </a>
+    <div class="ornament">
+      <div class="ornament-line"></div>
+      <div class="ornament-text">Anı Galerisi</div>
+      <div class="ornament-line r"></div>
+    </div>
+    <div class="page-title">Anlarınızı Paylaşın</div>
+    <div class="page-sub">Güzel anlarınızı bu özel günün hatırası için yükleyin</div>
   </div>
+</header>
 
-  <div class="divider"></div>
+<!-- MAIN -->
+<main class="main-content">
 
   <!-- UPLOAD CARD -->
-  <div class="card">
-    <div class="upload-title">Fotoğraflarınızı Ekleyin</div>
-    <div class="form-row">
-      <input class="field" type="text" id="uploaderName" placeholder="İsminiz *" maxlength="40">
-    </div>
-    <div class="form-row">
-      <textarea class="field" id="uploaderComment" placeholder="Bir mesaj bırakın… (opsiyonel)"></textarea>
-    </div>
-    <!-- Hidden file input — position:absolute left:-9999px iOS uyumluluğu için -->
-    <label class="drop-zone" id="dropZone">
-      <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" multiple>
-      <div class="drop-zone-label">
-        <strong>Fotoğraf seçmek için dokunun</strong><br>
-        Birden fazla seçebilirsiniz · Max 50MB/adet
+  <div class="upload-card reveal">
+    <div class="card-label">Fotoğraf Yükle</div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif" />
+      <div class="drop-icon" id="dropIcon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <path d="M21 15l-5-5L5 21"/>
+        </svg>
       </div>
-    </label>
-    <div class="file-chips" id="fileChips"></div>
-    <button class="btn-upload" id="uploadBtn" onclick="showConfirm()" disabled>Yükle</button>
-    <div class="progress-wrap" id="progressWrap" style="display:none">
-      <div class="progress-label">
-        <span id="progressLabel">Yükleniyor…</span>
-        <span id="progressPct">0%</span>
-      </div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="drop-title" id="dropTitle">Fotoğraf Seçin veya Sürükleyin</div>
+      <div class="drop-sub">JPEG · PNG · WEBP · GIF · HEIC</div>
     </div>
-    <div class="toast" id="toast"></div>
-    <div id="errorLog" style="display:none;margin-top:14px;padding:14px 14px;background:rgba(0,0,0,0.55);border:1.5px solid rgba(255,120,120,0.4);border-radius:12px;font-size:11.5px;font-family:monospace;color:#f4a4a4;line-height:1.7;word-break:break-all;max-height:280px;overflow-y:auto;"></div>
+
+    <div class="preview-wrap" id="previewWrap">
+      <img id="previewImg" src="" alt="Önizleme" />
+      <div class="preview-clear" id="previewClear" title="Kaldır">✕</div>
+    </div>
+
+    <div class="form-fields">
+      <div class="field-group">
+        <label class="field-label" for="nameInput">İsim <span class="field-required">*</span></label>
+        <input class="field-input" type="text" id="nameInput" placeholder="Adınızı yazın" maxlength="80" />
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="commentInput">Yorum <span style="opacity:.4;font-size:10px;letter-spacing:1px;">(isteğe bağlı)</span></label>
+        <textarea class="field-textarea" id="commentInput" placeholder="Güzel bir anı notu bırakın…" maxlength="300"></textarea>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <button class="btn-submit" id="submitBtn" disabled>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      Fotoğrafı Yükle
+    </button>
+
+    <div class="status-msg" id="statusMsg"></div>
   </div>
 
-  <!-- GALLERY HEADER -->
-  <div class="gallery-header">
-    <div class="gallery-title">Galeri</div>
-    <div class="gallery-right">
+  <!-- GALLERY SECTION -->
+  <div class="gallery-section reveal">
+    <div class="gallery-header">
+      <div class="gallery-title-wrap">
+        <div class="gallery-title">Anı Defteri</div>
+        <div class="gallery-count" id="galleryCount">Yükleniyor…</div>
+      </div>
       <div class="view-toggle">
-        <button class="view-btn active" id="btnSlider" onclick="setView('slider')" title="Slayt">▶</button>
-        <button class="view-btn" id="btnGrid" onclick="setView('grid')" title="Mozaik">⊞</button>
-      </div>
-      <div class="photo-count" id="photoCount">
-        <span class="realtime-dot"></span><span id="countText">0 fotoğraf</span>
+        <button class="view-btn active" id="btnSlide" onclick="setView('slide')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M8 12h8M12 8v8" opacity="0"/><path d="M2 9h20M2 15h20" opacity="0"/></svg>
+          Slayt
+        </button>
+        <button class="view-btn" id="btnGrid" onclick="setView('grid')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Grid
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- SLIDER CARD -->
-  <div class="card slider-card" id="sliderSection">
-    <div class="slider-wrap">
-      <div class="slider" id="slider">
-        <div class="slides" id="slides"></div>
-      </div>
-      <button class="nav-btn prev" onclick="prevSlide()">‹</button>
-      <button class="nav-btn next" onclick="nextSlide()">›</button>
-      <button class="fullscreen-btn" onclick="openLightbox(current)" title="Tam ekran">⛶</button>
+    <!-- Loading -->
+    <div class="spinner-wrap" id="galleryLoading">
+      <div class="spinner"></div>
     </div>
-    <div class="dots" id="dots"></div>
-    <div class="story-bar"><div class="story-fill" id="storyFill"></div></div>
+
+    <!-- Empty -->
+    <div class="gallery-empty" id="galleryEmpty" style="display:none;">
+      <div class="gallery-empty-icon">📷</div>
+      <div class="gallery-empty-text">Henüz fotoğraf yüklenmedi.<br>İlk anıyı paylaşan siz olun!</div>
+    </div>
+
+    <!-- Slideshow -->
+    <div class="slideshow-wrap" id="slideshowWrap" style="display:none;">
+      <div class="slide-counter" id="slideCounter">1 / 1</div>
+      <div class="slide-track" id="slideTrack"></div>
+      <button class="slide-nav prev" id="slidePrev" onclick="changeSlide(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="slide-nav next" id="slideNext" onclick="changeSlide(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="slide-dots" id="slideDots"></div>
+    </div>
+
+    <!-- Grid -->
+    <div class="gallery-grid" id="galleryGrid"></div>
   </div>
 
-  <!-- GRID CARD -->
-  <div class="card grid-card" id="gridSection" style="display:none">
-    <div class="photo-grid" id="photoGrid"></div>
-  </div>
-
-</div>
+</main>
 
 <!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox">
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <button class="lightbox-nav prev" onclick="lbNav(-1)">‹</button>
-  <button class="lightbox-nav next" onclick="lbNav(1)">›</button>
-  <div class="lightbox-img-wrap">
-    <img id="lbImg" src="" alt="">
-  </div>
-  <div class="lightbox-info">
-    <div class="lightbox-name" id="lbName"></div>
-    <div class="lightbox-comment" id="lbComment"></div>
+  <img id="lightboxImg" src="" alt="" />
+  <div class="lightbox-caption">
+    <div class="lightbox-name" id="lightboxName"></div>
+    <div class="lightbox-comment" id="lightboxComment"></div>
   </div>
 </div>
 
-<!-- ADMIN OVERLAY -->
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-panel">
-    <div class="admin-header">
-      <div class="admin-title">Yönetim Paneli</div>
-      <button class="admin-close" onclick="closeAdmin()">✕</button>
-    </div>
-
-    <!-- Login -->
-    <div id="adminLogin" class="admin-login">
-      <div class="admin-login-title">Şifre Girin</div>
-      <input class="field" type="password" id="adminPwInput" placeholder="Şifre" onkeydown="if(event.key==='Enter') adminLogin()">
-      <br><br>
-      <button class="btn-login" onclick="adminLogin()">Giriş</button>
-      <div class="toast" id="adminToast" style="margin-top:12px"></div>
-    </div>
-
-    <!-- Panel (hidden until login) -->
-    <div id="adminContent" style="display:none">
-      <div class="admin-tabs">
-        <button class="admin-tab active" onclick="adminTab('photos', this)">Fotoğraflar</button>
-        <button class="admin-tab" onclick="adminTab('guests', this)">Misafirler</button>
-      </div>
-      <div id="adminPhotosTab"></div>
-      <div id="adminGuestsTab" style="display:none"></div>
-    </div>
-  </div>
+<!-- FOOTER -->
+<div class="page-bottom">
+  <div class="bottom-ornament"><span>♡</span></div>
+  <div class="bottom-text">Firdevs & Hasan Çağlar · 2026</div>
 </div>
 
 <script>
-/* ── CONFIG ─────────────────────────────────── */
+/* ════════════════════════════════
+   SUPABASE CONFIG
+════════════════════════════════ */
 const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
+const BUCKET = "photos";
 
-const ADMIN_PASSWORD = "nisanadmin2026"; // İstediğiniz şifreyle değiştirin
+const headers = {
+  "apikey": SUPABASE_KEY,
+  "Authorization": "Bearer " + SUPABASE_KEY,
+};
 
-const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-function getClient() { return client; }
+/* ════════════════════════════════
+   UPLOAD LOGIC
+════════════════════════════════ */
+let selectedFile = null;
 
-/* ── STATE ───────────────────────────────────── */
-let images        = [];
-let current       = 0;
-let lbIndex       = 0;
-let storyTimer    = null;
-let selectedFiles = []; // each entry: { dataUrl: string, contentType, name, size }
-let newlyAddedIds = new Set();
-let currentView   = 'slider';
-let adminAuthed   = false;
+const dropZone   = document.getElementById('dropZone');
+const fileInput  = document.getElementById('fileInput');
+const previewWrap = document.getElementById('previewWrap');
+const previewImg = document.getElementById('previewImg');
+const previewClear = document.getElementById('previewClear');
+const submitBtn  = document.getElementById('submitBtn');
+const nameInput  = document.getElementById('nameInput');
+const commentInput = document.getElementById('commentInput');
+const statusMsg  = document.getElementById('statusMsg');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const dropTitle  = document.getElementById('dropTitle');
 
-/* ── ADMIN URL TRIGGER ───────────────────────── */
-function checkAdminRoute() {
-  if (window.location.hash === '#admin') {
-    document.getElementById('adminOverlay').classList.add('open');
-  }
-}
-window.addEventListener('hashchange', () => {
-  if (window.location.hash === '#admin') {
-    document.getElementById('adminOverlay').classList.add('open');
-  }
-});
-checkAdminRoute();
-
-function closeAdmin() {
-  document.getElementById('adminOverlay').classList.remove('open');
-  history.replaceState(null, '', window.location.pathname);
-}
-
-function adminLogin() {
-  const pw = document.getElementById('adminPwInput').value;
-  if (pw === ADMIN_PASSWORD) {
-    adminAuthed = true;
-    document.getElementById('adminLogin').style.display = 'none';
-    document.getElementById('adminContent').style.display = 'block';
-    renderAdminPhotos();
-    renderAdminGuests();
-  } else {
-    const t = document.getElementById('adminToast');
-    t.textContent = 'Hatalı şifre'; t.className = 'toast show err';
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
+function setFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    previewImg.src = e.target.result;
+    previewWrap.style.display = 'block';
+    dropTitle.textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+  checkSubmit();
 }
 
-function adminTab(tab, btn) {
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('adminPhotosTab').style.display = tab === 'photos' ? 'block' : 'none';
-  document.getElementById('adminGuestsTab').style.display = tab === 'guests' ? 'block' : 'none';
+function checkSubmit() {
+  submitBtn.disabled = !(selectedFile && nameInput.value.trim());
 }
 
-function renderAdminPhotos() {
-  const el = document.getElementById('adminPhotosTab');
-  if (!images.length) { el.innerHTML = '<div style="text-align:center;opacity:.4;padding:40px;font-size:14px">Henüz fotoğraf yok</div>'; return; }
-  el.innerHTML = `<div class="admin-grid">${images.map(img => {
-    const date = img.created_at ? new Date(img.created_at).toLocaleDateString('tr-TR', {day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}) : '';
-    return `<div class="admin-photo-card" id="apc-${img.id}">
-      <img src="${img.url}" alt="" loading="lazy">
-      <div class="admin-photo-info">
-        <div class="admin-photo-name">${escHtml(img.name || '—')}</div>
-        ${img.comment ? `<div class="admin-photo-comment">${escHtml(img.comment)}</div>` : ''}
-        <div class="admin-photo-date">${date}</div>
-      </div>
-      <div class="admin-photo-actions">
-        <button class="btn-delete" onclick="deletePhoto('${img.id}', '${img.url}')">Sil</button>
-      </div>
-    </div>`;
-  }).join('')}</div>`;
-}
+fileInput.addEventListener('change', e => { if (e.target.files[0]) setFile(e.target.files[0]); });
+nameInput.addEventListener('input', checkSubmit);
 
-function renderAdminGuests() {
-  const el = document.getElementById('adminGuestsTab');
-  // group by name
-  const guestMap = {};
-  images.forEach(img => {
-    const key = (img.name || 'İsimsiz').trim();
-    if (!guestMap[key]) guestMap[key] = { name: key, photos: [], comments: new Set() };
-    guestMap[key].photos.push(img);
-    if (img.comment) guestMap[key].comments.add(img.comment);
-  });
-  const guests = Object.values(guestMap).sort((a,b) => b.photos.length - a.photos.length);
-  if (!guests.length) { el.innerHTML = '<div style="text-align:center;opacity:.4;padding:40px;font-size:14px">Henüz misafir yok</div>'; return; }
-  el.innerHTML = `<div class="guest-list">${guests.map(g => `
-    <div class="guest-card">
-      <div class="guest-avatar">${g.name.charAt(0)}</div>
-      <div class="guest-info">
-        <div class="guest-name">${escHtml(g.name)}</div>
-        <div class="guest-meta">${g.photos.length} fotoğraf</div>
-        ${[...g.comments].map(c => `<div class="guest-comment">"${escHtml(c)}"</div>`).join('')}
-        <div class="guest-thumb-row">
-          ${g.photos.slice(0,6).map(p => `<img class="guest-thumb" src="${p.url}" onclick="openLightbox(${images.indexOf(p)}); closeAdmin();">`).join('')}
-        </div>
-      </div>
-    </div>`).join('')}</div>`;
-}
-
-async function deletePhoto(id, url) {
-  if (!confirm('Bu fotoğrafı silmek istediğinize emin misiniz?')) return;
-  // Extract filename from URL for storage deletion
-  const parts = url.split('/photos/');
-  if (parts[1]) {
-    await getClient().storage.from('photos').remove([parts[1]]);
-  }
-  await getClient().from('photos').delete().eq('id', id);
-  // Remove from UI immediately
-  document.getElementById('apc-' + id)?.remove();
-  images = images.filter(i => i.id !== id);
-  render();
-  renderAdminGuests();
-}
-
-/* ── VIEW TOGGLE ─────────────────────────────── */
-function setView(v) {
-  currentView = v;
-  document.getElementById('sliderSection').style.display = v === 'slider' ? 'block' : 'none';
-  document.getElementById('gridSection').style.display   = v === 'grid'   ? 'block' : 'none';
-  document.getElementById('btnSlider').classList.toggle('active', v === 'slider');
-  document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
-}
-
-
-/* ── DROP ZONE & FILE READING ──────────────────────────────────────────────
-// KRİTİK: iOS/Android, dosya iznini "change" event handler'ı return eder etmez
-// iptal eder. async function, Promise, await — hepsi yeni microtask demek,
-// izin o anda gidiyor. Tek güvenli yol: FileReader'ı hiç indirection olmadan,
-// doğrudan event handler'ın synchronous call stack'inde başlatmak.
-
-const MIME_MAP = { jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp",
-                   heic:"image/heic", heif:"image/heif", gif:"image/gif", bmp:"image/bmp", avif:"image/avif" };
-
-function startReading(fileList) {
-  // Bu fonksiyon SYNC çağrılıyor, içinde hiç await/Promise yok
-  clearErrorLog();
-  document.getElementById("uploadBtn").disabled = true;
-
-  // Validation — tamamen synchronous
-  const toRead = [];
-  for (let i = 0; i < fileList.length; i++) {
-    const f   = fileList[i];
-    const ext = (f.name.split(".").pop() || "").toLowerCase();
-    const ok  = (f.type || "").startsWith("image/") || Object.keys(MIME_MAP).includes(ext);
-    logInfo("Seçilen: " + f.name + " | " + (f.type || "(boş)") + " | " + (f.size/1024).toFixed(0) + " KB");
-    if (!ok)                                            { logError("Format reddedildi: " + f.name); continue; }
-    if (f.size > 50 * 1024 * 1024)                     { logError(f.name + " çok büyük (max 50MB)"); continue; }
-    if (selectedFiles.find(x => x.name === f.name && x.size === f.size)) continue;
-    toRead.push(f);
-  }
-
-  if (!toRead.length) {
-    document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
-    return;
-  }
-
-  // Her dosya için FileReader'ı HEMEN, SYNCHRONOUS başlat
-  // Hiç Promise, hiç await yok — saf callback
-  let remaining = toRead.length;
-
-  function onAllDone() {
-    fileInput.value = ""; // Okuma bitti, şimdi güvenle sıfırla
-    renderChips();
-    document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
-  }
-
-  toRead.forEach(function(f) {
-    const ext         = (f.name.split(".").pop() || "").toLowerCase();
-    const contentType = (f.type && !f.type.includes("octet-stream")) ? f.type : (MIME_MAP[ext] || "image/jpeg");
-    const reader      = new FileReader();
-
-    reader.onload = function(evt) {
-      logInfo("  ✓ okundu: " + f.name);
-      selectedFiles.push({ dataUrl: evt.target.result, contentType, name: f.name, size: f.size });
-      if (--remaining === 0) onAllDone();
-    };
-
-    reader.onerror = function() {
-      logError("Okunamadı: " + f.name + " — " + (reader.error ? reader.error.message : "bilinmeyen hata"));
-      if (--remaining === 0) onAllDone();
-    };
-
-    reader.readAsDataURL(f); // synchronous başlatma
-  });
-}
-
-// Drop zone — label elementi native olarak file picker'ı açıyor, JS click() gerekmez
-const dropZone  = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-
-// change handler: this.files'a anında eriş, hiç başka fonksiyona geçme
-fileInput.addEventListener("change", function() {
-  if (!this.files || !this.files.length) return;
-  startReading(this.files);
-  // NOT: this.value = "" buraya taşındı → onAllDone() içinde yapılıyor
-  // FileReaders tamamlanmadan önce value sıfırlanırsa FileList geçersizleşebilir
+previewClear.addEventListener('click', () => {
+  selectedFile = null;
+  previewWrap.style.display = 'none';
+  previewImg.src = '';
+  fileInput.value = '';
+  dropTitle.textContent = 'Fotoğraf Seçin veya Sürükleyin';
+  checkSubmit();
 });
 
-// Masaüstü drag-and-drop
-dropZone.addEventListener("dragover",  function(e) { e.preventDefault(); dropZone.classList.add("dragover"); });
-dropZone.addEventListener("dragleave", function()  { dropZone.classList.remove("dragover"); });
-dropZone.addEventListener("drop", function(e) {
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
   e.preventDefault();
-  dropZone.classList.remove("dragover");
-  if (e.dataTransfer.files.length) startReading(e.dataTransfer.files);
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) setFile(file);
 });
 
-function renderChips() {
-  document.getElementById("fileChips").innerHTML = selectedFiles.map((e, i) => `
-    <div class="chip">${e.name.length > 18 ? e.name.slice(0,15)+"…" : e.name}
-      <button onclick="removeFile(${i})">✕</button>
-    </div>`).join("");
+function showStatus(type, msg) {
+  statusMsg.className = 'status-msg ' + type;
+  statusMsg.textContent = msg;
+}
+function hideStatus() {
+  statusMsg.className = 'status-msg';
 }
 
-function removeFile(i) {
-  selectedFiles.splice(i, 1);
-  renderChips();
-  document.getElementById("uploadBtn").disabled = selectedFiles.length === 0;
-}
+submitBtn.addEventListener('click', async () => {
+  if (!selectedFile || !nameInput.value.trim()) return;
+  submitBtn.disabled = true;
+  hideStatus();
+  progressWrap.style.display = 'block';
+  progressFill.style.width = '10%';
 
-/* ── UPLOAD ──────────────────────────────────── */
-async function startUpload() {
-  const name    = document.getElementById("uploaderName").value.trim();
-  const comment = document.getElementById("uploaderComment").value.trim();
-
-  // Snapshot files immediately — prevent any async mutation
-  const filesToUpload = [...selectedFiles];
-  if (!filesToUpload.length) return;
-
-  // Wait for Supabase auth/session to be fully ready before any storage call
   try {
-    await getClient().auth.getSession();
-  } catch(e) { /* anon kullanımda hata gelmez, yine de yakala */ }
+    const ext  = selectedFile.name.split('.').pop().toLowerCase() || 'jpg';
+    const uid  = crypto.randomUUID();
+    const path = `${uid}.${ext}`;
 
-  const btn         = document.getElementById("uploadBtn");
-  const progressWrap = document.getElementById("progressWrap");
-  const fill        = document.getElementById("progressFill");
-  const label       = document.getElementById("progressLabel");
-  const pct         = document.getElementById("progressPct");
-
-  btn.disabled = true;
-  progressWrap.style.display = "block";
-
-  let done = 0;
-  const total = filesToUpload.length;
-  logInfo("Toplam " + total + " dosya yüklenecek. İsim: " + name);
-
-  // ── Upload one file with retry + XHR fallback ──────────────────────────────
-  // Returns { ok, fileName, publicUrl } or { ok: false, error }
-  async function uploadFile(entry) {
-    const { dataUrl, contentType, name } = entry;
-    const fileName  = Date.now() + "-" + Math.random().toString(36).slice(2) + "-" + name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const uploadUrl = SUPABASE_URL + "/storage/v1/object/photos/" + encodeURIComponent(fileName);
-    const publicUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + encodeURIComponent(fileName);
-
-    // dataUrl → Blob (synchronous, hızlı)
-    function dataUrlToBlob(dataUrl, type) {
-      const base64 = dataUrl.split(",")[1];
-      const binary = atob(base64);
-      const bytes  = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-      return new Blob([bytes], { type });
-    }
-    const blob = dataUrlToBlob(dataUrl, contentType);
-
-    const ATTEMPTS = [0, 1500, 3000]; // backoff ms before each attempt (max 3 tries)
-
-    for (let i = 0; i < ATTEMPTS.length; i++) {
-      if (ATTEMPTS[i] > 0) {
-        label.textContent = "Tekrar deneniyor… (" + (i+1) + "/" + ATTEMPTS.length + ")";
-        await new Promise(r => setTimeout(r, ATTEMPTS[i]));
-      }
-      logInfo("  attempt " + (i+1) + "/" + ATTEMPTS.length + " — " + name);
-
-      // Try fetch first
-      let networkFail = false;
-      try {
-        const res = await fetch(uploadUrl, {
-          method: "POST",
-          headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": contentType, "x-upsert": "false" },
-          body: blob
-        });
-        if (res.ok) { logInfo("  fetch ✓"); return { ok: true, fileName, publicUrl }; }
-        let e = ""; try { const j = await res.json(); e = j.message||j.error||JSON.stringify(j); } catch(_){ e = res.status; }
-        if (res.status >= 400 && res.status < 500) return { ok: false, error: "HTTP " + res.status + ": " + e }; // fatal
-        logError("  fetch " + res.status + " — XHR fallback");
-        networkFail = true;
-      } catch(err) {
-        logError("  fetch err: " + (err.message||err) + " — XHR fallback");
-        networkFail = true;
-      }
-
-      // XHR fallback on network-level failures only
-      if (networkFail) {
-        try {
-          const r = await new Promise((res, rej) => {
-            const x = new XMLHttpRequest();
-            x.open("POST", uploadUrl);
-            x.setRequestHeader("apikey", SUPABASE_KEY);
-            x.setRequestHeader("Authorization", "Bearer " + SUPABASE_KEY);
-            x.setRequestHeader("Content-Type", contentType);
-            x.setRequestHeader("x-upsert", "false");
-            x.onload    = () => res({ status: x.status, body: x.responseText });
-            x.onerror   = () => rej(new Error("XHR network error"));
-            x.ontimeout = () => rej(new Error("XHR timeout"));
-            x.timeout   = 90000;
-            x.send(blob); // Blob gönder, File değil
-          });
-          if (r.status >= 200 && r.status < 300) { logInfo("  XHR ✓"); return { ok: true, fileName, publicUrl }; }
-          logError("  XHR " + r.status + ": " + r.body.slice(0,120));
-        } catch(err) {
-          logError("  XHR err: " + (err.message||err));
-        }
-      }
-    }
-    return { ok: false, error: "Tüm denemeler başarısız" };
-  }
-
-  // ── Phase 1: upload files sequentially ─────────────────────────────────────
-  // Paralel yerine sıralı: mobil bağlantılarda çok daha güvenilir.
-  logInfo("Phase 1: " + total + " dosya sıralı yükleniyor");
-
-  const uploadResults = [];
-  for (let idx = 0; idx < total; idx++) {
-    const entry = filesToUpload[idx];
-    label.textContent = (total > 1 ? (idx + 1) + "/" + total + " — " : "") + "Yükleniyor…";
-    const pctVal = Math.round((idx / total) * 85);
-    fill.style.width = pctVal + "%";
-    pct.textContent  = pctVal + "%";
-    logInfo("↑ başlatıldı: " + entry.name);
-
-    const result = await uploadFile(entry);
-    uploadResults.push({ ...result, entry });
-
-    const pctValAfter = Math.round(((idx + 1) / total) * 85);
-    fill.style.width = pctValAfter + "%";
-    pct.textContent  = pctValAfter + "%";
-  }
-
-  const failed = uploadResults.filter(r => !r.ok);
-  const succeeded = uploadResults.filter(r => r.ok);
-
-  logInfo("Phase 1 sonuç: " + succeeded.length + " başarılı, " + failed.length + " başarısız");
-  failed.forEach(r => logError("Başarısız: " + r.entry.name + (r.error ? " — " + r.error : "")));
-
-  // ── Phase 2: all-or-nothing — roll back if any failed ───────────────────
-  if (failed.length > 0) {
-    // Clean up successfully uploaded files so storage stays tidy
-    if (succeeded.length > 0) {
-      logInfo("Rollback: " + succeeded.length + " dosya siliniyor…");
-      await Promise.allSettled(
-        succeeded.map(r =>
-          getClient().storage.from("photos").remove([r.fileName])
-        )
-      );
-    }
-    setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 300);
-    btn.disabled = false;
-    showErrorModal("Fotoğraflar yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.");
-    return;
-  }
-
-  // ── Phase 3: all succeeded — write DB records ───────────────────────────
-  fill.style.width = "90%"; label.textContent = "Kaydediliyor…";
-  logInfo("Phase 3: DB kayıtları yazılıyor");
-
-  const dbResults = await Promise.all(
-    uploadResults.map(r =>
-      getClient().from("photos")
-        .insert([{ url: r.publicUrl, name, comment }])
-        .then(({ error }) => ({ ok: !error, entry: r.entry, fileName: r.fileName, error }))
-    )
-  );
-
-  const dbFailed = dbResults.filter(r => !r.ok);
-  if (dbFailed.length > 0) {
-    dbFailed.forEach(r => logError("DB hatası: " + r.entry.name + " — " + r.error?.message));
-    // Roll back all storage
-    await Promise.allSettled(uploadResults.map(r => getClient().storage.from("photos").remove([r.fileName])));
-    setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 300);
-    btn.disabled = false;
-    showErrorModal("Kayıt sırasında bir sorun oluştu. Lütfen tekrar deneyin.");
-    return;
-  }
-
-  // ── All done ─────────────────────────────────────────────────────────────
-  fill.style.width = "100%";
-  setTimeout(() => { progressWrap.style.display = "none"; fill.style.width = "0%"; }, 600);
-
-  selectedFiles = [];
-  renderChips();
-  fileInput.value = "";
-  document.getElementById("uploaderComment").value = "";
-  btn.disabled = false;
-
-  showToast(total + " fotoğraf yüklendi! Sayfa yenileniyor…", "ok");
-  setTimeout(() => location.reload(), 1500);
-}
-
-function showToast(msg, type) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.className = "toast show " + (type || "ok");
-  setTimeout(() => t.classList.remove("show"), type === "err" ? 12000 : 3000);
-  if (type === "err") logError(msg);
-}
-
-function logError(msg) {
-  _appendLog("⚠ " + msg, "#f4a4a4");
-}
-
-function logInfo(msg) {
-  _appendLog("ℹ " + msg, "rgba(232,213,176,0.7)");
-}
-
-function _appendLog(msg, color) {
-  const el = document.getElementById("errorLog");
-  if (!el) return;
-  el.style.display = "block";
-  const d = document.createElement("div");
-  d.style.cssText = "margin-bottom:3px;color:" + color;
-  d.textContent = msg;
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
-}
-
-function clearErrorLog() {
-  const el = document.getElementById("errorLog");
-  if (!el) return;
-  el.style.display = "none";
-  el.innerHTML = "";
-}
-
-/* ── LOAD & RENDER ───────────────────────────── */
-async function loadImages() {
-  const { data } = await getClient().from("photos").select("*").order("created_at", { ascending: false });
-  if (!data) return;
-  const isFirst = images.length === 0;
-  if (!isFirst) data.forEach(r => { if (!images.find(x => x.id === r.id)) newlyAddedIds.add(r.id); });
-  images = data;
-  render();
-  if (adminAuthed) { renderAdminPhotos(); renderAdminGuests(); }
-}
-
-function render() {
-  document.getElementById("countText").textContent = images.length + " fotoğraf";
-  renderSlider();
-  renderGrid();
-}
-
-function renderSlider() {
-  const slidesEl = document.getElementById("slides");
-  const dotsEl   = document.getElementById("dots");
-  if (!images.length) {
-    slidesEl.innerHTML = `<div class="slide"><div class="empty-state">Henüz fotoğraf yok.<br>İlk fotoğrafı ekleyen siz olun!</div></div>`;
-    dotsEl.innerHTML = ""; return;
-  }
-  slidesEl.innerHTML = images.map((img, i) => {
-    const isNew = newlyAddedIds.has(img.id);
-    return `<div class="slide" data-index="${i}">
-      ${isNew ? '<div class="new-badge">Yeni</div>' : ""}
-      <img src="${img.url}" alt="" loading="lazy">
-      <div class="slide-caption">
-        ${img.name ? `<div class="slide-name">${escHtml(img.name)}</div>` : ""}
-        ${img.comment ? `<div class="slide-comment">${escHtml(img.comment)}</div>` : ""}
-      </div>
-    </div>`;
-  }).join("");
-  dotsEl.innerHTML = images.map((_, i) => `<div class="dot ${i === current ? "active" : ""}" onclick="goTo(${i})"></div>`).join("");
-  goTo(current < images.length ? current : 0);
-}
-
-function renderGrid() {
-  const grid = document.getElementById("photoGrid");
-  if (!images.length) { grid.innerHTML = '<div class="grid-empty">Henüz fotoğraf yok</div>'; return; }
-  grid.innerHTML = images.map((img, i) => `
-    <div class="grid-item" onclick="openLightbox(${i})">
-      <img src="${img.url}" alt="" loading="lazy">
-      <div class="grid-overlay">
-        ${img.name ? `<div class="grid-name">${escHtml(img.name)}</div>` : ''}
-      </div>
-    </div>`).join("");
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-/* ── SLIDER ──────────────────────────────────── */
-const SLIDE_MS = 6000;
-
-function goTo(idx) {
-  if (!images.length) return;
-  current = (idx + images.length) % images.length;
-  document.getElementById("slides").style.transform = `translateX(-${current * 100}%)`;
-  document.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === current));
-  startStory();
-}
-function nextSlide() { goTo(current + 1); }
-function prevSlide() { goTo(current - 1); }
-
-function startStory() {
-  if (storyTimer) { clearTimeout(storyTimer); storyTimer = null; }
-  const fill = document.getElementById("storyFill");
-  fill.style.transition = "none";
-  fill.style.width = "0%";
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fill.style.transition = `width ${SLIDE_MS}ms linear`;
-      fill.style.width = "100%";
+    // Upload to Storage
+    progressFill.style.width = '35%';
+    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': selectedFile.type },
+      body: selectedFile,
     });
-  });
-  if (images.length > 1) {
-    storyTimer = setTimeout(() => goTo(current + 1), SLIDE_MS);
+    if (!uploadRes.ok) throw new Error('Dosya yüklenemedi: ' + uploadRes.status);
+
+    progressFill.style.width = '65%';
+
+    // Get public URL
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+
+    // Insert row
+    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/photos`, {
+      method: 'POST',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({
+        id: uid,
+        url: publicUrl,
+        name: nameInput.value.trim(),
+        comment: commentInput.value.trim() || null,
+      }),
+    });
+    if (!insertRes.ok) throw new Error('Kayıt eklenemedi: ' + insertRes.status);
+
+    progressFill.style.width = '100%';
+    showStatus('success', '✓ Fotoğrafınız başarıyla eklendi! Teşekkürler ♡');
+
+    // reset
+    setTimeout(() => { progressWrap.style.display = 'none'; progressFill.style.width = '0%'; }, 800);
+    previewClear.click();
+    nameInput.value = '';
+    commentInput.value = '';
+
+    // reload gallery
+    await loadPhotos();
+
+  } catch (err) {
+    progressFill.style.width = '0%';
+    setTimeout(() => { progressWrap.style.display = 'none'; }, 400);
+    showStatus('error', '✗ Hata: ' + err.message);
+    submitBtn.disabled = false;
+    checkSubmit();
   }
-}
+});
 
-/* ── SWIPE ───────────────────────────────────── */
+/* ════════════════════════════════
+   GALLERY LOGIC
+════════════════════════════════ */
+let photos = [];
+let currentSlide = 0;
+let currentView = 'slide';
+
+// Touch/swipe
 let touchStartX = 0;
-document.getElementById("slider").addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-document.getElementById("slider").addEventListener("touchend", e => {
+const slideshowWrap = document.getElementById('slideshowWrap');
+slideshowWrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+slideshowWrap.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - touchStartX;
-  if (dx < -40) nextSlide(); else if (dx > 40) prevSlide();
+  if (Math.abs(dx) > 40) changeSlide(dx < 0 ? 1 : -1);
 });
 
-/* ── LIGHTBOX ────────────────────────────────── */
-function openLightbox(idx) {
-  lbIndex = idx; updateLightbox();
-  document.getElementById("lightbox").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-function closeLightbox() {
-  document.getElementById("lightbox").classList.remove("open");
-  document.body.style.overflow = "";
-}
-function lbNav(dir) { lbIndex = (lbIndex + dir + images.length) % images.length; updateLightbox(); }
-function updateLightbox() {
-  const img = images[lbIndex]; if (!img) return;
-  document.getElementById("lbImg").src = img.url;
-  document.getElementById("lbName").textContent    = img.name || "";
-  document.getElementById("lbComment").textContent = img.comment || "";
-}
-document.getElementById("lightbox").addEventListener("click", e => { if (e.target === document.getElementById("lightbox")) closeLightbox(); });
-
-/* ── BLOCK SAVE/CONTEXT-MENU ON GALLERY IMAGES ── */
-["slider", "photoGrid", "lightbox"].forEach(id => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.addEventListener("contextmenu", e => { if (e.target.tagName === "IMG") e.preventDefault(); });
-  el.addEventListener("dragstart",   e => { if (e.target.tagName === "IMG") e.preventDefault(); });
-});
-let lbTouchX = 0;
-document.getElementById("lightbox").addEventListener("touchstart", e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
-document.getElementById("lightbox").addEventListener("touchend", e => {
-  const dx = e.changedTouches[0].clientX - lbTouchX;
-  if (dx < -40) lbNav(1); else if (dx > 40) lbNav(-1);
-});
-document.addEventListener("keydown", e => {
-  if (!document.getElementById("lightbox").classList.contains("open")) return;
-  if (e.key === "ArrowRight") lbNav(1);
-  if (e.key === "ArrowLeft")  lbNav(-1);
-  if (e.key === "Escape") closeLightbox();
-});
-
-/* ── REALTIME ────────────────────────────────── */
-getClient().channel("photos-changes")
-  .on("postgres_changes", { event: "INSERT", schema: "public", table: "photos" }, () => { loadImages(); })
-  .subscribe();
-
-
-/* ── CONFIRM MODAL ───────────────────────────── */
-function showErrorModal(msg) {
-  if (msg) document.getElementById("errorOverlayMsg").textContent = msg;
-  document.getElementById("errorOverlay").classList.add("open");
-  document.body.style.overflow = "hidden";
+function changeSlide(dir) {
+  if (!photos.length) return;
+  currentSlide = (currentSlide + dir + photos.length) % photos.length;
+  updateSlide();
 }
 
-function showConfirm() {
-  const name = document.getElementById("uploaderName").value.trim();
-  if (!name) { showToast("İsminizi yazın lütfen", "err"); return; }
-  if (!selectedFiles.length) return;
-  document.getElementById("confirmOverlay").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-function closeConfirm() {
-  document.getElementById("confirmOverlay").classList.remove("open");
-  document.body.style.overflow = "";
-}
-function confirmUpload() {
-  closeConfirm();
-  startUpload();
+function goToSlide(idx) {
+  currentSlide = idx;
+  updateSlide();
 }
 
-/* ── INIT ────────────────────────────────────── */
-loadImages();
+function updateSlide() {
+  const track = document.getElementById('slideTrack');
+  track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+  document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${photos.length}`;
+
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i === currentSlide);
+  });
+}
+
+function buildSlideshow() {
+  const track = document.getElementById('slideTrack');
+  const dots  = document.getElementById('slideDots');
+  track.innerHTML = '';
+  dots.innerHTML = '';
+
+  photos.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'slide-item';
+    const date = new Date(p.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+    item.innerHTML = `
+      <img src="${p.url}" alt="${p.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23111%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23555%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2216%22%3EGörsel yüklenemedi%3C/text%3E%3C/svg%3E'" />
+      <div class="slide-caption">
+        <div class="slide-name">${p.name}</div>
+        ${p.comment ? `<div class="slide-comment">${p.comment}</div>` : ''}
+        <div class="slide-date">${date}</div>
+      </div>`;
+    track.appendChild(item);
+
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dots.appendChild(dot);
+  });
+
+  // Hide dots if too many
+  dots.style.display = photos.length > 20 ? 'none' : 'flex';
+  currentSlide = 0;
+  updateSlide();
+}
+
+function buildGrid() {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  photos.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'grid-item';
+    item.innerHTML = `
+      <img src="${p.url}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'" />
+      <div class="grid-item-overlay">
+        <div class="grid-item-name">${p.name}</div>
+      </div>`;
+    item.addEventListener('click', () => openLightbox(p));
+    grid.appendChild(item);
+  });
+}
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('btnSlide').classList.toggle('active', view === 'slide');
+  document.getElementById('btnGrid').classList.toggle('active', view === 'grid');
+  document.getElementById('slideshowWrap').style.display = (view === 'slide' && photos.length) ? 'block' : 'none';
+  const gg = document.getElementById('galleryGrid');
+  if (view === 'grid' && photos.length) gg.classList.add('visible');
+  else gg.classList.remove('visible');
+}
+
+function openLightbox(p) {
+  document.getElementById('lightboxImg').src = p.url;
+  document.getElementById('lightboxName').textContent = p.name;
+  document.getElementById('lightboxComment').textContent = p.comment || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.closest('.lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') }); });
+
+async function loadPhotos() {
+  document.getElementById('galleryLoading').style.display = 'flex';
+  document.getElementById('galleryEmpty').style.display   = 'none';
+  document.getElementById('slideshowWrap').style.display  = 'none';
+  document.getElementById('galleryGrid').classList.remove('visible');
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/photos?select=*&order=created_at.desc`, {
+      headers: { ...headers, 'Accept': 'application/json' },
+    });
+    photos = await res.json();
+    if (!Array.isArray(photos)) photos = [];
+  } catch(e) {
+    photos = [];
+  }
+
+  document.getElementById('galleryLoading').style.display = 'none';
+  document.getElementById('galleryCount').textContent =
+    photos.length ? `${photos.length} fotoğraf` : '';
+
+  if (!photos.length) {
+    document.getElementById('galleryEmpty').style.display = 'block';
+    return;
+  }
+
+  buildSlideshow();
+  buildGrid();
+  setView(currentView);
+}
+
+/* ── SCROLL REVEAL ── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ── INIT ── */
+loadPhotos();
 </script>
-
-<!-- CONFIRM MODAL -->
-<div class="confirm-overlay" id="confirmOverlay">
-  <div class="confirm-box">
-    <div class="confirm-icon">✦</div>
-    <div class="confirm-title">Paylaşmaya Hazır mısınız?</div>
-    <div class="confirm-text">Yüklediğiniz fotoğraflar ve isminiz sayfadaki galeride herkese görünür olacaktır.</div>
-    <div class="confirm-note">Devam ederek bu paylaşımı onaylıyorsunuz.</div>
-    <div class="confirm-actions">
-      <button class="btn-cancel" onclick="closeConfirm()">İptal</button>
-      <button class="btn-confirm" onclick="confirmUpload()">Devam Et</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ERROR MODAL -->
-<div class="confirm-overlay" id="errorOverlay">
-  <div class="confirm-box">
-    <div class="confirm-icon" style="border-color:rgba(244,164,164,0.4);background:rgba(244,164,164,0.08);">⚠</div>
-    <div class="confirm-title" style="color:#f4a4a4;font-size:22px;">Bir sorun oluştu</div>
-    <div class="confirm-text" id="errorOverlayMsg">Fotoğraf yüklenirken bir hata meydana geldi. Lütfen tekrar deneyin.</div>
-    <div class="confirm-actions" style="justify-content:center;">
-      <button class="btn-confirm" onclick="location.reload()" style="max-width:200px;">Sayfayı Yenile</button>
-    </div>
-  </div>
-</div>
-
-<!-- VERSION FOOTER -->
-<div style="
-  text-align: center;
-  padding: 20px 0 32px;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 11px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.15);
-  position: relative; z-index: 2;
-  user-select: none;
-">v5.2</div>
-
 </body>
 </html>
