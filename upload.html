@@ -2,25 +2,24 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Firdevs & Hasan Çağlar — Anı Galerisi</title>
-<link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Luxurious+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --gold:    #c9a96e;
-  --gold2:   #e8d5b0;
-  --gold3:   #a07840;
-  --dark:    #0e0b08;
-  --dark2:   #1a1410;
-  --cream:   #f5efe6;
-  --glass:   rgba(255,255,255,0.05);
-  --gb:      rgba(255,255,255,0.12);
+  --gold:  #c9a96e;
+  --gold2: #e8d5b0;
+  --gold3: #a07840;
+  --dark:  #0e0b08;
+  --dark2: #1a1410;
+  --cream: #f5efe6;
+  --glass: rgba(255,255,255,0.05);
+  --gb:    rgba(255,255,255,0.12);
 }
 
 html { scroll-behavior: smooth; }
@@ -31,561 +30,412 @@ body {
   color: var(--cream);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-user-select: none;
+  user-select: none;
 }
+input, textarea { -webkit-user-select: text; user-select: text; }
 
+/* ── BG – same dark treatment as index.html ── */
 .site-bg {
-  position: fixed; inset: 0; z-index: -1;
+  position: fixed; inset: 0; z-index: -2;
   background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
-  filter: brightness(0.75);
+  filter: brightness(0.38);
   transform: translate3d(0,0,0);
   -webkit-transform: translate3d(0,0,0);
 }
-
+.site-overlay {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,169,110,0.06) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(14,11,8,0.72) 0%, rgba(26,20,16,0.55) 50%, rgba(14,11,8,0.80) 100%);
+}
 body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  opacity: 0.035;
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ── PAGE HEADER ── */
+/* ══ HEADER ══ */
 .page-header {
   position: relative; z-index: 1;
-  padding: 60px 20px 40px;
+  padding: 48px 20px 32px;
   text-align: center;
+  animation: fadeUp .7s ease .05s both;
 }
-
 .back-link {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--gold); opacity: .65;
-  text-decoration: none;
-  transition: opacity .3s;
-  margin-bottom: 32px;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); opacity: .6; text-decoration: none;
+  transition: opacity .3s; margin-bottom: 28px;
+  -webkit-tap-highlight-color: transparent;
 }
-.back-link:hover { opacity: 1; }
-.back-link svg { width: 14px; height: 14px; }
-
-.ornament {
-  display: flex; align-items: center; justify-content: center; gap: 16px;
-  margin-bottom: 20px;
-}
-.ornament-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); opacity: .5; }
+.back-link:active { opacity: 1; }
+.back-link svg { width: 13px; height: 13px; }
+.ornament { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 16px; }
+.ornament-line { width: 50px; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); opacity: .5; }
 .ornament-line.r { background: linear-gradient(to left, transparent, var(--gold)); }
-.ornament-text { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); opacity: .8; }
+.ornament-text { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); opacity: .8; }
+.page-title { font-family: 'Luxurious Script', cursive; font-size: clamp(40px, 12vw, 72px); line-height: 1.1; color: var(--cream); }
+.page-sub { margin-top: 10px; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(245,239,230,.38); }
 
-.page-title {
-  font-family: 'Luxurious Script', cursive;
-  font-size: clamp(44px, 10vw, 80px);
-  line-height: 1.1;
-  color: var(--cream);
-}
-.page-sub {
-  margin-top: 12px;
-  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(245,239,230,.4);
-}
-
-/* ── MAIN CONTENT ── */
+/* ══ MAIN ══ */
 .main-content {
   position: relative; z-index: 1;
-  max-width: 860px; margin: 0 auto;
-  padding: 0 20px 80px;
-  display: flex; flex-direction: column; gap: 56px;
+  max-width: 600px; margin: 0 auto;
+  padding: 0 16px 80px;
+  display: flex; flex-direction: column; gap: 48px;
 }
 
-/* ── UPLOAD CARD ── */
+/* ══ UPLOAD CARD ══ */
 .upload-card {
   background: var(--glass);
   border: 1px solid var(--gb);
-  border-radius: 24px;
-  backdrop-filter: blur(20px);
-  padding: 36px 32px;
+  border-radius: 22px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 28px 20px;
 }
-
 .card-label {
-  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
-  color: var(--gold); opacity: .7;
-  margin-bottom: 24px;
-  display: flex; align-items: center; gap: 12px;
+  font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--gold); opacity: .7; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
 }
-.card-label::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(to right, rgba(201,169,110,0.3), transparent);
-}
+.card-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(201,169,110,.3), transparent); }
 
 /* drop zone */
 .drop-zone {
   border: 1.5px dashed rgba(201,169,110,0.3);
-  border-radius: 16px;
-  padding: 40px 24px;
-  text-align: center;
-  cursor: pointer;
+  border-radius: 14px; padding: 34px 20px;
+  text-align: center; cursor: pointer;
   transition: border-color .3s, background .3s;
   position: relative;
-  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
-.drop-zone.drag-over {
-  border-color: var(--gold);
-  background: rgba(201,169,110,0.06);
-}
+.drop-zone.drag-over { border-color: var(--gold); background: rgba(201,169,110,0.06); }
 .drop-zone input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0;
 }
-.drop-icon {
-  width: 48px; height: 48px; margin: 0 auto 14px;
-  color: var(--gold); opacity: .5;
-}
-.drop-title {
-  font-size: 16px; letter-spacing: 2px;
-  color: var(--gold2); margin-bottom: 6px;
-}
-.drop-sub { font-size: 12px; letter-spacing: 1px; opacity: .4; }
+.drop-icon { width: 42px; height: 42px; margin: 0 auto 12px; color: var(--gold); opacity: .45; }
+.drop-title { font-size: 15px; letter-spacing: 1.5px; color: var(--gold2); margin-bottom: 5px; }
+.drop-sub { font-size: 11px; letter-spacing: 1px; opacity: .38; }
 
-/* preview */
-.preview-wrap {
+/* multi preview grid */
+.preview-grid {
+  margin-top: 14px;
   display: none;
-  margin-top: 16px;
-  position: relative;
-  border-radius: 12px; overflow: hidden;
-  max-height: 280px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
-.preview-wrap img {
-  width: 100%; height: 280px; object-fit: cover; display: block;
-  border-radius: 12px;
+.preview-grid.has-files { display: grid; }
+.preview-thumb {
+  position: relative; aspect-ratio: 1;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid rgba(201,169,110,.15);
 }
-.preview-clear {
-  position: absolute; top: 10px; right: 10px;
-  background: rgba(14,11,8,.8); border: 1px solid rgba(201,169,110,.3);
-  color: var(--gold2); border-radius: 50%;
-  width: 30px; height: 30px;
+.preview-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  pointer-events: none; -webkit-touch-callout: none;
+}
+.preview-remove {
+  position: absolute; top: 5px; right: 5px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(14,11,8,.82); border: 1px solid rgba(201,169,110,.3);
+  color: var(--gold2); font-size: 13px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 16px;
-  transition: background .2s;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
-.preview-clear:hover { background: rgba(14,11,8,1); }
-
-/* form fields */
-.form-fields {
-  margin-top: 24px;
-  display: flex; flex-direction: column; gap: 16px;
+.preview-add {
+  aspect-ratio: 1; border-radius: 10px;
+  border: 1.5px dashed rgba(201,169,110,.25);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; position: relative;
+  -webkit-tap-highlight-color: transparent; transition: border-color .25s;
 }
+.preview-add:active { border-color: var(--gold); }
+.preview-add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.preview-add span { font-size: 28px; color: var(--gold); opacity: .4; line-height: 1; }
 
-.field-group { display: flex; flex-direction: column; gap: 8px; }
-.field-label {
-  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--gold); opacity: .7;
-}
-.field-required { color: var(--gold); margin-left: 2px; }
-
+/* form */
+.form-fields { margin-top: 22px; display: flex; flex-direction: column; gap: 14px; }
+.field-group { display: flex; flex-direction: column; gap: 7px; }
+.field-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: .7; }
+.field-required { color: var(--gold); }
 .field-input, .field-textarea {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(201,169,110,0.2);
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: var(--cream);
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px;
-  letter-spacing: .5px;
-  outline: none;
-  transition: border-color .3s, background .3s;
-  width: 100%;
+  border-radius: 10px; padding: 13px 15px;
+  color: var(--cream); font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; letter-spacing: .4px;
+  outline: none; transition: border-color .3s, background .3s;
+  width: 100%; -webkit-appearance: none;
 }
-.field-input::placeholder, .field-textarea::placeholder { opacity: .35; }
-.field-input:focus, .field-textarea:focus {
-  border-color: rgba(201,169,110,0.6);
-  background: rgba(255,255,255,0.07);
-}
-.field-textarea { resize: vertical; min-height: 80px; }
+.field-input::placeholder, .field-textarea::placeholder { opacity: .32; }
+.field-input:focus, .field-textarea:focus { border-color: rgba(201,169,110,.6); background: rgba(255,255,255,.07); }
+.field-textarea { resize: none; height: 80px; }
 
-/* submit button */
+/* progress */
+.progress-bar-wrap { display: none; margin-top: 12px; height: 3px; background: rgba(201,169,110,.12); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(to right, var(--gold3), var(--gold)); border-radius: 3px; width: 0%; transition: width .3s ease; }
+.progress-label { display: none; margin-top: 6px; font-size: 11px; letter-spacing: 1px; text-align: center; color: var(--gold); opacity: .6; }
+
+/* submit */
 .btn-submit {
-  margin-top: 8px;
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%;
-  padding: 16px 32px;
-  border-radius: 40px;
+  margin-top: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; padding: 15px 24px; border-radius: 40px;
   border: 1px solid rgba(201,169,110,0.4);
-  background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(201,169,110,0.05));
-  color: var(--gold2);
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
-  cursor: pointer;
-  transition: background .3s, border-color .3s, transform .2s, opacity .3s;
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, rgba(201,169,110,.15), rgba(201,169,110,.05));
+  color: var(--gold2); font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: background .3s, border-color .3s, opacity .3s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.btn-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(201,169,110,0.28), rgba(201,169,110,0.12));
-  border-color: var(--gold);
-  transform: translateY(-2px);
-}
-.btn-submit:disabled { opacity: .45; cursor: not-allowed; }
+.btn-submit:active:not(:disabled) { background: linear-gradient(135deg, rgba(201,169,110,.28), rgba(201,169,110,.12)); border-color: var(--gold); }
+.btn-submit:disabled { opacity: .38; cursor: not-allowed; }
+.btn-submit svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-/* status messages */
-.status-msg {
-  display: none;
-  margin-top: 14px;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 14px; letter-spacing: .5px;
-  text-align: center;
-}
-.status-msg.success {
-  display: block;
-  background: rgba(100,180,100,0.1);
-  border: 1px solid rgba(100,180,100,0.3);
-  color: #9de89d;
-}
-.status-msg.error {
-  display: block;
-  background: rgba(200,80,80,0.1);
-  border: 1px solid rgba(200,80,80,0.3);
-  color: #f09090;
-}
+/* status */
+.status-msg { display: none; margin-top: 12px; padding: 11px 16px; border-radius: 10px; font-size: 14px; letter-spacing: .3px; text-align: center; }
+.status-msg.success { display: block; background: rgba(100,180,100,.1); border: 1px solid rgba(100,180,100,.3); color: #9de89d; }
+.status-msg.error   { display: block; background: rgba(200,80,80,.1);  border: 1px solid rgba(200,80,80,.3);  color: #f09090; }
 
-/* progress bar */
-.progress-bar-wrap {
-  display: none;
-  margin-top: 14px;
-  height: 3px;
-  background: rgba(201,169,110,0.15);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(to right, var(--gold3), var(--gold));
-  border-radius: 3px;
-  width: 0%;
-  transition: width .3s ease;
-}
+/* ══ GALLERY SECTION ══ */
+.gallery-section { display: flex; flex-direction: column; gap: 22px; }
+.gallery-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.gallery-title-wrap { display: flex; flex-direction: column; gap: 3px; }
+.gallery-title { font-family: 'Luxurious Script', cursive; font-size: clamp(26px, 8vw, 40px); color: var(--cream); line-height: 1; }
+.gallery-count { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); opacity: .5; }
 
-/* ── GALLERY SECTION ── */
-.gallery-section { display: flex; flex-direction: column; gap: 28px; }
-
-.gallery-header {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 16px;
-}
-.gallery-title-wrap { display: flex; flex-direction: column; gap: 4px; }
-.gallery-title {
-  font-family: 'Luxurious Script', cursive;
-  font-size: clamp(28px, 6vw, 44px);
-  color: var(--cream); line-height: 1;
-}
-.gallery-count {
-  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--gold); opacity: .55;
-}
-
-/* view toggle */
-.view-toggle {
-  display: flex;
-  border: 1px solid rgba(201,169,110,0.2);
-  border-radius: 30px;
-  overflow: hidden;
-}
+.view-toggle { display: flex; border: 1px solid rgba(201,169,110,.2); border-radius: 30px; overflow: hidden; flex-shrink: 0; }
 .view-btn {
-  display: flex; align-items: center; gap: 7px;
-  padding: 8px 16px;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(245,239,230,.4);
-  background: transparent;
-  border: none; cursor: pointer;
-  transition: background .2s, color .2s;
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(245,239,230,.38); background: transparent; border: none; cursor: pointer;
+  transition: background .2s, color .2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.view-btn svg { width: 14px; height: 14px; }
-.view-btn.active {
-  background: rgba(201,169,110,0.15);
-  color: var(--gold2);
-}
-.view-btn:hover:not(.active) { color: var(--gold); }
+.view-btn svg { width: 13px; height: 13px; }
+.view-btn.active { background: rgba(201,169,110,.15); color: var(--gold2); }
 
-/* ── SLIDESHOW ── */
+/* loading / empty */
+.spinner-wrap { display: flex; align-items: center; justify-content: center; padding: 48px; }
+.spinner { width: 28px; height: 28px; border: 2px solid rgba(201,169,110,.12); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.gallery-empty { text-align: center; padding: 52px 20px; background: var(--glass); border: 1px solid var(--gb); border-radius: 18px; }
+.gallery-empty-icon { font-size: 36px; margin-bottom: 14px; opacity: .3; }
+.gallery-empty-text { font-size: 13px; letter-spacing: 1px; opacity: .38; line-height: 1.8; }
+
+/* ══ SLIDESHOW ══ */
 .slideshow-wrap {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(0,0,0,0.2);
-  border: 1px solid var(--gb);
-  user-select: none;
+  display: none; position: relative;
+  border-radius: 18px; overflow: hidden;
+  background: rgba(0,0,0,.3); border: 1px solid var(--gb);
+  -webkit-touch-callout: none;
 }
+.slide-track { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); will-change: transform; }
+.slide-item { flex: 0 0 100%; position: relative; }
 
-.slide-track {
-  display: flex;
-  transition: transform .5s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
-}
-
-.slide-item {
-  flex: 0 0 100%;
-  position: relative;
-}
+/* contain full image, no crop */
 .slide-item img {
-  width: 100%; height: 420px; object-fit: cover; display: block;
+  width: 100%; height: 340px; object-fit: contain; display: block;
+  background: rgba(0,0,0,.35);
+  pointer-events: none; -webkit-touch-callout: none; user-select: none;
 }
 .slide-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 20px 24px;
-  background: linear-gradient(to top, rgba(14,11,8,.85), transparent);
+  padding: 18px 20px;
+  background: linear-gradient(to top, rgba(14,11,8,.88), transparent);
+  pointer-events: none;
 }
-.slide-name {
-  font-family: 'Luxurious Script', cursive;
-  font-size: 22px; color: var(--gold2); line-height: 1;
-}
-.slide-comment {
-  margin-top: 4px;
-  font-size: 13px; font-style: italic; opacity: .65;
-  letter-spacing: .3px;
-}
-.slide-date {
-  margin-top: 6px;
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: .35;
-}
+.slide-name { font-family: 'Luxurious Script', cursive; font-size: 20px; color: var(--gold2); line-height: 1; }
+.slide-comment { margin-top: 3px; font-size: 12px; font-style: italic; opacity: .58; }
+.slide-date { margin-top: 5px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: .32; }
 
-/* nav buttons */
 .slide-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
-  width: 40px; height: 40px;
+  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+  background: rgba(14,11,8,.55); border: 1px solid rgba(201,169,110,.2);
+  border-radius: 50%; cursor: pointer; color: var(--gold2); z-index: 2;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.slide-nav:active { background: rgba(14,11,8,.9); }
+.slide-nav.prev { left: 10px; }
+.slide-nav.next { right: 10px; }
+.slide-nav svg { width: 15px; height: 15px; }
+
+/* top badges */
+.slide-topbar { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 2; pointer-events: none; }
+.slide-counter { background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.18); border-radius: 20px; padding: 3px 10px; font-size: 10px; letter-spacing: 2px; color: var(--gold); }
+.slide-fullscreen-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.18);
   display: flex; align-items: center; justify-content: center;
-  background: rgba(14,11,8,.55);
-  border: 1px solid rgba(201,169,110,.25);
-  border-radius: 50%; cursor: pointer;
-  color: var(--gold2);
-  transition: background .25s, border-color .25s;
-  z-index: 2;
+  cursor: pointer; color: var(--gold); pointer-events: auto;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.slide-nav:hover { background: rgba(14,11,8,.85); border-color: var(--gold); }
-.slide-nav.prev { left: 14px; }
-.slide-nav.next { right: 14px; }
-.slide-nav svg { width: 16px; height: 16px; }
+.slide-fullscreen-btn:active { background: rgba(14,11,8,.95); }
+.slide-fullscreen-btn svg { width: 14px; height: 14px; }
 
-/* dots */
-.slide-dots {
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 14px;
-}
-.dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(201,169,110,.25);
-  cursor: pointer; transition: background .3s, transform .3s;
-}
-.dot.active { background: var(--gold); transform: scale(1.4); }
+.slide-dots { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; flex-wrap: wrap; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(201,169,110,.22); cursor: pointer; transition: background .3s, transform .3s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.dot.active { background: var(--gold); transform: scale(1.5); }
 
-/* counter badge */
-.slide-counter {
-  position: absolute; top: 14px; right: 14px;
-  background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.2);
-  border-radius: 20px; padding: 4px 12px;
-  font-size: 11px; letter-spacing: 2px; color: var(--gold); opacity: .8;
-  z-index: 2;
-}
-
-/* empty state */
-.gallery-empty {
-  text-align: center;
-  padding: 60px 24px;
-  background: var(--glass);
-  border: 1px solid var(--gb);
-  border-radius: 20px;
-}
-.gallery-empty-icon { font-size: 40px; margin-bottom: 16px; opacity: .3; }
-.gallery-empty-text {
-  font-size: 14px; letter-spacing: 1px; opacity: .4;
-  line-height: 1.7;
-}
-
-/* ── GRID ── */
-.gallery-grid {
-  display: none;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
+/* ══ GRID ══ */
+.gallery-grid { display: none; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .gallery-grid.visible { display: grid; }
-
 .grid-item {
-  position: relative; overflow: hidden;
-  border-radius: 14px; aspect-ratio: 1;
-  cursor: pointer;
-  border: 1px solid rgba(201,169,110,.1);
+  position: relative; overflow: hidden; border-radius: 12px; aspect-ratio: 1;
+  cursor: pointer; border: 1px solid rgba(201,169,110,.08);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none;
 }
-.grid-item img {
-  width: 100%; height: 100%; object-fit: cover;
-  display: block;
-  transition: transform .4s ease;
-}
-.grid-item:hover img { transform: scale(1.06); }
-.grid-item-overlay {
+.grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s ease; pointer-events: none; -webkit-touch-callout: none; }
+.grid-item:active img { transform: scale(1.05); }
+.grid-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(14,11,8,.8) 0%, transparent 50%);
+  background: linear-gradient(to top, rgba(14,11,8,.78) 0%, transparent 55%);
   opacity: 0; transition: opacity .3s;
-  display: flex; align-items: flex-end; padding: 12px;
+  display: flex; align-items: flex-end; padding: 10px;
 }
-.grid-item:hover .grid-item-overlay { opacity: 1; }
-.grid-item-name {
-  font-family: 'Luxurious Script', cursive;
-  font-size: 16px; color: var(--gold2); line-height: 1;
-}
+.grid-item:active .grid-overlay { opacity: 1; }
+.grid-item-name { font-family: 'Luxurious Script', cursive; font-size: 14px; color: var(--gold2); line-height: 1; }
 
-/* ── LIGHTBOX ── */
+/* ══ LIGHTBOX (fullscreen) ══ */
 .lightbox {
-  display: none;
-  position: fixed; inset: 0; z-index: 100;
-  background: rgba(14,11,8,.93);
-  backdrop-filter: blur(12px);
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(6,4,3,.97); flex-direction: column;
   align-items: center; justify-content: center;
-  flex-direction: column;
-  padding: 20px;
+  -webkit-touch-callout: none;
 }
 .lightbox.open { display: flex; }
-.lightbox img {
-  max-width: 100%; max-height: 75vh;
-  border-radius: 12px;
-  object-fit: contain;
-  border: 1px solid rgba(201,169,110,.15);
+
+.lightbox-topbar {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 16px 12px;
+  background: linear-gradient(to bottom, rgba(6,4,3,.8), transparent);
+  z-index: 3;
 }
-.lightbox-caption {
-  margin-top: 16px; text-align: center;
-}
-.lightbox-name {
-  font-family: 'Luxurious Script', cursive;
-  font-size: 26px; color: var(--gold2);
-}
-.lightbox-comment {
-  font-size: 14px; font-style: italic; opacity: .55; margin-top: 4px;
-}
+.lightbox-counter { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); opacity: .65; }
 .lightbox-close {
-  position: absolute; top: 20px; right: 20px;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,.08); border: 1px solid rgba(201,169,110,.2);
-  color: var(--cream); font-size: 18px; cursor: pointer;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(201,169,110,.18);
   display: flex; align-items: center; justify-content: center;
-  transition: background .2s;
+  cursor: pointer; color: var(--cream);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.lightbox-close:hover { background: rgba(255,255,255,.15); }
+.lightbox-close:active { background: rgba(255,255,255,.16); }
+.lightbox-close svg { width: 15px; height: 15px; }
 
-/* loading spinner */
-.spinner-wrap {
+/* image fills available space, fully contained */
+.lightbox-img-wrap {
+  flex: 1; width: 100%;
   display: flex; align-items: center; justify-content: center;
-  padding: 40px;
+  overflow: hidden; padding: 56px 48px 8px;
 }
-.spinner {
-  width: 32px; height: 32px;
-  border: 2px solid rgba(201,169,110,.15);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
+.lightbox-img-wrap img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain; border-radius: 10px; display: block;
+  pointer-events: none; -webkit-touch-callout: none; user-select: none;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
 
-/* page bottom */
-.page-bottom {
-  padding: 0 20px 60px;
-  display: flex; flex-direction: column; align-items: center; gap: 16px;
-  position: relative; z-index: 1;
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  background: rgba(14,11,8,.5); border: 1px solid rgba(201,169,110,.18);
+  border-radius: 50%; cursor: pointer; color: var(--gold2); z-index: 3;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.bottom-ornament {
-  display: flex; align-items: center; gap: 16px;
+.lightbox-nav:active { background: rgba(14,11,8,.95); }
+.lightbox-nav.prev { left: 10px; }
+.lightbox-nav.next { right: 10px; }
+.lightbox-nav svg { width: 16px; height: 16px; }
+
+.lightbox-caption {
+  padding: 10px 20px 24px; text-align: center; width: 100%;
+  background: linear-gradient(to top, rgba(6,4,3,.85), transparent);
 }
-.bottom-ornament::before, .bottom-ornament::after {
-  content: ''; width: 80px; height: 1px;
-  background: linear-gradient(to right, transparent, rgba(201,169,110,0.3));
-}
-.bottom-ornament::after { background: linear-gradient(to left, transparent, rgba(201,169,110,0.3)); }
-.bottom-ornament span { font-size: 18px; color: var(--gold); opacity: .5; }
-.bottom-text { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: .25; }
+.lightbox-name { font-family: 'Luxurious Script', cursive; font-size: 24px; color: var(--gold2); line-height: 1; }
+.lightbox-comment { font-size: 13px; font-style: italic; opacity: .5; margin-top: 4px; }
+.lightbox-date { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: .28; margin-top: 5px; }
+
+/* ══ FOOTER ══ */
+.page-bottom { padding: 0 16px 56px; display: flex; flex-direction: column; align-items: center; gap: 14px; position: relative; z-index: 1; }
+.bottom-ornament { display: flex; align-items: center; gap: 14px; }
+.bottom-ornament::before,.bottom-ornament::after { content: ''; width: 70px; height: 1px; background: linear-gradient(to right, transparent, rgba(201,169,110,.28)); }
+.bottom-ornament::after { background: linear-gradient(to left, transparent, rgba(201,169,110,.28)); }
+.bottom-ornament span { font-size: 16px; color: var(--gold); opacity: .45; }
+.bottom-text { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: .22; }
 
 /* reveal */
-.reveal { opacity: 0; transform: translateY(30px); transition: opacity .9s ease, transform .9s ease; }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
 .reveal.visible { opacity: 1; transform: none; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 520px) {
-  .upload-card { padding: 24px 18px; }
-  .slide-item img { height: 280px; }
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
 </style>
 </head>
 <body>
 
 <div class="site-bg"></div>
+<div class="site-overlay"></div>
 
 <!-- HEADER -->
 <header class="page-header">
-  <div style="position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; animation: fadeUp .8s ease .1s both;">
-    <a class="back-link" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Davete Dön
-    </a>
-    <div class="ornament">
-      <div class="ornament-line"></div>
-      <div class="ornament-text">Anı Galerisi</div>
-      <div class="ornament-line r"></div>
-    </div>
-    <div class="page-title">Anlarınızı Paylaşın</div>
-    <div class="page-sub">Güzel anlarınızı bu özel günün hatırası için yükleyin</div>
+  <a class="back-link" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Davete Dön
+  </a>
+  <div class="ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-text">Anı Galerisi</div>
+    <div class="ornament-line r"></div>
   </div>
+  <div class="page-title">Anlarınızı Paylaşın</div>
+  <div class="page-sub">Güzel anlarınızı bu özel günün hatırası için yükleyin</div>
 </header>
 
 <!-- MAIN -->
 <main class="main-content">
 
-  <!-- UPLOAD CARD -->
+  <!-- ── UPLOAD CARD ── -->
   <div class="upload-card reveal">
     <div class="card-label">Fotoğraf Yükle</div>
 
     <div class="drop-zone" id="dropZone">
-      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif" />
-      <div class="drop-icon" id="dropIcon">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif" multiple />
+      <div class="drop-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
           <rect x="3" y="3" width="18" height="18" rx="3"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <path d="M21 15l-5-5L5 21"/>
         </svg>
       </div>
-      <div class="drop-title" id="dropTitle">Fotoğraf Seçin veya Sürükleyin</div>
-      <div class="drop-sub">JPEG · PNG · WEBP · GIF · HEIC</div>
+      <div class="drop-title" id="dropTitle">Fotoğraf Seç veya Sürükle</div>
+      <div class="drop-sub">Birden fazla seçebilirsiniz</div>
     </div>
 
-    <div class="preview-wrap" id="previewWrap">
-      <img id="previewImg" src="" alt="Önizleme" />
-      <div class="preview-clear" id="previewClear" title="Kaldır">✕</div>
-    </div>
+    <div class="preview-grid" id="previewGrid"></div>
 
     <div class="form-fields">
       <div class="field-group">
         <label class="field-label" for="nameInput">İsim <span class="field-required">*</span></label>
-        <input class="field-input" type="text" id="nameInput" placeholder="Adınızı yazın" maxlength="80" />
+        <input class="field-input" type="text" id="nameInput" placeholder="Adınızı yazın" maxlength="80" autocomplete="off" />
       </div>
       <div class="field-group">
-        <label class="field-label" for="commentInput">Yorum <span style="opacity:.4;font-size:10px;letter-spacing:1px;">(isteğe bağlı)</span></label>
+        <label class="field-label" for="commentInput">Yorum <span style="opacity:.35;font-size:9px;letter-spacing:1px;">(isteğe bağlı)</span></label>
         <textarea class="field-textarea" id="commentInput" placeholder="Güzel bir anı notu bırakın…" maxlength="300"></textarea>
       </div>
     </div>
 
-    <div class="progress-bar-wrap" id="progressWrap">
-      <div class="progress-bar-fill" id="progressFill"></div>
-    </div>
+    <div class="progress-bar-wrap" id="progressWrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
 
     <button class="btn-submit" id="submitBtn" disabled>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
-      Fotoğrafı Yükle
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Yükle
     </button>
-
     <div class="status-msg" id="statusMsg"></div>
   </div>
 
-  <!-- GALLERY SECTION -->
+  <!-- ── GALLERY ── -->
   <div class="gallery-section reveal">
     <div class="gallery-header">
       <div class="gallery-title-wrap">
@@ -594,35 +444,36 @@ body::after {
       </div>
       <div class="view-toggle">
         <button class="view-btn active" id="btnSlide" onclick="setView('slide')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M8 12h8M12 8v8" opacity="0"/><path d="M2 9h20M2 15h20" opacity="0"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
           Slayt
         </button>
         <button class="view-btn" id="btnGrid" onclick="setView('grid')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Grid
         </button>
       </div>
     </div>
 
-    <!-- Loading -->
-    <div class="spinner-wrap" id="galleryLoading">
-      <div class="spinner"></div>
-    </div>
+    <div class="spinner-wrap" id="galleryLoading"><div class="spinner"></div></div>
 
-    <!-- Empty -->
     <div class="gallery-empty" id="galleryEmpty" style="display:none;">
       <div class="gallery-empty-icon">📷</div>
       <div class="gallery-empty-text">Henüz fotoğraf yüklenmedi.<br>İlk anıyı paylaşan siz olun!</div>
     </div>
 
     <!-- Slideshow -->
-    <div class="slideshow-wrap" id="slideshowWrap" style="display:none;">
-      <div class="slide-counter" id="slideCounter">1 / 1</div>
+    <div class="slideshow-wrap" id="slideshowWrap">
+      <div class="slide-topbar">
+        <div class="slide-counter" id="slideCounter">1 / 1</div>
+        <div class="slide-fullscreen-btn" onclick="openLightboxAt(currentSlide)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+        </div>
+      </div>
       <div class="slide-track" id="slideTrack"></div>
-      <button class="slide-nav prev" id="slidePrev" onclick="changeSlide(-1)">
+      <button class="slide-nav prev" onclick="changeSlide(-1)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
-      <button class="slide-nav next" id="slideNext" onclick="changeSlide(1)">
+      <button class="slide-nav next" onclick="changeSlide(1)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </button>
       <div class="slide-dots" id="slideDots"></div>
@@ -635,12 +486,29 @@ body::after {
 </main>
 
 <!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="lightboxImg" src="" alt="" />
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-topbar">
+    <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
+    <div class="lightbox-close" onclick="closeLightbox()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+
+  <div class="lightbox-img-wrap">
+    <img id="lightboxImg" src="" alt="" draggable="false" />
+  </div>
+
+  <button class="lightbox-nav prev" onclick="lightboxNav(-1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button class="lightbox-nav next" onclick="lightboxNav(1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
   <div class="lightbox-caption">
     <div class="lightbox-name" id="lightboxName"></div>
     <div class="lightbox-comment" id="lightboxComment"></div>
+    <div class="lightbox-date" id="lightboxDate"></div>
   </div>
 </div>
 
@@ -651,255 +519,304 @@ body::after {
 </div>
 
 <script>
-/* ════════════════════════════════
-   SUPABASE CONFIG
-════════════════════════════════ */
+/* ════════════════════════
+   CONFIG
+════════════════════════ */
 const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
 const BUCKET = "photos";
+const SB_H = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
 
-const headers = {
-  "apikey": SUPABASE_KEY,
-  "Authorization": "Bearer " + SUPABASE_KEY,
-};
+/* ════════════════════════
+   IMAGE PROTECTION
+════════════════════════ */
+// Block right-click on images
+document.addEventListener('contextmenu', e => {
+  if (e.target.tagName === 'IMG') { e.preventDefault(); return false; }
+});
+// Block drag
+document.addEventListener('dragstart', e => {
+  if (e.target.tagName === 'IMG') { e.preventDefault(); return false; }
+});
+// Block iOS long-press callout via CSS (-webkit-touch-callout: none) already set
+// Additionally intercept touchstart to absorb potential context menu gestures
+document.addEventListener('touchstart', e => {
+  if (e.target.tagName === 'IMG') {
+    // We don't preventDefault here (would break scroll/tap) but CSS handles callout
+  }
+}, { passive: true });
 
-/* ════════════════════════════════
-   UPLOAD LOGIC
-════════════════════════════════ */
-let selectedFile = null;
+/* ════════════════════════
+   UPLOAD – MULTI FILE
+════════════════════════ */
+let selectedFiles = [];
 
-const dropZone   = document.getElementById('dropZone');
-const fileInput  = document.getElementById('fileInput');
-const previewWrap = document.getElementById('previewWrap');
-const previewImg = document.getElementById('previewImg');
-const previewClear = document.getElementById('previewClear');
-const submitBtn  = document.getElementById('submitBtn');
-const nameInput  = document.getElementById('nameInput');
-const commentInput = document.getElementById('commentInput');
-const statusMsg  = document.getElementById('statusMsg');
-const progressWrap = document.getElementById('progressWrap');
-const progressFill = document.getElementById('progressFill');
-const dropTitle  = document.getElementById('dropTitle');
+const dropZone      = document.getElementById('dropZone');
+const fileInput     = document.getElementById('fileInput');
+const previewGrid   = document.getElementById('previewGrid');
+const nameInput     = document.getElementById('nameInput');
+const commentInput  = document.getElementById('commentInput');
+const submitBtn     = document.getElementById('submitBtn');
+const statusMsg     = document.getElementById('statusMsg');
+const progressWrap  = document.getElementById('progressWrap');
+const progressFill  = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const dropTitle     = document.getElementById('dropTitle');
 
-function setFile(file) {
-  if (!file || !file.type.startsWith('image/')) return;
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    previewImg.src = e.target.result;
-    previewWrap.style.display = 'block';
-    dropTitle.textContent = file.name;
-  };
-  reader.readAsDataURL(file);
+function addFiles(fileList) {
+  for (const f of fileList) {
+    if (!f.type.startsWith('image/')) continue;
+    if (selectedFiles.length >= 20) break;
+    selectedFiles.push(f);
+  }
+  rebuildPreviews();
+}
+
+function removeFile(idx) {
+  selectedFiles.splice(idx, 1);
+  rebuildPreviews();
+}
+
+function rebuildPreviews() {
+  previewGrid.innerHTML = '';
+
+  selectedFiles.forEach((f, i) => {
+    const reader = new FileReader();
+    const thumb = document.createElement('div');
+    thumb.className = 'preview-thumb';
+    reader.onload = e => {
+      thumb.innerHTML = `
+        <img src="${e.target.result}" alt="" draggable="false" oncontextmenu="return false" />
+        <div class="preview-remove" onclick="removeFile(${i})">✕</div>`;
+    };
+    reader.readAsDataURL(f);
+    previewGrid.appendChild(thumb);
+  });
+
+  if (selectedFiles.length < 20) {
+    const addTile = document.createElement('div');
+    addTile.className = 'preview-add';
+    addTile.innerHTML = `<span>+</span><input type="file" accept="image/*" multiple onchange="addFiles(this.files); this.value='';" />`;
+    previewGrid.appendChild(addTile);
+  }
+
+  previewGrid.classList.toggle('has-files', selectedFiles.length > 0);
+  dropTitle.textContent = selectedFiles.length
+    ? `${selectedFiles.length} fotoğraf seçildi`
+    : 'Fotoğraf Seç veya Sürükle';
   checkSubmit();
 }
 
 function checkSubmit() {
-  submitBtn.disabled = !(selectedFile && nameInput.value.trim());
+  submitBtn.disabled = !(selectedFiles.length > 0 && nameInput.value.trim());
 }
 
-fileInput.addEventListener('change', e => { if (e.target.files[0]) setFile(e.target.files[0]); });
+fileInput.addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
 nameInput.addEventListener('input', checkSubmit);
-
-previewClear.addEventListener('click', () => {
-  selectedFile = null;
-  previewWrap.style.display = 'none';
-  previewImg.src = '';
-  fileInput.value = '';
-  dropTitle.textContent = 'Fotoğraf Seçin veya Sürükleyin';
-  checkSubmit();
-});
 
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
 dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) setFile(file);
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  addFiles(e.dataTransfer.files);
 });
 
-function showStatus(type, msg) {
-  statusMsg.className = 'status-msg ' + type;
-  statusMsg.textContent = msg;
-}
-function hideStatus() {
-  statusMsg.className = 'status-msg';
-}
+function showStatus(type, msg) { statusMsg.className = 'status-msg ' + type; statusMsg.textContent = msg; }
+function hideStatus() { statusMsg.className = 'status-msg'; }
 
 submitBtn.addEventListener('click', async () => {
-  if (!selectedFile || !nameInput.value.trim()) return;
+  if (!selectedFiles.length || !nameInput.value.trim()) return;
   submitBtn.disabled = true;
   hideStatus();
   progressWrap.style.display = 'block';
-  progressFill.style.width = '10%';
+  progressLabel.style.display = 'block';
 
-  try {
-    const ext  = selectedFile.name.split('.').pop().toLowerCase() || 'jpg';
-    const uid  = crypto.randomUUID();
-    const path = `${uid}.${ext}`;
+  const name    = nameInput.value.trim();
+  const comment = commentInput.value.trim() || null;
+  const total   = selectedFiles.length;
+  let ok = 0, err = 0;
 
-    // Upload to Storage
-    progressFill.style.width = '35%';
-    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
-      method: 'POST',
-      headers: { ...headers, 'Content-Type': selectedFile.type },
-      body: selectedFile,
-    });
-    if (!uploadRes.ok) throw new Error('Dosya yüklenemedi: ' + uploadRes.status);
+  for (let i = 0; i < total; i++) {
+    const file = selectedFiles[i];
+    progressLabel.textContent = `${i + 1} / ${total} yükleniyor…`;
+    progressFill.style.width = (((i) / total) * 88 + 5) + '%';
 
-    progressFill.style.width = '65%';
+    try {
+      const ext  = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const uid  = crypto.randomUUID();
+      const path = `${uid}.${ext}`;
 
-    // Get public URL
-    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+      const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+        method: 'POST',
+        headers: { ...SB_H, 'Content-Type': file.type },
+        body: file,
+      });
+      if (!upRes.ok) throw new Error(upRes.status);
 
-    // Insert row
-    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/photos`, {
-      method: 'POST',
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
-      },
-      body: JSON.stringify({
-        id: uid,
-        url: publicUrl,
-        name: nameInput.value.trim(),
-        comment: commentInput.value.trim() || null,
-      }),
-    });
-    if (!insertRes.ok) throw new Error('Kayıt eklenemedi: ' + insertRes.status);
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
 
-    progressFill.style.width = '100%';
-    showStatus('success', '✓ Fotoğrafınız başarıyla eklendi! Teşekkürler ♡');
+      const insRes = await fetch(`${SUPABASE_URL}/rest/v1/photos`, {
+        method: 'POST',
+        headers: { ...SB_H, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ id: uid, url: publicUrl, name, comment }),
+      });
+      if (!insRes.ok) throw new Error(insRes.status);
 
-    // reset
-    setTimeout(() => { progressWrap.style.display = 'none'; progressFill.style.width = '0%'; }, 800);
-    previewClear.click();
-    nameInput.value = '';
-    commentInput.value = '';
-
-    // reload gallery
-    await loadPhotos();
-
-  } catch (err) {
-    progressFill.style.width = '0%';
-    setTimeout(() => { progressWrap.style.display = 'none'; }, 400);
-    showStatus('error', '✗ Hata: ' + err.message);
-    submitBtn.disabled = false;
-    checkSubmit();
+      ok++;
+    } catch (e) { err++; console.error(e); }
   }
+
+  progressFill.style.width = '100%';
+  setTimeout(() => { progressWrap.style.display = 'none'; progressLabel.style.display = 'none'; progressFill.style.width = '0%'; }, 700);
+
+  if (err === 0) showStatus('success', `✓ ${ok} fotoğraf yüklendi! Teşekkürler ♡`);
+  else showStatus(ok > 0 ? 'success' : 'error', `${ok} başarılı, ${err} hatalı.`);
+
+  // reset
+  selectedFiles = [];
+  nameInput.value = '';
+  commentInput.value = '';
+  fileInput.value = '';
+  rebuildPreviews();
+
+  await loadPhotos();
 });
 
-/* ════════════════════════════════
-   GALLERY LOGIC
-════════════════════════════════ */
+/* ════════════════════════
+   GALLERY
+════════════════════════ */
 let photos = [];
 let currentSlide = 0;
-let currentView = 'slide';
+let currentView  = 'slide';
 
-// Touch/swipe
-let touchStartX = 0;
-const slideshowWrap = document.getElementById('slideshowWrap');
-slideshowWrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-slideshowWrap.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(dx) > 40) changeSlide(dx < 0 ? 1 : -1);
-});
+/* swipe on slideshow */
+let tsX = 0, tsY = 0;
+document.getElementById('slideshowWrap').addEventListener('touchstart', e => {
+  tsX = e.touches[0].clientX; tsY = e.touches[0].clientY;
+}, { passive: true });
+document.getElementById('slideshowWrap').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tsX;
+  const dy = e.changedTouches[0].clientY - tsY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) changeSlide(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+/* swipe on lightbox */
+let ltsX = 0;
+document.getElementById('lightbox').addEventListener('touchstart', e => {
+  ltsX = e.touches[0].clientX;
+}, { passive: true });
+document.getElementById('lightbox').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - ltsX;
+  if (Math.abs(dx) > 40) lightboxNav(dx < 0 ? 1 : -1);
+}, { passive: true });
 
 function changeSlide(dir) {
   if (!photos.length) return;
   currentSlide = (currentSlide + dir + photos.length) % photos.length;
-  updateSlide();
+  updateSlideUI();
 }
+function goToSlide(idx) { currentSlide = idx; updateSlideUI(); }
 
-function goToSlide(idx) {
-  currentSlide = idx;
-  updateSlide();
-}
-
-function updateSlide() {
-  const track = document.getElementById('slideTrack');
-  track.style.transform = `translateX(-${currentSlide * 100}%)`;
-
+function updateSlideUI() {
+  document.getElementById('slideTrack').style.transform = `translateX(-${currentSlide * 100}%)`;
   document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${photos.length}`;
-
-  document.querySelectorAll('.dot').forEach((d, i) => {
-    d.classList.toggle('active', i === currentSlide);
-  });
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
 }
 
 function buildSlideshow() {
   const track = document.getElementById('slideTrack');
   const dots  = document.getElementById('slideDots');
-  track.innerHTML = '';
-  dots.innerHTML = '';
+  track.innerHTML = dots.innerHTML = '';
 
   photos.forEach((p, i) => {
     const item = document.createElement('div');
     item.className = 'slide-item';
-    const date = new Date(p.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
     item.innerHTML = `
-      <img src="${p.url}" alt="${p.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23111%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23555%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2216%22%3EGörsel yüklenemedi%3C/text%3E%3C/svg%3E'" />
+      <img src="${p.url}" alt="${esc(p.name)}" loading="lazy"
+           draggable="false" oncontextmenu="return false" />
       <div class="slide-caption">
-        <div class="slide-name">${p.name}</div>
-        ${p.comment ? `<div class="slide-comment">${p.comment}</div>` : ''}
-        <div class="slide-date">${date}</div>
+        <div class="slide-name">${esc(p.name)}</div>
+        ${p.comment ? `<div class="slide-comment">${esc(p.comment)}</div>` : ''}
+        <div class="slide-date">${fmtDate(p.created_at)}</div>
       </div>`;
     track.appendChild(item);
 
-    const dot = document.createElement('div');
-    dot.className = 'dot' + (i === 0 ? ' active' : '');
-    dot.onclick = () => goToSlide(i);
-    dots.appendChild(dot);
+    if (photos.length <= 30) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      dots.appendChild(dot);
+    }
   });
-
-  // Hide dots if too many
-  dots.style.display = photos.length > 20 ? 'none' : 'flex';
   currentSlide = 0;
-  updateSlide();
+  updateSlideUI();
 }
 
 function buildGrid() {
   const grid = document.getElementById('galleryGrid');
   grid.innerHTML = '';
-  photos.forEach(p => {
+  photos.forEach((p, i) => {
     const item = document.createElement('div');
     item.className = 'grid-item';
     item.innerHTML = `
-      <img src="${p.url}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'" />
-      <div class="grid-item-overlay">
-        <div class="grid-item-name">${p.name}</div>
+      <img src="${p.url}" alt="${esc(p.name)}" loading="lazy"
+           draggable="false" oncontextmenu="return false" />
+      <div class="grid-overlay">
+        <div class="grid-item-name">${esc(p.name)}</div>
       </div>`;
-    item.addEventListener('click', () => openLightbox(p));
+    item.addEventListener('click', () => openLightboxAt(i));
     grid.appendChild(item);
   });
 }
 
-function setView(view) {
-  currentView = view;
-  document.getElementById('btnSlide').classList.toggle('active', view === 'slide');
-  document.getElementById('btnGrid').classList.toggle('active', view === 'grid');
-  document.getElementById('slideshowWrap').style.display = (view === 'slide' && photos.length) ? 'block' : 'none';
+function setView(v) {
+  currentView = v;
+  document.getElementById('btnSlide').classList.toggle('active', v === 'slide');
+  document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
+  document.getElementById('slideshowWrap').style.display = (v === 'slide' && photos.length) ? 'block' : 'none';
   const gg = document.getElementById('galleryGrid');
-  if (view === 'grid' && photos.length) gg.classList.add('visible');
+  if (v === 'grid' && photos.length) gg.classList.add('visible');
   else gg.classList.remove('visible');
 }
 
-function openLightbox(p) {
-  document.getElementById('lightboxImg').src = p.url;
-  document.getElementById('lightboxName').textContent = p.name;
-  document.getElementById('lightboxComment').textContent = p.comment || '';
+/* Lightbox */
+let lbIdx = 0;
+
+function openLightboxAt(idx) {
+  lbIdx = idx;
+  renderLightbox();
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function closeLightbox(e) {
-  if (e && e.target !== document.getElementById('lightbox') && !e.target.closest('.lightbox-close')) return;
+
+function lightboxNav(dir) {
+  if (!photos.length) return;
+  lbIdx = (lbIdx + dir + photos.length) % photos.length;
+  renderLightbox();
+}
+
+function renderLightbox() {
+  const p = photos[lbIdx];
+  document.getElementById('lightboxImg').src = p.url;
+  document.getElementById('lightboxName').textContent    = p.name;
+  document.getElementById('lightboxComment').textContent = p.comment || '';
+  document.getElementById('lightboxDate').textContent    = fmtDate(p.created_at);
+  document.getElementById('lightboxCounter').textContent = `${lbIdx + 1} / ${photos.length}`;
+}
+
+function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') }); });
 
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowRight')  lightboxNav(1);
+  if (e.key === 'ArrowLeft')   lightboxNav(-1);
+});
+
+/* Load photos */
 async function loadPhotos() {
   document.getElementById('galleryLoading').style.display = 'flex';
   document.getElementById('galleryEmpty').style.display   = 'none';
@@ -907,36 +824,41 @@ async function loadPhotos() {
   document.getElementById('galleryGrid').classList.remove('visible');
 
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/photos?select=*&order=created_at.desc`, {
-      headers: { ...headers, 'Accept': 'application/json' },
-    });
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/photos?select=*&order=created_at.desc`,
+      { headers: { ...SB_H, 'Accept': 'application/json' } }
+    );
     photos = await res.json();
     if (!Array.isArray(photos)) photos = [];
-  } catch(e) {
-    photos = [];
-  }
+  } catch { photos = []; }
 
   document.getElementById('galleryLoading').style.display = 'none';
-  document.getElementById('galleryCount').textContent =
-    photos.length ? `${photos.length} fotoğraf` : '';
+  document.getElementById('galleryCount').textContent = photos.length ? `${photos.length} fotoğraf` : '';
 
-  if (!photos.length) {
-    document.getElementById('galleryEmpty').style.display = 'block';
-    return;
-  }
+  if (!photos.length) { document.getElementById('galleryEmpty').style.display = 'block'; return; }
 
   buildSlideshow();
   buildGrid();
   setView(currentView);
 }
 
-/* ── SCROLL REVEAL ── */
+/* Helpers */
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* Scroll reveal */
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-/* ── INIT ── */
+/* Init */
 loadPhotos();
 </script>
 </body>
