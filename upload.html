@@ -57,15 +57,13 @@ body::after {
 /* ══ HEADER ══ */
 .page-header {
   position: relative; z-index: 1;
-  padding: 48px 20px 28px;
-  text-align: center;
+  padding: 48px 20px 28px; text-align: center;
   animation: fadeUp .7s ease .05s both;
 }
 .back-link {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--gold); opacity: .6; text-decoration: none;
-  margin-bottom: 26px;
+  color: var(--gold); opacity: .6; text-decoration: none; margin-bottom: 26px;
   -webkit-tap-highlight-color: transparent;
 }
 .back-link svg { width: 13px; height: 13px; }
@@ -97,17 +95,14 @@ body::after {
 
 .view-toggle { display: flex; border: 1px solid rgba(201,169,110,.2); border-radius: 30px; overflow: hidden; flex-shrink: 0; }
 .view-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 14px; font-family: 'Cormorant Garamond', serif;
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+  font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
   color: rgba(245,239,230,.38); background: transparent; border: none; cursor: pointer;
-  transition: background .2s, color .2s;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: background .2s, color .2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .view-btn svg { width: 13px; height: 13px; }
 .view-btn.active { background: rgba(201,169,110,.15); color: var(--gold2); }
 
-/* loading / empty */
 .spinner-wrap { display: flex; align-items: center; justify-content: center; padding: 48px; }
 .spinner { width: 28px; height: 28px; border: 2px solid rgba(201,169,110,.12); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -130,28 +125,12 @@ body::after {
   pointer-events: none; -webkit-touch-callout: none; user-select: none;
 }
 .slide-caption {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 18px 20px;
-  background: linear-gradient(to top, rgba(14,11,8,.88), transparent);
-  pointer-events: none;
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 18px 20px;
+  background: linear-gradient(to top, rgba(14,11,8,.88), transparent); pointer-events: none;
 }
 .slide-name { font-family: 'Luxurious Script', cursive; font-size: 20px; color: var(--gold2); line-height: 1; }
 .slide-comment { margin-top: 3px; font-size: 12px; font-style: italic; opacity: .58; }
-.slide-date { margin-top: 5px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: .32; }
-
-/* nav arrows */
-.slide-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
-  background: rgba(14,11,8,.55); border: 1px solid rgba(201,169,110,.2);
-  border-radius: 50%; cursor: pointer; color: var(--gold2); z-index: 2;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  transition: background .2s;
-}
-.slide-nav:active { background: rgba(14,11,8,.9); }
-.slide-nav.prev { left: 10px; }
-.slide-nav.next { right: 10px; }
-.slide-nav svg { width: 15px; height: 15px; }
+/* [CHANGE 1] no .slide-date — date removed from captions */
 
 /* top badges */
 .slide-topbar {
@@ -160,8 +139,7 @@ body::after {
 }
 .slide-counter {
   background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.18);
-  border-radius: 20px; padding: 3px 10px;
-  font-size: 10px; letter-spacing: 2px; color: var(--gold);
+  border-radius: 20px; padding: 3px 10px; font-size: 10px; letter-spacing: 2px; color: var(--gold);
 }
 .slide-actions { display: flex; align-items: center; gap: 7px; pointer-events: auto; }
 .slide-icon-btn {
@@ -169,31 +147,20 @@ body::after {
   background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.18);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: var(--gold);
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  transition: background .2s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: background .2s;
 }
 .slide-icon-btn:active { background: rgba(14,11,8,.95); }
 .slide-icon-btn svg { width: 14px; height: 14px; }
 
-/* ── Auto-play progress bar ── */
-.slide-progress-wrap {
-  height: 3px;
-  background: rgba(201,169,110,.12);
-  position: relative; overflow: hidden;
-}
+/* auto-play progress bar */
+.slide-progress-wrap { height: 3px; background: rgba(201,169,110,.12); position: relative; overflow: hidden; }
 .slide-progress-fill {
   position: absolute; left: 0; top: 0; bottom: 0;
   background: linear-gradient(to right, var(--gold3), var(--gold));
   width: 0%;
-  /* animation controlled via JS class */
 }
-.slide-progress-fill.running {
-  animation: slideProgress var(--auto-dur) linear forwards;
-}
-@keyframes slideProgress {
-  from { width: 0%; }
-  to   { width: 100%; }
-}
+.slide-progress-fill.running { animation: slideProgress var(--auto-dur) linear forwards; }
+@keyframes slideProgress { from { width: 0%; } to { width: 100%; } }
 
 /* dots */
 .slide-dots { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; flex-wrap: wrap; }
@@ -212,8 +179,7 @@ body::after {
 .grid-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(14,11,8,.78) 0%, transparent 55%);
-  opacity: 0; transition: opacity .25s;
-  display: flex; align-items: flex-end; padding: 10px;
+  opacity: 0; transition: opacity .25s; display: flex; align-items: flex-end; padding: 10px;
 }
 .grid-item:active .grid-overlay { opacity: 1; }
 .grid-item-name { font-family: 'Luxurious Script', cursive; font-size: 14px; color: var(--gold2); line-height: 1; }
@@ -221,13 +187,11 @@ body::after {
 /* ══ UPLOAD CARD ══ */
 .upload-card {
   background: var(--glass); border: 1px solid var(--gb);
-  border-radius: 22px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  padding: 28px 20px;
+  border-radius: 22px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); padding: 28px 20px;
 }
 .card-label {
   font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
-  color: var(--gold); opacity: .7; margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px;
+  color: var(--gold); opacity: .7; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
 }
 .card-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(201,169,110,.3), transparent); }
 
@@ -321,8 +285,7 @@ body::after {
 .lightbox-close:active { background: rgba(255,255,255,.18); }
 .lightbox-close svg { width: 15px; height: 15px; }
 .lightbox-img-wrap {
-  flex: 1; width: 100%;
-  display: flex; align-items: center; justify-content: center;
+  flex: 1; width: 100%; display: flex; align-items: center; justify-content: center;
   padding: 60px 10px 6px; overflow: hidden;
 }
 .lightbox-img-wrap img {
@@ -360,6 +323,99 @@ body::after {
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* ══ [CHANGE 3] ADMIN PANEL ══ */
+#adminPanel {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(8,6,4,.98); flex-direction: column; overflow: hidden;
+}
+#adminPanel.open { display: flex; }
+
+.adm-topbar {
+  flex-shrink: 0; padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(201,169,110,.12);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.adm-title { font-family: 'Luxurious Script', cursive; font-size: 30px; color: var(--gold2); line-height: 1; }
+.adm-subtitle { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: .5; margin-top: 3px; }
+.adm-close {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(201,169,110,.18);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cream);
+  -webkit-tap-highlight-color: transparent;
+}
+.adm-close svg { width: 14px; height: 14px; }
+
+.adm-body { flex: 1; overflow-y: auto; padding: 20px 18px 20px; display: flex; flex-direction: column; gap: 28px; }
+
+.adm-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.adm-stat {
+  background: rgba(201,169,110,.08); border: 1px solid rgba(201,169,110,.18);
+  border-radius: 20px; padding: 7px 14px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold2);
+}
+.adm-stat b { font-family: 'Libre Baskerville', serif; font-style: italic; font-weight: 400; }
+
+.adm-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.adm-btn {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 22px;
+  font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; border: none; transition: background .2s, opacity .2s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.adm-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.adm-btn-muted { background: rgba(201,169,110,.1); border: 1px solid rgba(201,169,110,.2); color: var(--gold2); }
+.adm-btn-muted:hover { background: rgba(201,169,110,.18); }
+.adm-btn-danger { background: rgba(200,70,70,.18); border: 1px solid rgba(200,70,70,.35); color: #f09090; }
+.adm-btn-danger:hover { background: rgba(200,70,70,.28); }
+.adm-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.adm-group { display: flex; flex-direction: column; gap: 12px; }
+.adm-group-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.adm-person-name { font-family: 'Luxurious Script', cursive; font-size: 24px; color: var(--gold2); line-height: 1; }
+.adm-person-meta { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); opacity: .5; margin-top: 2px; }
+.adm-person-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+.adm-thumb {
+  position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer; transition: border-color .2s;
+  -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none;
+}
+.adm-thumb.selected { border-color: var(--gold); }
+.adm-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-touch-callout: none; }
+.adm-thumb-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(14,11,8,0); transition: background .2s;
+}
+.adm-thumb.selected .adm-thumb-overlay { background: rgba(14,11,8,.45); }
+.adm-check {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(.5); transition: opacity .2s, transform .2s;
+}
+.adm-thumb.selected .adm-check { opacity: 1; transform: scale(1); }
+.adm-check svg { width: 11px; height: 11px; stroke: var(--dark); stroke-width: 3; }
+.adm-thumb-foot {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 8px 5px;
+  background: linear-gradient(to top, rgba(14,11,8,.85), transparent); pointer-events: none;
+}
+.adm-thumb-comment { font-size: 10px; font-style: italic; opacity: .5; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.adm-thumb-date { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; opacity: .3; margin-top: 1px; }
+
+.adm-thumb.deleting::after {
+  content: ''; position: absolute; inset: 0; background: rgba(200,70,70,.3);
+  animation: delpulse .7s ease-in-out infinite;
+}
+@keyframes delpulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+.adm-sel-bar {
+  flex-shrink: 0; display: none; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 18px; border-top: 1px solid rgba(201,169,110,.12); background: rgba(8,6,4,.95);
+}
+.adm-sel-bar.visible { display: flex; }
+.adm-sel-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold2); }
+
+.adm-msg { text-align: center; padding: 48px 20px; font-size: 13px; letter-spacing: 1px; opacity: .38; }
 </style>
 </head>
 <body>
@@ -367,6 +423,7 @@ body::after {
 <div class="site-bg"></div>
 <div class="site-overlay"></div>
 
+<!-- HEADER -->
 <header class="page-header">
   <a class="back-link" href="index.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -403,35 +460,26 @@ body::after {
     </div>
 
     <div class="spinner-wrap" id="galleryLoading"><div class="spinner"></div></div>
-
     <div class="gallery-empty" id="galleryEmpty" style="display:none;">
       <div class="gallery-empty-icon">📷</div>
       <div class="gallery-empty-text">Henüz fotoğraf yüklenmedi.<br>İlk anıyı paylaşan siz olun!</div>
     </div>
 
+    <!-- Slideshow — [CHANGE 2] no prev/next arrows -->
     <div class="slideshow-wrap" id="slideshowWrap">
       <div class="slide-topbar">
         <div class="slide-counter" id="slideCounter">1 / 1</div>
         <div class="slide-actions">
-          <!-- play/pause -->
-          <div class="slide-icon-btn" id="playPauseBtn" title="Oynat / Duraklat">
+          <div class="slide-icon-btn" id="playPauseBtn">
             <svg id="iconPause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
             <svg id="iconPlay"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
-          <!-- fullscreen -->
-          <div class="slide-icon-btn" id="slideFullscreenBtn" title="Tam ekran">
+          <div class="slide-icon-btn" id="slideFullscreenBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
           </div>
         </div>
       </div>
       <div class="slide-track" id="slideTrack"></div>
-      <button class="slide-nav prev" id="slidePrev">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <button class="slide-nav next" id="slideNext">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-      <!-- auto-play progress bar -->
       <div class="slide-progress-wrap">
         <div class="slide-progress-fill" id="slideProgressFill"></div>
       </div>
@@ -446,22 +494,17 @@ body::after {
   <!-- ══ 2. YÜKLEME ══ -->
   <div class="upload-card reveal">
     <div class="card-label">Fotoğraf Yükle</div>
-
     <div class="drop-zone" id="dropZone">
       <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif" multiple />
       <div class="drop-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="M21 15l-5-5L5 21"/>
+          <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
         </svg>
       </div>
       <div class="drop-title" id="dropTitle">Fotoğraf Seç veya Sürükle</div>
       <div class="drop-sub">Birden fazla seçebilirsiniz</div>
     </div>
-
     <div class="preview-grid" id="previewGrid"></div>
-
     <div class="form-fields">
       <div class="field-group">
         <label class="field-label" for="nameInput">İsim <span class="field-required">*</span></label>
@@ -472,10 +515,8 @@ body::after {
         <textarea class="field-textarea" id="commentInput" placeholder="Güzel bir anı notu bırakın…" maxlength="300"></textarea>
       </div>
     </div>
-
     <div class="progress-bar-wrap" id="progressWrap"><div class="progress-bar-fill" id="progressFill"></div></div>
     <div class="progress-label" id="progressLabel"></div>
-
     <button class="btn-submit" id="submitBtn" disabled>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Yükle
@@ -485,6 +526,11 @@ body::after {
 
 </main>
 
+<div class="page-bottom">
+  <div class="bottom-ornament"><span>♡</span></div>
+  <div class="bottom-text">Firdevs & Hasan Çağlar · 2026</div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-topbar">
@@ -493,9 +539,7 @@ body::after {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
   </div>
-  <div class="lightbox-img-wrap">
-    <img id="lightboxImg" src="" alt="" draggable="false" />
-  </div>
+  <div class="lightbox-img-wrap"><img id="lightboxImg" src="" alt="" draggable="false" /></div>
   <button class="lightbox-nav prev" id="lbPrev">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
   </button>
@@ -509,35 +553,56 @@ body::after {
   </div>
 </div>
 
-<div class="page-bottom">
-  <div class="bottom-ornament"><span>♡</span></div>
-  <div class="bottom-text">Firdevs & Hasan Çağlar · 2026</div>
+<!-- [CHANGE 3] ADMIN PANEL — only reachable via #admin hash -->
+<div id="adminPanel">
+  <div class="adm-topbar">
+    <div>
+      <div class="adm-title">Admin Paneli</div>
+      <div class="adm-subtitle">Fotoğraf Yönetimi</div>
+    </div>
+    <div class="adm-close" id="admClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="adm-body" id="admBody">
+    <div class="adm-msg">Yükleniyor…</div>
+  </div>
+  <div class="adm-sel-bar" id="admSelBar">
+    <div class="adm-sel-label" id="admSelLabel">0 seçili</div>
+    <div style="display:flex;gap:8px;">
+      <button class="adm-btn adm-btn-muted" id="admDeselect">Seçimi Kaldır</button>
+      <button class="adm-btn adm-btn-danger" id="admDelete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+        Sil
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
 'use strict';
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════
    CONFIG
-═══════════════════════════════════════ */
+═══════════════════════════ */
 const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
-const BUCKET = "photos";
-const SB_H = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
+const BUCKET       = "photos";
+const SB_H         = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
 const AUTO_SLIDE_MS = 5000;
 const MAX_RETRIES   = 3;
 
-/* ═══════════════════════════════════════
+/* ═══════════════════════════
    IMAGE PROTECTION
-═══════════════════════════════════════ */
+═══════════════════════════ */
 document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 document.addEventListener('dragstart',   e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-/* ═══════════════════════════════════════
-   UPLOAD — stable Map + retry logic
-═══════════════════════════════════════ */
+/* ═══════════════════════════
+   UPLOAD
+═══════════════════════════ */
 let fileIdCounter = 0;
-const fileMap = new Map(); // id → { file, objectUrl }
+const fileMap = new Map();
 
 const dropZone      = document.getElementById('dropZone');
 const fileInput     = document.getElementById('fileInput');
@@ -551,61 +616,43 @@ const progressFill  = document.getElementById('progressFill');
 const progressLabel = document.getElementById('progressLabel');
 const dropTitle     = document.getElementById('dropTitle');
 
+function isImageByExt(name) { return /\.(jpe?g|png|gif|webp|heic|heif|bmp|tiff?)$/i.test(name); }
+function resolveMime(file) {
+  if (file.type && file.type.startsWith('image/')) return file.type;
+  const ext = file.name.split('.').pop().toLowerCase();
+  return ({ jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif',
+            webp:'image/webp', heic:'image/heic', heif:'image/heif' })[ext] || 'application/octet-stream';
+}
+
 function addFiles(fileList) {
   for (const f of Array.from(fileList)) {
     if (!f.type.startsWith('image/') && !isImageByExt(f.name)) continue;
     if (fileMap.size >= 20) break;
     const id = ++fileIdCounter;
-    const objectUrl = URL.createObjectURL(f);
-    fileMap.set(id, { file: f, objectUrl });
-    appendThumb(id, objectUrl);
+    fileMap.set(id, { file: f, objectUrl: URL.createObjectURL(f) });
+    appendThumb(id, fileMap.get(id).objectUrl);
   }
   syncPreviewState();
-}
-
-function isImageByExt(name) {
-  return /\.(jpe?g|png|gif|webp|heic|heif|bmp|tiff?)$/i.test(name);
-}
-
-// Resolve MIME type — iOS HEIC often arrives as '' or 'application/octet-stream'
-function resolveMime(file) {
-  if (file.type && file.type.startsWith('image/')) return file.type;
-  const ext = file.name.split('.').pop().toLowerCase();
-  const map = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
-                gif: 'image/gif', webp: 'image/webp',
-                heic: 'image/heic', heif: 'image/heif' };
-  return map[ext] || 'application/octet-stream';
 }
 
 function appendThumb(id, objectUrl) {
   const addTile = previewGrid.querySelector('.preview-add');
   if (addTile) previewGrid.removeChild(addTile);
-
   const thumb = document.createElement('div');
-  thumb.className = 'preview-thumb';
-  thumb.dataset.fid = id;
-
+  thumb.className = 'preview-thumb'; thumb.dataset.fid = id;
   const img = document.createElement('img');
-  img.src = objectUrl; img.alt = ''; img.draggable = false;
-  img.oncontextmenu = () => false;
-
+  img.src = objectUrl; img.alt = ''; img.draggable = false; img.oncontextmenu = () => false;
   const btn = document.createElement('div');
-  btn.className = 'preview-remove';
-  btn.textContent = '✕';
+  btn.className = 'preview-remove'; btn.textContent = '✕';
   btn.addEventListener('click', e => { e.stopPropagation(); removeFile(id); });
-
-  thumb.appendChild(img);
-  thumb.appendChild(btn);
+  thumb.appendChild(img); thumb.appendChild(btn);
   previewGrid.appendChild(thumb);
-
   if (fileMap.size < 20) previewGrid.appendChild(makeAddTile());
 }
 
 function removeFile(id) {
-  const entry = fileMap.get(id);
-  if (!entry) return;
-  URL.revokeObjectURL(entry.objectUrl);
-  fileMap.delete(id);
+  const entry = fileMap.get(id); if (!entry) return;
+  URL.revokeObjectURL(entry.objectUrl); fileMap.delete(id);
   const thumb = previewGrid.querySelector(`[data-fid="${id}"]`);
   if (thumb) previewGrid.removeChild(thumb);
   const addTile = previewGrid.querySelector('.preview-add');
@@ -615,15 +662,12 @@ function removeFile(id) {
 }
 
 function makeAddTile() {
-  const tile = document.createElement('div');
-  tile.className = 'preview-add';
+  const tile = document.createElement('div'); tile.className = 'preview-add';
   const inp = document.createElement('input');
   inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
   inp.addEventListener('change', function() { addFiles(this.files); this.value = ''; });
-  const icon = document.createElement('span');
-  icon.textContent = '+';
-  tile.appendChild(inp); tile.appendChild(icon);
-  return tile;
+  const icon = document.createElement('span'); icon.textContent = '+';
+  tile.appendChild(inp); tile.appendChild(icon); return tile;
 }
 
 function syncPreviewState() {
@@ -632,10 +676,7 @@ function syncPreviewState() {
   dropTitle.textContent = n ? `${n} fotoğraf seçildi` : 'Fotoğraf Seç veya Sürükle';
   checkSubmit();
 }
-
-function checkSubmit() {
-  submitBtn.disabled = !(fileMap.size > 0 && nameInput.value.trim());
-}
+function checkSubmit() { submitBtn.disabled = !(fileMap.size > 0 && nameInput.value.trim()); }
 
 fileInput.addEventListener('change', function() { addFiles(this.files); this.value = ''; });
 nameInput.addEventListener('input', checkSubmit);
@@ -646,194 +687,129 @@ dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.
 function showStatus(type, msg) { statusMsg.className = 'status-msg ' + type; statusMsg.textContent = msg; }
 function hideStatus() { statusMsg.className = 'status-msg'; }
 
-/* ── Retry helper ── */
 async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
   let lastErr;
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url, options);
       if (res.ok) return res;
-      // 4xx errors are not retryable (permission, bad request)
       if (res.status >= 400 && res.status < 500) {
-        const body = await res.text().catch(() => '');
-        throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status, body, fatal: true });
+        throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status, fatal: true });
       }
       lastErr = new Error(`HTTP ${res.status}`);
-    } catch (err) {
+    } catch(err) {
       if (err.fatal) throw err;
       lastErr = err;
-      if (attempt < retries) {
-        // Exponential back-off: 500ms, 1000ms, 2000ms
-        await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt - 1)));
-      }
+      if (attempt < retries) await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt - 1)));
     }
   }
   throw lastErr;
 }
 
-/* ── Submit (atomic: all-or-nothing) ── */
 submitBtn.addEventListener('click', async () => {
   if (!fileMap.size || !nameInput.value.trim()) return;
-
-  submitBtn.disabled = true;
-  hideStatus();
-  progressWrap.style.display = 'block';
-  progressLabel.style.display = 'block';
+  submitBtn.disabled = true; hideStatus();
+  progressWrap.style.display = 'block'; progressLabel.style.display = 'block';
   progressFill.style.width = '0%';
 
   const name    = nameInput.value.trim();
   const comment = commentInput.value.trim() || null;
   const entries = Array.from(fileMap.entries());
   const total   = entries.length;
-  const uploaded = []; // { uid, publicUrl }
+  const uploaded = [];
 
-  /* ── Phase 1: Storage uploads (with retry) ── */
   for (let i = 0; i < total; i++) {
     const [, { file }] = entries[i];
     progressLabel.textContent = `Yükleniyor ${i + 1} / ${total}…`;
     progressFill.style.width = ((i / total) * 65 + 5) + '%';
-
     const mime = resolveMime(file);
     const ext  = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const uid  = crypto.randomUUID();
     const path = `${uid}.${ext}`;
-
     try {
-      await fetchWithRetry(
-        `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`,
-        {
-          method: 'POST',
-          headers: {
-            ...SB_H,
-            'Content-Type': mime,
-            'x-upsert': 'true',          // allow overwrite on retry
-            'Cache-Control': '3600',
-          },
-          body: file,
-        }
-      );
+      await fetchWithRetry(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+        method: 'POST',
+        headers: { ...SB_H, 'Content-Type': mime, 'x-upsert': 'true', 'Cache-Control': '3600' },
+        body: file,
+      });
       uploaded.push({ uid, publicUrl: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}` });
-    } catch (err) {
+    } catch(err) {
       progressFill.style.width = '0%';
-      setTimeout(() => { progressWrap.style.display = 'none'; progressLabel.style.display = 'none'; }, 400);
-      showStatus('error',
-        `${i + 1}. fotoğraf yüklenemedi (${err.status || 'bağlantı hatası'}).\nLütfen internet bağlantınızı kontrol edip tekrar deneyin.`);
-      submitBtn.disabled = false;
-      checkSubmit();
-      return;
+      setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
+      showStatus('error', `${i + 1}. fotoğraf yüklenemedi (${err.status || 'bağlantı hatası'}). Lütfen tekrar deneyin.`);
+      submitBtn.disabled = false; checkSubmit(); return;
     }
   }
 
-  /* ── Phase 2: DB insert ── */
-  progressLabel.textContent = 'Kaydediliyor…';
-  progressFill.style.width = '82%';
-
+  progressLabel.textContent = 'Kaydediliyor…'; progressFill.style.width = '82%';
   const rows = uploaded.map(({ uid, publicUrl }) => ({ id: uid, url: publicUrl, name, comment }));
-
   try {
-    await fetchWithRetry(
-      `${SUPABASE_URL}/rest/v1/photos`,
-      {
-        method: 'POST',
-        headers: { ...SB_H, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify(rows),
-      }
-    );
-  } catch (err) {
+    await fetchWithRetry(`${SUPABASE_URL}/rest/v1/photos`, {
+      method: 'POST',
+      headers: { ...SB_H, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(rows),
+    });
+  } catch(err) {
     progressFill.style.width = '0%';
-    setTimeout(() => { progressWrap.style.display = 'none'; progressLabel.style.display = 'none'; }, 400);
+    setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
     showStatus('error', 'Fotoğraflar yüklendi ancak kaydedilemedi. Lütfen tekrar deneyin.');
-    submitBtn.disabled = false;
-    checkSubmit();
-    return;
+    submitBtn.disabled = false; checkSubmit(); return;
   }
 
-  /* ── Success ── */
-  progressFill.style.width = '100%';
-  progressLabel.textContent = 'Tamamlandı!';
+  progressFill.style.width = '100%'; progressLabel.textContent = 'Tamamlandı!';
   showStatus('success', `✓ ${total} fotoğraf başarıyla paylaşıldı! Teşekkürler ♡`);
-  setTimeout(() => {
-    progressWrap.style.display = 'none';
-    progressLabel.style.display = 'none';
-    progressFill.style.width = '0%';
-  }, 900);
+  setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; progressFill.style.width='0%'; }, 900);
 
   fileMap.forEach(e => URL.revokeObjectURL(e.objectUrl));
   fileMap.clear(); fileIdCounter = 0;
-  previewGrid.innerHTML = '';
-  previewGrid.classList.remove('has-files');
+  previewGrid.innerHTML = ''; previewGrid.classList.remove('has-files');
   nameInput.value = ''; commentInput.value = ''; fileInput.value = '';
-  dropTitle.textContent = 'Fotoğraf Seç veya Sürükle';
-  checkSubmit();
+  dropTitle.textContent = 'Fotoğraf Seç veya Sürükle'; checkSubmit();
 
   await loadPhotos();
 });
 
-/* ═══════════════════════════════════════
-   GALLERY + SLIDESHOW (with auto-play)
-═══════════════════════════════════════ */
+/* ═══════════════════════════
+   GALLERY + SLIDESHOW
+═══════════════════════════ */
 let photos       = [];
 let currentSlide = 0;
 let currentView  = 'slide';
 let isPlaying    = true;
 let autoTimer    = null;
 
-const slideshowWrap   = document.getElementById('slideshowWrap');
-const progressFillEl  = document.getElementById('slideProgressFill');
-const playPauseBtn    = document.getElementById('playPauseBtn');
-const iconPlay        = document.getElementById('iconPlay');
-const iconPause       = document.getElementById('iconPause');
-const lightboxEl      = document.getElementById('lightbox');
+const slideshowWrap  = document.getElementById('slideshowWrap');
+const progressFillEl = document.getElementById('slideProgressFill');
+const playPauseBtn   = document.getElementById('playPauseBtn');
+const iconPlay       = document.getElementById('iconPlay');
+const iconPause      = document.getElementById('iconPause');
+const lightboxEl     = document.getElementById('lightbox');
 
-/* ── Auto-play control ── */
 function startAutoPlay() {
   if (!photos.length || photos.length < 2) return;
-  isPlaying = true;
-  iconPlay.style.display  = 'none';
-  iconPause.style.display = '';
-  scheduleNext();
-  startProgressAnim();
+  isPlaying = true; iconPlay.style.display = 'none'; iconPause.style.display = '';
+  scheduleNext(); startProgressAnim();
 }
-
 function pauseAutoPlay() {
-  isPlaying = false;
-  iconPlay.style.display  = '';
-  iconPause.style.display = 'none';
-  clearTimeout(autoTimer);
-  stopProgressAnim();
+  isPlaying = false; iconPlay.style.display = ''; iconPause.style.display = 'none';
+  clearTimeout(autoTimer); stopProgressAnim();
 }
-
 function scheduleNext() {
   clearTimeout(autoTimer);
   autoTimer = setTimeout(() => {
     if (!isPlaying) return;
     currentSlide = (currentSlide + 1) % photos.length;
-    updateSlideUI();
-    scheduleNext();
-    startProgressAnim();
+    updateSlideUI(); scheduleNext(); startProgressAnim();
   }, AUTO_SLIDE_MS);
 }
-
 function startProgressAnim() {
-  // Force reflow to restart animation
-  progressFillEl.classList.remove('running');
-  void progressFillEl.offsetWidth; // reflow
+  progressFillEl.classList.remove('running'); void progressFillEl.offsetWidth;
   progressFillEl.classList.add('running');
 }
-
-function stopProgressAnim() {
-  progressFillEl.classList.remove('running');
-  progressFillEl.style.width = '0%';
-}
-
-function togglePlayPause() {
-  if (isPlaying) pauseAutoPlay();
-  else startAutoPlay();
-}
-
+function stopProgressAnim() { progressFillEl.classList.remove('running'); progressFillEl.style.width = '0%'; }
+function togglePlayPause() { isPlaying ? pauseAutoPlay() : startAutoPlay(); }
 playPauseBtn.addEventListener('click', togglePlayPause);
 
-/* Pause on user interaction, resume after 8s idle */
 function userInteracted() {
   if (!isPlaying) return;
   pauseAutoPlay();
@@ -841,21 +817,16 @@ function userInteracted() {
   window._resumeTimer = setTimeout(() => startAutoPlay(), 8000);
 }
 
-/* ── Swipe on slideshow ── */
+/* swipe on slideshow */
 let tsX = 0, tsY = 0;
-slideshowWrap.addEventListener('touchstart', e => {
-  tsX = e.touches[0].clientX; tsY = e.touches[0].clientY;
-}, { passive: true });
+slideshowWrap.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; }, { passive: true });
 slideshowWrap.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - tsX;
   const dy = e.changedTouches[0].clientY - tsY;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) {
-    changeSlide(dx < 0 ? 1 : -1);
-    userInteracted();
-  }
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) { changeSlide(dx < 0 ? 1 : -1); userInteracted(); }
 }, { passive: true });
 
-/* ── Swipe on lightbox ── */
+/* swipe on lightbox */
 let ltsX = 0;
 lightboxEl.addEventListener('touchstart', e => { ltsX = e.touches[0].clientX; }, { passive: true });
 lightboxEl.addEventListener('touchend', e => {
@@ -863,26 +834,18 @@ lightboxEl.addEventListener('touchend', e => {
   if (Math.abs(dx) > 40) lightboxNav(dx < 0 ? 1 : -1);
 }, { passive: true });
 
-/* ── Button wiring ── */
-document.getElementById('slidePrev').addEventListener('click', () => { changeSlide(-1); userInteracted(); });
-document.getElementById('slideNext').addEventListener('click', () => { changeSlide(1);  userInteracted(); });
 document.getElementById('slideFullscreenBtn').addEventListener('click', () => openLightboxAt(currentSlide));
 document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
 document.getElementById('lbPrev').addEventListener('click', () => lightboxNav(-1));
 document.getElementById('lbNext').addEventListener('click', () => lightboxNav(1));
 
-/* ── Slide logic ── */
 function changeSlide(dir) {
   if (!photos.length) return;
   currentSlide = (currentSlide + dir + photos.length) % photos.length;
   updateSlideUI();
   if (isPlaying) { scheduleNext(); startProgressAnim(); }
 }
-
-function goToSlide(idx) {
-  currentSlide = idx; updateSlideUI();
-  userInteracted();
-}
+function goToSlide(idx) { currentSlide = idx; updateSlideUI(); userInteracted(); }
 
 function updateSlideUI() {
   document.getElementById('slideTrack').style.transform = `translateX(-${currentSlide * 100}%)`;
@@ -894,19 +857,17 @@ function buildSlideshow() {
   const track = document.getElementById('slideTrack');
   const dots  = document.getElementById('slideDots');
   track.innerHTML = dots.innerHTML = '';
-
   photos.forEach((p, i) => {
     const item = document.createElement('div');
     item.className = 'slide-item';
+    /* [CHANGE 1] no date in caption */
     item.innerHTML = `
       <img src="${p.url}" alt="${esc(p.name)}" loading="lazy" draggable="false" oncontextmenu="return false" />
       <div class="slide-caption">
         <div class="slide-name">${esc(p.name)}</div>
         ${p.comment ? `<div class="slide-comment">${esc(p.comment)}</div>` : ''}
-        <div class="slide-date">${fmtDate(p.created_at)}</div>
       </div>`;
     track.appendChild(item);
-
     if (photos.length <= 30) {
       const dot = document.createElement('div');
       dot.className = 'dot' + (i === 0 ? ' active' : '');
@@ -914,14 +875,10 @@ function buildSlideshow() {
       dots.appendChild(dot);
     }
   });
-
-  currentSlide = 0;
-  updateSlideUI();
-
-  // Start auto-play (only if more than 1 photo)
+  currentSlide = 0; updateSlideUI();
   clearTimeout(autoTimer);
   if (photos.length > 1) startAutoPlay();
-  else { stopProgressAnim(); iconPlay.style.display='none'; iconPause.style.display=''; }
+  else { stopProgressAnim(); iconPlay.style.display = 'none'; iconPause.style.display = ''; }
 }
 
 function buildGrid() {
@@ -944,27 +901,18 @@ function setView(v) {
   document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
   slideshowWrap.style.display = (v === 'slide' && photos.length) ? 'block' : 'none';
   const gg = document.getElementById('galleryGrid');
-  if (v === 'grid' && photos.length) gg.classList.add('visible');
-  else gg.classList.remove('visible');
-  // Resume/pause auto-play based on view
-  if (v === 'slide' && photos.length > 1) startAutoPlay();
-  else pauseAutoPlay();
+  if (v === 'grid' && photos.length) gg.classList.add('visible'); else gg.classList.remove('visible');
+  if (v === 'slide' && photos.length > 1) startAutoPlay(); else pauseAutoPlay();
 }
 
-/* ── Lightbox ── */
 let lbIdx = 0;
-
 function openLightboxAt(idx) {
-  pauseAutoPlay();
-  lbIdx = idx;
-  renderLightbox();
-  lightboxEl.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  pauseAutoPlay(); lbIdx = idx; renderLightbox();
+  lightboxEl.classList.add('open'); document.body.style.overflow = 'hidden';
 }
 function lightboxNav(dir) {
   if (!photos.length) return;
-  lbIdx = (lbIdx + dir + photos.length) % photos.length;
-  renderLightbox();
+  lbIdx = (lbIdx + dir + photos.length) % photos.length; renderLightbox();
 }
 function renderLightbox() {
   const p = photos[lbIdx];
@@ -975,8 +923,7 @@ function renderLightbox() {
   document.getElementById('lightboxCounter').textContent = `${lbIdx + 1} / ${photos.length}`;
 }
 function closeLightbox() {
-  lightboxEl.classList.remove('open');
-  document.body.style.overflow = '';
+  lightboxEl.classList.remove('open'); document.body.style.overflow = '';
   if (currentView === 'slide' && photos.length > 1) startAutoPlay();
 }
 
@@ -987,14 +934,12 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft')  lightboxNav(-1);
 });
 
-/* ── Load from Supabase ── */
 async function loadPhotos() {
   document.getElementById('galleryLoading').style.display = 'flex';
   document.getElementById('galleryEmpty').style.display   = 'none';
   slideshowWrap.style.display = 'none';
   document.getElementById('galleryGrid').classList.remove('visible');
-  clearTimeout(autoTimer);
-  stopProgressAnim();
+  clearTimeout(autoTimer); stopProgressAnim();
 
   try {
     const res = await fetch(
@@ -1007,31 +952,183 @@ async function loadPhotos() {
 
   document.getElementById('galleryLoading').style.display = 'none';
   document.getElementById('galleryCount').textContent = photos.length ? `${photos.length} fotoğraf` : '';
-
   if (!photos.length) { document.getElementById('galleryEmpty').style.display = 'block'; return; }
-
-  buildSlideshow();
-  buildGrid();
-  setView(currentView);
+  buildSlideshow(); buildGrid(); setView(currentView);
 }
 
-/* ── Helpers ── */
+/* ═══════════════════════════
+   [CHANGE 3] ADMIN PANEL
+   URL: upload.html#admin
+   No button/link anywhere on the page.
+═══════════════════════════ */
+const adminPanel  = document.getElementById('adminPanel');
+const admBody     = document.getElementById('admBody');
+const admSelBar   = document.getElementById('admSelBar');
+const admSelLabel = document.getElementById('admSelLabel');
+let admPhotos  = [];
+let admSelected = new Set();
+
+function openAdmin() {
+  adminPanel.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadAdminPhotos();
+}
+function closeAdmin() {
+  adminPanel.classList.remove('open');
+  document.body.style.overflow = '';
+  admSelected.clear(); updateAdmSelBar();
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+}
+
+document.getElementById('admClose').addEventListener('click', closeAdmin);
+
+function checkAdminHash() { if (window.location.hash === '#admin') openAdmin(); }
+window.addEventListener('hashchange', checkAdminHash);
+checkAdminHash();
+
+async function loadAdminPhotos() {
+  admBody.innerHTML = '<div class="adm-msg">Yükleniyor…</div>';
+  admSelected.clear(); updateAdmSelBar();
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/photos?select=*&order=created_at.desc`,
+      { headers: { ...SB_H, 'Accept': 'application/json' } }
+    );
+    admPhotos = await res.json();
+    if (!Array.isArray(admPhotos)) throw new Error();
+  } catch {
+    admBody.innerHTML = '<div class="adm-msg" style="color:#f09090">Yüklenemedi.</div>'; return;
+  }
+  renderAdmin();
+}
+
+function renderAdmin() {
+  if (!admPhotos.length) {
+    admBody.innerHTML = '<div class="adm-msg">Henüz fotoğraf yok.</div>'; return;
+  }
+  const total  = admPhotos.length;
+  const people = new Set(admPhotos.map(p => p.name)).size;
+
+  // Group by name
+  const groups = {};
+  admPhotos.forEach(p => { if (!groups[p.name]) groups[p.name] = []; groups[p.name].push(p); });
+
+  let html = `
+    <div class="adm-stats">
+      <div class="adm-stat"><b>${total}</b> fotoğraf</div>
+      <div class="adm-stat"><b>${people}</b> kişi</div>
+    </div>
+    <div class="adm-actions">
+      <button class="adm-btn adm-btn-muted" onclick="admSelectAll()">Tümünü Seç</button>
+    </div>`;
+
+  for (const [name, items] of Object.entries(groups)) {
+    html += `
+      <div class="adm-group">
+        <div class="adm-group-header">
+          <div>
+            <div class="adm-person-name">${esc(name)}</div>
+            <div class="adm-person-meta">${items.length} fotoğraf</div>
+          </div>
+          <button class="adm-btn adm-btn-muted" style="font-size:10px;padding:7px 12px"
+                  onclick="admSelectPerson('${esc(name).replace(/'/g,"\\'")}')">Seç</button>
+        </div>
+        <div class="adm-person-grid">`;
+    items.forEach(p => {
+      html += `
+          <div class="adm-thumb" id="admt-${p.id}" onclick="admToggle('${p.id}')">
+            <img src="${p.url}" alt="" loading="lazy" draggable="false" oncontextmenu="return false" />
+            <div class="adm-thumb-overlay">
+              <div class="adm-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="adm-thumb-foot">
+              ${p.comment ? `<div class="adm-thumb-comment">${esc(p.comment)}</div>` : ''}
+              <div class="adm-thumb-date">${fmtDate(p.created_at)}</div>
+            </div>
+          </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  admBody.innerHTML = html;
+}
+
+function admToggle(id) {
+  admSelected.has(id) ? admSelected.delete(id) : admSelected.add(id);
+  document.getElementById('admt-' + id)?.classList.toggle('selected', admSelected.has(id));
+  updateAdmSelBar();
+}
+function admSelectAll() {
+  admPhotos.forEach(p => { admSelected.add(p.id); document.getElementById('admt-' + p.id)?.classList.add('selected'); });
+  updateAdmSelBar();
+}
+function admSelectPerson(name) {
+  admPhotos.filter(p => p.name === name).forEach(p => {
+    admSelected.add(p.id); document.getElementById('admt-' + p.id)?.classList.add('selected');
+  });
+  updateAdmSelBar();
+}
+function updateAdmSelBar() {
+  const n = admSelected.size;
+  admSelBar.classList.toggle('visible', n > 0);
+  admSelLabel.textContent = `${n} fotoğraf seçili`;
+}
+
+document.getElementById('admDeselect').addEventListener('click', () => {
+  admSelected.forEach(id => document.getElementById('admt-' + id)?.classList.remove('selected'));
+  admSelected.clear(); updateAdmSelBar();
+});
+
+document.getElementById('admDelete').addEventListener('click', async () => {
+  if (!admSelected.size) return;
+  if (!confirm(`${admSelected.size} fotoğrafı kalıcı olarak silmek istiyor musunuz?`)) return;
+
+  const ids      = Array.from(admSelected);
+  const toDelete = admPhotos.filter(p => ids.includes(p.id));
+  ids.forEach(id => document.getElementById('admt-' + id)?.classList.add('deleting'));
+  document.getElementById('admDelete').disabled = true;
+
+  let errors = 0;
+  for (const p of toDelete) {
+    try {
+      const pathMatch = p.url.match(/\/public\/photos\/(.+)$/);
+      if (pathMatch) {
+        await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${pathMatch[1]}`, { method: 'DELETE', headers: SB_H });
+      }
+      const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/photos?id=eq.${p.id}`, { method: 'DELETE', headers: SB_H });
+      if (!dbRes.ok) throw new Error();
+      document.getElementById('admt-' + p.id)?.remove();
+      admPhotos = admPhotos.filter(x => x.id !== p.id);
+      admSelected.delete(p.id);
+    } catch {
+      errors++;
+      document.getElementById('admt-' + p.id)?.classList.remove('deleting');
+    }
+  }
+
+  document.getElementById('admDelete').disabled = false;
+  updateAdmSelBar();
+  if (errors === 0) { renderAdmin(); await loadPhotos(); }
+  else { alert(`${errors} fotoğraf silinemedi.`); await loadAdminPhotos(); }
+});
+
+/* ═══════════════════════════
+   HELPERS + INIT
+═══════════════════════════ */
 function fmtDate(d) {
   return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 function esc(s) {
-  return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* ── Scroll reveal ── */
 const revealIO = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
 
-/* ── Init ── */
 loadPhotos();
 </script>
 </body>
