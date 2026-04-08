@@ -19,6 +19,7 @@
   --cream: #f5efe6;
   --glass: rgba(255,255,255,0.05);
   --gb:    rgba(255,255,255,0.12);
+  --auto-dur: 5s;
 }
 
 html { scroll-behavior: smooth; }
@@ -82,20 +83,12 @@ body::after {
   padding: 0 16px 80px;
   display: flex; flex-direction: column; gap: 44px;
 }
-
-/* ══ SECTION DIVIDER ══ */
-.section-sep {
-  display: flex; align-items: center; gap: 14px;
-  opacity: .5;
-}
-.section-sep::before, .section-sep::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(to right, transparent, rgba(201,169,110,.35));
-}
+.section-sep { display: flex; align-items: center; gap: 14px; opacity: .5; }
+.section-sep::before, .section-sep::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(201,169,110,.35)); }
 .section-sep::after { background: linear-gradient(to left, transparent, rgba(201,169,110,.35)); }
 .section-sep span { font-size: 14px; color: var(--gold); }
 
-/* ══ GALLERY SECTION ══ */
+/* ══ GALLERY ══ */
 .gallery-section { display: flex; flex-direction: column; gap: 20px; }
 .gallery-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .gallery-title-wrap { display: flex; flex-direction: column; gap: 3px; }
@@ -129,7 +122,7 @@ body::after {
   background: rgba(0,0,0,.3); border: 1px solid var(--gb);
   -webkit-touch-callout: none;
 }
-.slide-track { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); will-change: transform; }
+.slide-track { display: flex; transition: transform .5s cubic-bezier(.4,0,.2,1); will-change: transform; }
 .slide-item { flex: 0 0 100%; position: relative; }
 .slide-item img {
   width: 100%; height: 340px; object-fit: contain; display: block;
@@ -146,18 +139,21 @@ body::after {
 .slide-comment { margin-top: 3px; font-size: 12px; font-style: italic; opacity: .58; }
 .slide-date { margin-top: 5px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: .32; }
 
+/* nav arrows */
 .slide-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
   background: rgba(14,11,8,.55); border: 1px solid rgba(201,169,110,.2);
   border-radius: 50%; cursor: pointer; color: var(--gold2); z-index: 2;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: background .2s;
 }
 .slide-nav:active { background: rgba(14,11,8,.9); }
 .slide-nav.prev { left: 10px; }
 .slide-nav.next { right: 10px; }
 .slide-nav svg { width: 15px; height: 15px; }
 
+/* top badges */
 .slide-topbar {
   position: absolute; top: 12px; left: 12px; right: 12px;
   display: flex; justify-content: space-between; align-items: center; z-index: 2; pointer-events: none;
@@ -167,17 +163,40 @@ body::after {
   border-radius: 20px; padding: 3px 10px;
   font-size: 10px; letter-spacing: 2px; color: var(--gold);
 }
-.slide-fullscreen-btn {
+.slide-actions { display: flex; align-items: center; gap: 7px; pointer-events: auto; }
+.slide-icon-btn {
   width: 32px; height: 32px; border-radius: 50%;
   background: rgba(14,11,8,.6); border: 1px solid rgba(201,169,110,.18);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--gold); pointer-events: auto;
+  cursor: pointer; color: var(--gold);
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: background .2s;
 }
-.slide-fullscreen-btn:active { background: rgba(14,11,8,.95); }
-.slide-fullscreen-btn svg { width: 14px; height: 14px; }
+.slide-icon-btn:active { background: rgba(14,11,8,.95); }
+.slide-icon-btn svg { width: 14px; height: 14px; }
 
-.slide-dots { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; flex-wrap: wrap; }
+/* ── Auto-play progress bar ── */
+.slide-progress-wrap {
+  height: 3px;
+  background: rgba(201,169,110,.12);
+  position: relative; overflow: hidden;
+}
+.slide-progress-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: linear-gradient(to right, var(--gold3), var(--gold));
+  width: 0%;
+  /* animation controlled via JS class */
+}
+.slide-progress-fill.running {
+  animation: slideProgress var(--auto-dur) linear forwards;
+}
+@keyframes slideProgress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* dots */
+.slide-dots { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; flex-wrap: wrap; }
 .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(201,169,110,.22); cursor: pointer; transition: background .3s, transform .3s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .dot.active { background: var(--gold); transform: scale(1.5); }
 
@@ -189,10 +208,7 @@ body::after {
   cursor: pointer; border: 1px solid rgba(201,169,110,.08);
   -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none;
 }
-.grid-item img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  pointer-events: none; -webkit-touch-callout: none;
-}
+.grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-touch-callout: none; }
 .grid-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(14,11,8,.78) 0%, transparent 55%);
@@ -204,11 +220,8 @@ body::after {
 
 /* ══ UPLOAD CARD ══ */
 .upload-card {
-  background: var(--glass);
-  border: 1px solid var(--gb);
-  border-radius: 22px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: var(--glass); border: 1px solid var(--gb);
+  border-radius: 22px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
   padding: 28px 20px;
 }
 .card-label {
@@ -218,91 +231,56 @@ body::after {
 }
 .card-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(201,169,110,.3), transparent); }
 
-/* drop zone */
 .drop-zone {
-  border: 1.5px dashed rgba(201,169,110,0.3);
-  border-radius: 14px; padding: 32px 20px;
-  text-align: center; cursor: pointer;
-  transition: border-color .3s, background .3s;
-  position: relative;
-  -webkit-tap-highlight-color: transparent;
+  border: 1.5px dashed rgba(201,169,110,0.3); border-radius: 14px; padding: 32px 20px;
+  text-align: center; cursor: pointer; transition: border-color .3s, background .3s;
+  position: relative; -webkit-tap-highlight-color: transparent;
 }
 .drop-zone.drag-over { border-color: var(--gold); background: rgba(201,169,110,0.06); }
-.drop-zone input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0;
-}
+.drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0; }
 .drop-icon { width: 40px; height: 40px; margin: 0 auto 12px; color: var(--gold); opacity: .45; }
 .drop-title { font-size: 15px; letter-spacing: 1.5px; color: var(--gold2); margin-bottom: 5px; }
 .drop-sub { font-size: 11px; letter-spacing: 1px; opacity: .38; }
 
-/* ── Multi preview (stable ID-based) ── */
-.preview-grid {
-  margin-top: 14px;
-  display: none;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
+.preview-grid { margin-top: 14px; display: none; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .preview-grid.has-files { display: grid; }
-
-.preview-thumb {
-  position: relative; aspect-ratio: 1;
-  border-radius: 10px; overflow: hidden;
-  border: 1px solid rgba(201,169,110,.15);
-  flex-shrink: 0;
-}
-.preview-thumb img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  pointer-events: none; -webkit-touch-callout: none;
-}
+.preview-thumb { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1px solid rgba(201,169,110,.15); }
+.preview-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-touch-callout: none; }
 .preview-remove {
-  position: absolute; top: 5px; right: 5px;
-  width: 24px; height: 24px; border-radius: 50%;
-  background: rgba(14,11,8,.85); border: 1px solid rgba(201,169,110,.35);
-  color: var(--gold2); font-size: 13px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 1;
+  position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(14,11,8,.85); border: 1px solid rgba(201,169,110,.35); color: var(--gold2); font-size: 13px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1;
   -webkit-tap-highlight-color: transparent;
 }
 .preview-add {
-  aspect-ratio: 1; border-radius: 10px;
-  border: 1.5px dashed rgba(201,169,110,.25);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; position: relative;
+  aspect-ratio: 1; border-radius: 10px; border: 1.5px dashed rgba(201,169,110,.25);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
   -webkit-tap-highlight-color: transparent; transition: border-color .25s;
 }
 .preview-add:active { border-color: var(--gold); }
-.preview-add-input {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-}
+.preview-add input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .preview-add span { font-size: 28px; color: var(--gold); opacity: .4; line-height: 1; pointer-events: none; }
 
-/* form */
 .form-fields { margin-top: 22px; display: flex; flex-direction: column; gap: 14px; }
 .field-group { display: flex; flex-direction: column; gap: 7px; }
 .field-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: .7; }
 .field-required { color: var(--gold); }
 .field-input, .field-textarea {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(201,169,110,0.2);
-  border-radius: 10px; padding: 13px 15px;
-  color: var(--cream); font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; letter-spacing: .4px;
-  outline: none; transition: border-color .3s, background .3s;
-  width: 100%; -webkit-appearance: none;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(201,169,110,0.2);
+  border-radius: 10px; padding: 13px 15px; color: var(--cream);
+  font-family: 'Cormorant Garamond', serif; font-size: 16px; letter-spacing: .4px;
+  outline: none; transition: border-color .3s, background .3s; width: 100%; -webkit-appearance: none;
 }
 .field-input::placeholder, .field-textarea::placeholder { opacity: .32; }
 .field-input:focus, .field-textarea:focus { border-color: rgba(201,169,110,.6); background: rgba(255,255,255,.07); }
 .field-textarea { resize: none; height: 80px; }
 
-/* progress */
 .progress-bar-wrap { display: none; margin-top: 14px; height: 3px; background: rgba(201,169,110,.12); border-radius: 3px; overflow: hidden; }
 .progress-bar-fill { height: 100%; background: linear-gradient(to right, var(--gold3), var(--gold)); border-radius: 3px; width: 0%; transition: width .35s ease; }
 .progress-label { display: none; margin-top: 7px; font-size: 11px; letter-spacing: 1px; text-align: center; color: var(--gold); opacity: .65; }
 
-/* submit */
 .btn-submit {
-  margin-top: 8px;
-  display: flex; align-items: center; justify-content: center; gap: 9px;
+  margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 9px;
   width: 100%; padding: 15px 24px; border-radius: 40px;
   border: 1px solid rgba(201,169,110,0.4);
   background: linear-gradient(135deg, rgba(201,169,110,.15), rgba(201,169,110,.05));
@@ -315,8 +293,7 @@ body::after {
 .btn-submit:disabled { opacity: .38; cursor: not-allowed; }
 .btn-submit svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-/* status */
-.status-msg { display: none; margin-top: 12px; padding: 11px 16px; border-radius: 10px; font-size: 14px; letter-spacing: .3px; text-align: center; }
+.status-msg { display: none; margin-top: 12px; padding: 11px 16px; border-radius: 10px; font-size: 14px; letter-spacing: .3px; text-align: center; line-height: 1.5; }
 .status-msg.success { display: block; background: rgba(100,180,100,.1); border: 1px solid rgba(100,180,100,.3); color: #9de89d; }
 .status-msg.error   { display: block; background: rgba(200,80,80,.1);  border: 1px solid rgba(200,80,80,.3);  color: #f09090; }
 
@@ -328,40 +305,31 @@ body::after {
   -webkit-touch-callout: none;
 }
 .lightbox.open { display: flex; }
-
 .lightbox-topbar {
   position: absolute; top: 0; left: 0; right: 0;
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 12px;
-  background: linear-gradient(to bottom, rgba(4,3,2,.85), transparent);
-  z-index: 3;
+  background: linear-gradient(to bottom, rgba(4,3,2,.85), transparent); z-index: 3;
 }
 .lightbox-counter { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); opacity: .65; }
 .lightbox-close {
   width: 34px; height: 34px; border-radius: 50%;
   background: rgba(255,255,255,.07); border: 1px solid rgba(201,169,110,.18);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--cream);
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  cursor: pointer; color: var(--cream); -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
 .lightbox-close:active { background: rgba(255,255,255,.18); }
 .lightbox-close svg { width: 15px; height: 15px; }
-
-/* ── Image area: takes ALL available space between topbar and caption ── */
 .lightbox-img-wrap {
-  flex: 1;
-  width: 100%;
+  flex: 1; width: 100%;
   display: flex; align-items: center; justify-content: center;
-  padding: 60px 10px 6px; /* just enough to clear topbar; minimal sides */
-  overflow: hidden;
+  padding: 60px 10px 6px; overflow: hidden;
 }
 .lightbox-img-wrap img {
-  max-width: 100%; max-height: 100%;
-  object-fit: contain;
+  max-width: 100%; max-height: 100%; object-fit: contain;
   border-radius: 6px; display: block;
   pointer-events: none; -webkit-touch-callout: none; user-select: none;
 }
-
 .lightbox-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
@@ -373,11 +341,9 @@ body::after {
 .lightbox-nav.prev { left: 8px; }
 .lightbox-nav.next { right: 8px; }
 .lightbox-nav svg { width: 16px; height: 16px; }
-
 .lightbox-caption {
   width: 100%; padding: 8px 20px 24px; text-align: center;
-  background: linear-gradient(to top, rgba(4,3,2,.9), transparent);
-  flex-shrink: 0;
+  background: linear-gradient(to top, rgba(4,3,2,.9), transparent); flex-shrink: 0;
 }
 .lightbox-name { font-family: 'Luxurious Script', cursive; font-size: 24px; color: var(--gold2); line-height: 1; }
 .lightbox-comment { font-size: 13px; font-style: italic; opacity: .5; margin-top: 4px; }
@@ -391,7 +357,6 @@ body::after {
 .bottom-ornament span { font-size: 16px; color: var(--gold); opacity: .45; }
 .bottom-text { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: .22; }
 
-/* reveal */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -402,7 +367,6 @@ body::after {
 <div class="site-bg"></div>
 <div class="site-overlay"></div>
 
-<!-- HEADER -->
 <header class="page-header">
   <a class="back-link" href="index.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -417,7 +381,6 @@ body::after {
   <div class="page-sub">Güzel anlarınızı bu özel günün hatırası için yükleyin</div>
 </header>
 
-<!-- MAIN — Gallery first, then upload -->
 <main class="main-content">
 
   <!-- ══ 1. GALERİ ══ -->
@@ -449,8 +412,16 @@ body::after {
     <div class="slideshow-wrap" id="slideshowWrap">
       <div class="slide-topbar">
         <div class="slide-counter" id="slideCounter">1 / 1</div>
-        <div class="slide-fullscreen-btn" id="slideFullscreenBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+        <div class="slide-actions">
+          <!-- play/pause -->
+          <div class="slide-icon-btn" id="playPauseBtn" title="Oynat / Duraklat">
+            <svg id="iconPause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            <svg id="iconPlay"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <!-- fullscreen -->
+          <div class="slide-icon-btn" id="slideFullscreenBtn" title="Tam ekran">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+          </div>
         </div>
       </div>
       <div class="slide-track" id="slideTrack"></div>
@@ -460,13 +431,16 @@ body::after {
       <button class="slide-nav next" id="slideNext">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </button>
+      <!-- auto-play progress bar -->
+      <div class="slide-progress-wrap">
+        <div class="slide-progress-fill" id="slideProgressFill"></div>
+      </div>
       <div class="slide-dots" id="slideDots"></div>
     </div>
 
     <div class="gallery-grid" id="galleryGrid"></div>
   </div>
 
-  <!-- divider -->
   <div class="section-sep reveal"><span>♡</span></div>
 
   <!-- ══ 2. YÜKLEME ══ -->
@@ -486,7 +460,6 @@ body::after {
       <div class="drop-sub">Birden fazla seçebilirsiniz</div>
     </div>
 
-    <!-- Preview grid – rebuilt from fileMap, not index-based -->
     <div class="preview-grid" id="previewGrid"></div>
 
     <div class="form-fields">
@@ -520,18 +493,15 @@ body::after {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
   </div>
-
   <div class="lightbox-img-wrap">
     <img id="lightboxImg" src="" alt="" draggable="false" />
   </div>
-
   <button class="lightbox-nav prev" id="lbPrev">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
   </button>
   <button class="lightbox-nav next" id="lbNext">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
   </button>
-
   <div class="lightbox-caption">
     <div class="lightbox-name" id="lightboxName"></div>
     <div class="lightbox-comment" id="lightboxComment"></div>
@@ -539,7 +509,6 @@ body::after {
   </div>
 </div>
 
-<!-- FOOTER -->
 <div class="page-bottom">
   <div class="bottom-ornament"><span>♡</span></div>
   <div class="bottom-text">Firdevs & Hasan Çağlar · 2026</div>
@@ -548,28 +517,27 @@ body::after {
 <script>
 'use strict';
 
-/* ════════════════════════════
-   SUPABASE CONFIG
-════════════════════════════ */
+/* ═══════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════ */
 const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
 const BUCKET = "photos";
 const SB_H = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
+const AUTO_SLIDE_MS = 5000;
+const MAX_RETRIES   = 3;
 
-/* ════════════════════════════
+/* ═══════════════════════════════════════
    IMAGE PROTECTION
-════════════════════════ */
+═══════════════════════════════════════ */
 document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 document.addEventListener('dragstart',   e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-/* ════════════════════════════
-   UPLOAD — stable Map-based state
-   Each file gets a unique numeric key so
-   removing/adding never corrupts indices.
-════════════════════════════ */
+/* ═══════════════════════════════════════
+   UPLOAD — stable Map + retry logic
+═══════════════════════════════════════ */
 let fileIdCounter = 0;
-// Map<id:number, {file:File, objectUrl:string}>
-const fileMap = new Map();
+const fileMap = new Map(); // id → { file, objectUrl }
 
 const dropZone      = document.getElementById('dropZone');
 const fileInput     = document.getElementById('fileInput');
@@ -583,71 +551,66 @@ const progressFill  = document.getElementById('progressFill');
 const progressLabel = document.getElementById('progressLabel');
 const dropTitle     = document.getElementById('dropTitle');
 
-// — Add files to Map, create thumbnails without full rebuild —
 function addFiles(fileList) {
-  let added = 0;
   for (const f of Array.from(fileList)) {
-    if (!f.type.startsWith('image/')) continue;
+    if (!f.type.startsWith('image/') && !isImageByExt(f.name)) continue;
     if (fileMap.size >= 20) break;
     const id = ++fileIdCounter;
     const objectUrl = URL.createObjectURL(f);
     fileMap.set(id, { file: f, objectUrl });
     appendThumb(id, objectUrl);
-    added++;
   }
-  if (added) syncPreviewState();
+  syncPreviewState();
 }
 
-// — Append a single thumb node without clearing existing ones —
+function isImageByExt(name) {
+  return /\.(jpe?g|png|gif|webp|heic|heif|bmp|tiff?)$/i.test(name);
+}
+
+// Resolve MIME type — iOS HEIC often arrives as '' or 'application/octet-stream'
+function resolveMime(file) {
+  if (file.type && file.type.startsWith('image/')) return file.type;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const map = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+                gif: 'image/gif', webp: 'image/webp',
+                heic: 'image/heic', heif: 'image/heif' };
+  return map[ext] || 'application/octet-stream';
+}
+
 function appendThumb(id, objectUrl) {
-  // Remove the add-more tile temporarily
   const addTile = previewGrid.querySelector('.preview-add');
   if (addTile) previewGrid.removeChild(addTile);
 
   const thumb = document.createElement('div');
   thumb.className = 'preview-thumb';
   thumb.dataset.fid = id;
+
   const img = document.createElement('img');
-  img.src = objectUrl;
-  img.alt = '';
-  img.draggable = false;
+  img.src = objectUrl; img.alt = ''; img.draggable = false;
   img.oncontextmenu = () => false;
+
   const btn = document.createElement('div');
   btn.className = 'preview-remove';
   btn.textContent = '✕';
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    removeFile(id);
-  });
+  btn.addEventListener('click', e => { e.stopPropagation(); removeFile(id); });
+
   thumb.appendChild(img);
   thumb.appendChild(btn);
   previewGrid.appendChild(thumb);
 
-  // Re-append add-more tile if under limit
-  if (fileMap.size < 20) {
-    previewGrid.appendChild(makeAddTile());
-  }
+  if (fileMap.size < 20) previewGrid.appendChild(makeAddTile());
 }
 
-// — Remove one file by its stable ID —
 function removeFile(id) {
   const entry = fileMap.get(id);
   if (!entry) return;
   URL.revokeObjectURL(entry.objectUrl);
   fileMap.delete(id);
-
-  // Remove just that thumb
   const thumb = previewGrid.querySelector(`[data-fid="${id}"]`);
   if (thumb) previewGrid.removeChild(thumb);
-
-  // Manage add-more tile visibility
   const addTile = previewGrid.querySelector('.preview-add');
-  if (fileMap.size < 20 && !addTile) {
-    previewGrid.appendChild(makeAddTile());
-  } else if (fileMap.size >= 20 && addTile) {
-    previewGrid.removeChild(addTile);
-  }
-
+  if (fileMap.size < 20 && !addTile) previewGrid.appendChild(makeAddTile());
+  else if (fileMap.size >= 20 && addTile) previewGrid.removeChild(addTile);
   syncPreviewState();
 }
 
@@ -655,25 +618,18 @@ function makeAddTile() {
   const tile = document.createElement('div');
   tile.className = 'preview-add';
   const inp = document.createElement('input');
-  inp.type = 'file';
-  inp.accept = 'image/*';
-  inp.multiple = true;
-  inp.className = 'preview-add-input';
-  inp.addEventListener('change', function() {
-    addFiles(this.files);
-    this.value = '';
-  });
+  inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
+  inp.addEventListener('change', function() { addFiles(this.files); this.value = ''; });
   const icon = document.createElement('span');
   icon.textContent = '+';
-  tile.appendChild(inp);
-  tile.appendChild(icon);
+  tile.appendChild(inp); tile.appendChild(icon);
   return tile;
 }
 
 function syncPreviewState() {
-  const count = fileMap.size;
-  previewGrid.classList.toggle('has-files', count > 0);
-  dropTitle.textContent = count ? `${count} fotoğraf seçildi` : 'Fotoğraf Seç veya Sürükle';
+  const n = fileMap.size;
+  previewGrid.classList.toggle('has-files', n > 0);
+  dropTitle.textContent = n ? `${n} fotoğraf seçildi` : 'Fotoğraf Seç veya Sürükle';
   checkSubmit();
 }
 
@@ -681,32 +637,41 @@ function checkSubmit() {
   submitBtn.disabled = !(fileMap.size > 0 && nameInput.value.trim());
 }
 
-// Main file input (drop zone)
-fileInput.addEventListener('change', function() {
-  addFiles(this.files);
-  this.value = '';
-});
+fileInput.addEventListener('change', function() { addFiles(this.files); this.value = ''; });
 nameInput.addEventListener('input', checkSubmit);
-
-// Drag & drop
 dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('drag-over');
-  addFiles(e.dataTransfer.files);
-});
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); });
 
-// — Status helpers —
 function showStatus(type, msg) { statusMsg.className = 'status-msg ' + type; statusMsg.textContent = msg; }
-function hideStatus()          { statusMsg.className = 'status-msg'; }
+function hideStatus() { statusMsg.className = 'status-msg'; }
 
-/* ════════════════════════════
-   SUBMIT — Atomic: all or nothing
-   Phase 1: upload ALL to storage
-   Phase 2: insert ALL to DB
-   If ANY phase-1 fails → abort, show error, upload nothing
-════════════════════════════ */
+/* ── Retry helper ── */
+async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok) return res;
+      // 4xx errors are not retryable (permission, bad request)
+      if (res.status >= 400 && res.status < 500) {
+        const body = await res.text().catch(() => '');
+        throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status, body, fatal: true });
+      }
+      lastErr = new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      if (err.fatal) throw err;
+      lastErr = err;
+      if (attempt < retries) {
+        // Exponential back-off: 500ms, 1000ms, 2000ms
+        await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt - 1)));
+      }
+    }
+  }
+  throw lastErr;
+}
+
+/* ── Submit (atomic: all-or-nothing) ── */
 submitBtn.addEventListener('click', async () => {
   if (!fileMap.size || !nameInput.value.trim()) return;
 
@@ -718,132 +683,206 @@ submitBtn.addEventListener('click', async () => {
 
   const name    = nameInput.value.trim();
   const comment = commentInput.value.trim() || null;
-  const entries = Array.from(fileMap.entries()); // [[id, {file,objectUrl}], ...]
+  const entries = Array.from(fileMap.entries());
   const total   = entries.length;
+  const uploaded = []; // { uid, publicUrl }
 
-  // ── Phase 1: Upload all files to Supabase Storage ──
-  const uploaded = []; // [{uid, publicUrl}]
-
+  /* ── Phase 1: Storage uploads (with retry) ── */
   for (let i = 0; i < total; i++) {
     const [, { file }] = entries[i];
     progressLabel.textContent = `Yükleniyor ${i + 1} / ${total}…`;
-    progressFill.style.width = ((i / total) * 60 + 5) + '%';
+    progressFill.style.width = ((i / total) * 65 + 5) + '%';
 
+    const mime = resolveMime(file);
     const ext  = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const uid  = crypto.randomUUID();
     const path = `${uid}.${ext}`;
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
-        method: 'POST',
-        headers: { ...SB_H, 'Content-Type': file.type },
-        body: file,
-      });
-      if (!res.ok) throw new Error(`Storage hatası (${res.status})`);
+      await fetchWithRetry(
+        `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`,
+        {
+          method: 'POST',
+          headers: {
+            ...SB_H,
+            'Content-Type': mime,
+            'x-upsert': 'true',          // allow overwrite on retry
+            'Cache-Control': '3600',
+          },
+          body: file,
+        }
+      );
       uploaded.push({ uid, publicUrl: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}` });
     } catch (err) {
-      // One failed → abort everything
       progressFill.style.width = '0%';
-      setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
-      showStatus('error', `✗ ${i + 1}. fotoğraf yüklenemedi, işlem iptal edildi. Lütfen tekrar deneyin.`);
+      setTimeout(() => { progressWrap.style.display = 'none'; progressLabel.style.display = 'none'; }, 400);
+      showStatus('error',
+        `${i + 1}. fotoğraf yüklenemedi (${err.status || 'bağlantı hatası'}).\nLütfen internet bağlantınızı kontrol edip tekrar deneyin.`);
       submitBtn.disabled = false;
       checkSubmit();
       return;
     }
   }
 
-  // ── Phase 2: Insert all rows to DB ──
+  /* ── Phase 2: DB insert ── */
   progressLabel.textContent = 'Kaydediliyor…';
-  progressFill.style.width = '80%';
+  progressFill.style.width = '82%';
 
-  const rows = uploaded.map(({ uid, publicUrl }) => ({
-    id: uid, url: publicUrl, name, comment,
-  }));
+  const rows = uploaded.map(({ uid, publicUrl }) => ({ id: uid, url: publicUrl, name, comment }));
 
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/photos`, {
-      method: 'POST',
-      headers: { ...SB_H, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(rows),
-    });
-    if (!res.ok) throw new Error(`DB hatası (${res.status})`);
+    await fetchWithRetry(
+      `${SUPABASE_URL}/rest/v1/photos`,
+      {
+        method: 'POST',
+        headers: { ...SB_H, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(rows),
+      }
+    );
   } catch (err) {
     progressFill.style.width = '0%';
-    setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
-    showStatus('error', '✗ Kayıt sırasında hata oluştu. Lütfen tekrar deneyin.');
+    setTimeout(() => { progressWrap.style.display = 'none'; progressLabel.style.display = 'none'; }, 400);
+    showStatus('error', 'Fotoğraflar yüklendi ancak kaydedilemedi. Lütfen tekrar deneyin.');
     submitBtn.disabled = false;
     checkSubmit();
     return;
   }
 
-  // ── Success ──
+  /* ── Success ── */
   progressFill.style.width = '100%';
   progressLabel.textContent = 'Tamamlandı!';
-  showStatus('success', `✓ ${total} fotoğraf yüklendi! Teşekkürler ♡`);
+  showStatus('success', `✓ ${total} fotoğraf başarıyla paylaşıldı! Teşekkürler ♡`);
   setTimeout(() => {
     progressWrap.style.display = 'none';
     progressLabel.style.display = 'none';
     progressFill.style.width = '0%';
-  }, 800);
+  }, 900);
 
-  // Reset form
   fileMap.forEach(e => URL.revokeObjectURL(e.objectUrl));
-  fileMap.clear();
-  fileIdCounter = 0;
+  fileMap.clear(); fileIdCounter = 0;
   previewGrid.innerHTML = '';
   previewGrid.classList.remove('has-files');
-  nameInput.value    = '';
-  commentInput.value = '';
-  fileInput.value    = '';
+  nameInput.value = ''; commentInput.value = ''; fileInput.value = '';
   dropTitle.textContent = 'Fotoğraf Seç veya Sürükle';
   checkSubmit();
 
   await loadPhotos();
 });
 
-/* ════════════════════════════
-   GALLERY
-════════════════════════ */
+/* ═══════════════════════════════════════
+   GALLERY + SLIDESHOW (with auto-play)
+═══════════════════════════════════════ */
 let photos       = [];
 let currentSlide = 0;
 let currentView  = 'slide';
+let isPlaying    = true;
+let autoTimer    = null;
 
-/* — Slideshow swipe — */
+const slideshowWrap   = document.getElementById('slideshowWrap');
+const progressFillEl  = document.getElementById('slideProgressFill');
+const playPauseBtn    = document.getElementById('playPauseBtn');
+const iconPlay        = document.getElementById('iconPlay');
+const iconPause       = document.getElementById('iconPause');
+const lightboxEl      = document.getElementById('lightbox');
+
+/* ── Auto-play control ── */
+function startAutoPlay() {
+  if (!photos.length || photos.length < 2) return;
+  isPlaying = true;
+  iconPlay.style.display  = 'none';
+  iconPause.style.display = '';
+  scheduleNext();
+  startProgressAnim();
+}
+
+function pauseAutoPlay() {
+  isPlaying = false;
+  iconPlay.style.display  = '';
+  iconPause.style.display = 'none';
+  clearTimeout(autoTimer);
+  stopProgressAnim();
+}
+
+function scheduleNext() {
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => {
+    if (!isPlaying) return;
+    currentSlide = (currentSlide + 1) % photos.length;
+    updateSlideUI();
+    scheduleNext();
+    startProgressAnim();
+  }, AUTO_SLIDE_MS);
+}
+
+function startProgressAnim() {
+  // Force reflow to restart animation
+  progressFillEl.classList.remove('running');
+  void progressFillEl.offsetWidth; // reflow
+  progressFillEl.classList.add('running');
+}
+
+function stopProgressAnim() {
+  progressFillEl.classList.remove('running');
+  progressFillEl.style.width = '0%';
+}
+
+function togglePlayPause() {
+  if (isPlaying) pauseAutoPlay();
+  else startAutoPlay();
+}
+
+playPauseBtn.addEventListener('click', togglePlayPause);
+
+/* Pause on user interaction, resume after 8s idle */
+function userInteracted() {
+  if (!isPlaying) return;
+  pauseAutoPlay();
+  clearTimeout(window._resumeTimer);
+  window._resumeTimer = setTimeout(() => startAutoPlay(), 8000);
+}
+
+/* ── Swipe on slideshow ── */
 let tsX = 0, tsY = 0;
-const slideshowWrap = document.getElementById('slideshowWrap');
 slideshowWrap.addEventListener('touchstart', e => {
   tsX = e.touches[0].clientX; tsY = e.touches[0].clientY;
 }, { passive: true });
 slideshowWrap.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - tsX;
   const dy = e.changedTouches[0].clientY - tsY;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) changeSlide(dx < 0 ? 1 : -1);
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) {
+    changeSlide(dx < 0 ? 1 : -1);
+    userInteracted();
+  }
 }, { passive: true });
 
-/* — Lightbox swipe — */
+/* ── Swipe on lightbox ── */
 let ltsX = 0;
-const lightboxEl = document.getElementById('lightbox');
 lightboxEl.addEventListener('touchstart', e => { ltsX = e.touches[0].clientX; }, { passive: true });
 lightboxEl.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - ltsX;
   if (Math.abs(dx) > 40) lightboxNav(dx < 0 ? 1 : -1);
 }, { passive: true });
 
-/* — Button wiring — */
-document.getElementById('slidePrev').addEventListener('click', () => changeSlide(-1));
-document.getElementById('slideNext').addEventListener('click', () => changeSlide(1));
+/* ── Button wiring ── */
+document.getElementById('slidePrev').addEventListener('click', () => { changeSlide(-1); userInteracted(); });
+document.getElementById('slideNext').addEventListener('click', () => { changeSlide(1);  userInteracted(); });
 document.getElementById('slideFullscreenBtn').addEventListener('click', () => openLightboxAt(currentSlide));
 document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
 document.getElementById('lbPrev').addEventListener('click', () => lightboxNav(-1));
 document.getElementById('lbNext').addEventListener('click', () => lightboxNav(1));
 
-/* — Slide logic — */
+/* ── Slide logic ── */
 function changeSlide(dir) {
   if (!photos.length) return;
   currentSlide = (currentSlide + dir + photos.length) % photos.length;
   updateSlideUI();
+  if (isPlaying) { scheduleNext(); startProgressAnim(); }
 }
-function goToSlide(idx) { currentSlide = idx; updateSlideUI(); }
+
+function goToSlide(idx) {
+  currentSlide = idx; updateSlideUI();
+  userInteracted();
+}
 
 function updateSlideUI() {
   document.getElementById('slideTrack').style.transform = `translateX(-${currentSlide * 100}%)`;
@@ -878,6 +917,11 @@ function buildSlideshow() {
 
   currentSlide = 0;
   updateSlideUI();
+
+  // Start auto-play (only if more than 1 photo)
+  clearTimeout(autoTimer);
+  if (photos.length > 1) startAutoPlay();
+  else { stopProgressAnim(); iconPlay.style.display='none'; iconPause.style.display=''; }
 }
 
 function buildGrid() {
@@ -902,12 +946,16 @@ function setView(v) {
   const gg = document.getElementById('galleryGrid');
   if (v === 'grid' && photos.length) gg.classList.add('visible');
   else gg.classList.remove('visible');
+  // Resume/pause auto-play based on view
+  if (v === 'slide' && photos.length > 1) startAutoPlay();
+  else pauseAutoPlay();
 }
 
-/* — Lightbox — */
+/* ── Lightbox ── */
 let lbIdx = 0;
 
 function openLightboxAt(idx) {
+  pauseAutoPlay();
   lbIdx = idx;
   renderLightbox();
   lightboxEl.classList.add('open');
@@ -929,6 +977,7 @@ function renderLightbox() {
 function closeLightbox() {
   lightboxEl.classList.remove('open');
   document.body.style.overflow = '';
+  if (currentView === 'slide' && photos.length > 1) startAutoPlay();
 }
 
 document.addEventListener('keydown', e => {
@@ -938,12 +987,14 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft')  lightboxNav(-1);
 });
 
-/* — Load from Supabase — */
+/* ── Load from Supabase ── */
 async function loadPhotos() {
   document.getElementById('galleryLoading').style.display = 'flex';
   document.getElementById('galleryEmpty').style.display   = 'none';
   slideshowWrap.style.display = 'none';
   document.getElementById('galleryGrid').classList.remove('visible');
+  clearTimeout(autoTimer);
+  stopProgressAnim();
 
   try {
     const res = await fetch(
@@ -964,7 +1015,7 @@ async function loadPhotos() {
   setView(currentView);
 }
 
-/* — Helpers — */
+/* ── Helpers ── */
 function fmtDate(d) {
   return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
@@ -974,13 +1025,13 @@ function esc(s) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/* — Scroll reveal — */
+/* ── Scroll reveal ── */
 const revealIO = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
 
-/* — Init — */
+/* ── Init ── */
 loadPhotos();
 </script>
 </body>
