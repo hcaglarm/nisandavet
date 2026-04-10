@@ -19,7 +19,6 @@
   --cream: #f5efe6;
   --glass: rgba(255,255,255,0.05);
   --gb:    rgba(255,255,255,0.12);
-  --auto-dur: 5s;
 }
 
 html { scroll-behavior: smooth; }
@@ -35,7 +34,6 @@ body {
 }
 input, textarea { -webkit-user-select: text; user-select: text; }
 
-/* ── BG ── */
 .site-bg {
   position: fixed; inset: 0; z-index: -2;
   background: url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600") center/cover no-repeat;
@@ -54,7 +52,7 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ══ HEADER ══ */
+/* HEADER */
 .page-header {
   position: relative; z-index: 1;
   padding: 48px 20px 28px; text-align: center;
@@ -74,7 +72,7 @@ body::after {
 .page-title { font-family: 'Luxurious Script', cursive; font-size: clamp(40px, 12vw, 72px); line-height: 1.1; color: var(--cream); }
 .page-sub { margin-top: 10px; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(245,239,230,.38); }
 
-/* ══ MAIN ══ */
+/* MAIN */
 .main-content {
   position: relative; z-index: 1;
   max-width: 600px; margin: 0 auto;
@@ -86,7 +84,7 @@ body::after {
 .section-sep::after { background: linear-gradient(to left, transparent, rgba(201,169,110,.35)); }
 .section-sep span { font-size: 14px; color: var(--gold); }
 
-/* ══ GALLERY ══ */
+/* GALLERY */
 .gallery-section { display: flex; flex-direction: column; gap: 20px; }
 .gallery-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .gallery-title-wrap { display: flex; flex-direction: column; gap: 3px; }
@@ -110,7 +108,7 @@ body::after {
 .gallery-empty-icon { font-size: 36px; margin-bottom: 14px; opacity: .3; }
 .gallery-empty-text { font-size: 13px; letter-spacing: 1px; opacity: .38; line-height: 1.8; }
 
-/* ══ SLIDESHOW ══ */
+/* SLIDESHOW */
 .slideshow-wrap {
   display: none; position: relative;
   border-radius: 18px; overflow: hidden;
@@ -130,9 +128,7 @@ body::after {
 }
 .slide-name { font-family: 'Luxurious Script', cursive; font-size: 20px; color: var(--gold2); line-height: 1; }
 .slide-comment { margin-top: 3px; font-size: 12px; font-style: italic; opacity: .58; }
-/* [CHANGE 1] no .slide-date — date removed from captions */
 
-/* top badges */
 .slide-topbar {
   position: absolute; top: 12px; left: 12px; right: 12px;
   display: flex; justify-content: space-between; align-items: center; z-index: 2; pointer-events: none;
@@ -152,22 +148,19 @@ body::after {
 .slide-icon-btn:active { background: rgba(14,11,8,.95); }
 .slide-icon-btn svg { width: 14px; height: 14px; }
 
-/* auto-play progress bar */
+/* rAF-driven progress bar — no CSS animation */
 .slide-progress-wrap { height: 3px; background: rgba(201,169,110,.12); position: relative; overflow: hidden; }
 .slide-progress-fill {
   position: absolute; left: 0; top: 0; bottom: 0;
   background: linear-gradient(to right, var(--gold3), var(--gold));
   width: 0%;
 }
-.slide-progress-fill.running { animation: slideProgress var(--auto-dur) linear forwards; }
-@keyframes slideProgress { from { width: 0%; } to { width: 100%; } }
 
-/* dots */
 .slide-dots { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; flex-wrap: wrap; }
 .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(201,169,110,.22); cursor: pointer; transition: background .3s, transform .3s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .dot.active { background: var(--gold); transform: scale(1.5); }
 
-/* ══ GRID ══ */
+/* GRID */
 .gallery-grid { display: none; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .gallery-grid.visible { display: grid; }
 .grid-item {
@@ -184,7 +177,7 @@ body::after {
 .grid-item:active .grid-overlay { opacity: 1; }
 .grid-item-name { font-family: 'Luxurious Script', cursive; font-size: 14px; color: var(--gold2); line-height: 1; }
 
-/* ══ UPLOAD CARD ══ */
+/* UPLOAD CARD */
 .upload-card {
   background: var(--glass); border: 1px solid var(--gb);
   border-radius: 22px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); padding: 28px 20px;
@@ -257,11 +250,17 @@ body::after {
 .btn-submit:disabled { opacity: .38; cursor: not-allowed; }
 .btn-submit svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-.status-msg { display: none; margin-top: 12px; padding: 11px 16px; border-radius: 10px; font-size: 14px; letter-spacing: .3px; text-align: center; line-height: 1.5; }
+.status-msg { display: none; margin-top: 12px; padding: 11px 16px; border-radius: 10px; font-size: 14px; letter-spacing: .3px; text-align: center; line-height: 1.6; }
 .status-msg.success { display: block; background: rgba(100,180,100,.1); border: 1px solid rgba(100,180,100,.3); color: #9de89d; }
 .status-msg.error   { display: block; background: rgba(200,80,80,.1);  border: 1px solid rgba(200,80,80,.3);  color: #f09090; }
+.btn-retry {
+  display: inline-block; margin-top: 10px; padding: 8px 20px; border-radius: 20px;
+  border: 1px solid rgba(240,144,144,.4); background: rgba(200,80,80,.12); color: #f09090;
+  font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
 
-/* ══ LIGHTBOX ══ */
+/* LIGHTBOX */
 .lightbox {
   display: none; position: fixed; inset: 0; z-index: 200;
   background: rgba(4,3,2,.98);
@@ -312,7 +311,7 @@ body::after {
 .lightbox-comment { font-size: 13px; font-style: italic; opacity: .5; margin-top: 4px; }
 .lightbox-date { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: .28; margin-top: 5px; }
 
-/* ══ FOOTER ══ */
+/* FOOTER */
 .page-bottom { padding: 0 16px 56px; display: flex; flex-direction: column; align-items: center; gap: 14px; position: relative; z-index: 1; }
 .bottom-ornament { display: flex; align-items: center; gap: 14px; }
 .bottom-ornament::before, .bottom-ornament::after { content: ''; width: 70px; height: 1px; background: linear-gradient(to right, transparent, rgba(201,169,110,.28)); }
@@ -324,12 +323,39 @@ body::after {
 .reveal.visible { opacity: 1; transform: none; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
-/* ══ [CHANGE 3] ADMIN PANEL ══ */
+/* ADMIN PANEL */
 #adminPanel {
   display: none; position: fixed; inset: 0; z-index: 300;
   background: rgba(8,6,4,.98); flex-direction: column; overflow: hidden;
 }
 #adminPanel.open { display: flex; }
+
+/* Admin password overlay */
+#adminAuthWrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px;
+}
+.adm-auth-title { font-family: 'Luxurious Script', cursive; font-size: 34px; color: var(--gold2); margin-bottom: 8px; }
+.adm-auth-sub { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: .5; margin-bottom: 32px; }
+.adm-auth-input {
+  width: 100%; max-width: 280px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(201,169,110,.25); border-radius: 12px;
+  padding: 14px 18px; color: var(--cream); font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; letter-spacing: 4px; text-align: center; outline: none;
+  -webkit-appearance: none; transition: border-color .3s;
+}
+.adm-auth-input:focus { border-color: var(--gold); }
+.adm-auth-btn {
+  margin-top: 16px; width: 100%; max-width: 280px; padding: 14px;
+  border-radius: 30px; border: 1px solid rgba(201,169,110,.4);
+  background: linear-gradient(135deg, rgba(201,169,110,.15), rgba(201,169,110,.05));
+  color: var(--gold2); font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.adm-auth-btn:active { background: linear-gradient(135deg, rgba(201,169,110,.28), rgba(201,169,110,.12)); }
+.adm-auth-err { margin-top: 12px; font-size: 12px; color: #f09090; letter-spacing: 1px; opacity: 0; transition: opacity .3s; }
+.adm-auth-err.show { opacity: 1; }
 
 .adm-topbar {
   flex-shrink: 0; padding: 20px 18px 16px;
@@ -414,7 +440,6 @@ body::after {
 }
 .adm-sel-bar.visible { display: flex; }
 .adm-sel-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold2); }
-
 .adm-msg { text-align: center; padding: 48px 20px; font-size: 13px; letter-spacing: 1px; opacity: .38; }
 </style>
 </head>
@@ -423,7 +448,6 @@ body::after {
 <div class="site-bg"></div>
 <div class="site-overlay"></div>
 
-<!-- HEADER -->
 <header class="page-header">
   <a class="back-link" href="index.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -440,7 +464,7 @@ body::after {
 
 <main class="main-content">
 
-  <!-- ══ 1. GALERİ ══ -->
+  <!-- GALLERY -->
   <div class="gallery-section reveal">
     <div class="gallery-header">
       <div class="gallery-title-wrap">
@@ -465,7 +489,6 @@ body::after {
       <div class="gallery-empty-text">Henüz fotoğraf yüklenmedi.<br>İlk anıyı paylaşan siz olun!</div>
     </div>
 
-    <!-- Slideshow — [CHANGE 2] no prev/next arrows -->
     <div class="slideshow-wrap" id="slideshowWrap">
       <div class="slide-topbar">
         <div class="slide-counter" id="slideCounter">1 / 1</div>
@@ -491,7 +514,7 @@ body::after {
 
   <div class="section-sep reveal"><span>♡</span></div>
 
-  <!-- ══ 2. YÜKLEME ══ -->
+  <!-- UPLOAD -->
   <div class="upload-card reveal">
     <div class="card-label">Fotoğraf Yükle</div>
     <div class="drop-zone" id="dropZone">
@@ -553,28 +576,40 @@ body::after {
   </div>
 </div>
 
-<!-- [CHANGE 3] ADMIN PANEL — only reachable via #admin hash -->
+<!-- ADMIN PANEL -->
 <div id="adminPanel">
-  <div class="adm-topbar">
-    <div>
-      <div class="adm-title">Admin Paneli</div>
-      <div class="adm-subtitle">Fotoğraf Yönetimi</div>
-    </div>
-    <div class="adm-close" id="admClose">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </div>
+  <!-- Auth screen -->
+  <div id="adminAuthWrap">
+    <div class="adm-auth-title">Admin Girişi</div>
+    <div class="adm-auth-sub">Şifrenizi girin</div>
+    <input class="adm-auth-input" type="password" id="admPassInput" placeholder="••••••" maxlength="20" autocomplete="off" />
+    <button class="adm-auth-btn" id="admPassBtn">Giriş</button>
+    <div class="adm-auth-err" id="admPassErr">Yanlış şifre</div>
+    <button class="adm-auth-btn" id="admAuthClose" style="margin-top:24px;background:transparent;border-color:rgba(201,169,110,.15);opacity:.5;">İptal</button>
   </div>
-  <div class="adm-body" id="admBody">
-    <div class="adm-msg">Yükleniyor…</div>
-  </div>
-  <div class="adm-sel-bar" id="admSelBar">
-    <div class="adm-sel-label" id="admSelLabel">0 seçili</div>
-    <div style="display:flex;gap:8px;">
-      <button class="adm-btn adm-btn-muted" id="admDeselect">Seçimi Kaldır</button>
-      <button class="adm-btn adm-btn-danger" id="admDelete">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
-        Sil
-      </button>
+  <!-- Main content (hidden until auth) -->
+  <div id="adminMain" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="adm-topbar">
+      <div>
+        <div class="adm-title">Admin Paneli</div>
+        <div class="adm-subtitle">Fotoğraf Yönetimi</div>
+      </div>
+      <div class="adm-close" id="admClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="adm-body" id="admBody">
+      <div class="adm-msg">Yükleniyor…</div>
+    </div>
+    <div class="adm-sel-bar" id="admSelBar">
+      <div class="adm-sel-label" id="admSelLabel">0 seçili</div>
+      <div style="display:flex;gap:8px;">
+        <button class="adm-btn adm-btn-muted" id="admDeselect">Seçimi Kaldır</button>
+        <button class="adm-btn adm-btn-danger" id="admDelete">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+          Sil
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -582,25 +617,22 @@ body::after {
 <script>
 'use strict';
 
-/* ═══════════════════════════
-   CONFIG
-═══════════════════════════ */
-const SUPABASE_URL = "https://gtadvplwwwlxutflmcix.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
-const BUCKET       = "photos";
-const SB_H         = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
+/* ─── CONFIG ─── */
+const SUPABASE_URL  = "https://gtadvplwwwlxutflmcix.supabase.co";
+const SUPABASE_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YWR2cGx3d3dseHV0ZmxtY2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzM4MzEsImV4cCI6MjA4OTk0OTgzMX0.ZlZK0GAFJBBA_akAimXKrGTUzSf4jPwfBa1bZ0EEQzc";
+const BUCKET        = "photos";
+const ADMIN_PASS    = "admn53";
+const SB_H          = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
 const AUTO_SLIDE_MS = 5000;
 const MAX_RETRIES   = 3;
 
-/* ═══════════════════════════
-   IMAGE PROTECTION
-═══════════════════════════ */
+/* ─── PROTECT IMAGES ─── */
 document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 document.addEventListener('dragstart',   e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-/* ═══════════════════════════
+/* ═══════════════════════════════════
    UPLOAD
-═══════════════════════════ */
+═══════════════════════════════════ */
 let fileIdCounter = 0;
 const fileMap = new Map();
 
@@ -617,11 +649,12 @@ const progressLabel = document.getElementById('progressLabel');
 const dropTitle     = document.getElementById('dropTitle');
 
 function isImageByExt(name) { return /\.(jpe?g|png|gif|webp|heic|heif|bmp|tiff?)$/i.test(name); }
+
 function resolveMime(file) {
   if (file.type && file.type.startsWith('image/')) return file.type;
   const ext = file.name.split('.').pop().toLowerCase();
-  return ({ jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif',
-            webp:'image/webp', heic:'image/heic', heif:'image/heif' })[ext] || 'application/octet-stream';
+  return ({jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',gif:'image/gif',
+           webp:'image/webp',heic:'image/heic',heif:'image/heif'})[ext] || 'application/octet-stream';
 }
 
 function addFiles(fileList) {
@@ -653,7 +686,7 @@ function appendThumb(id, objectUrl) {
 function removeFile(id) {
   const entry = fileMap.get(id); if (!entry) return;
   URL.revokeObjectURL(entry.objectUrl); fileMap.delete(id);
-  const thumb = previewGrid.querySelector(`[data-fid="${id}"]`);
+  const thumb = previewGrid.querySelector('[data-fid="' + id + '"]');
   if (thumb) previewGrid.removeChild(thumb);
   const addTile = previewGrid.querySelector('.preview-add');
   if (fileMap.size < 20 && !addTile) previewGrid.appendChild(makeAddTile());
@@ -667,16 +700,20 @@ function makeAddTile() {
   inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
   inp.addEventListener('change', function() { addFiles(this.files); this.value = ''; });
   const icon = document.createElement('span'); icon.textContent = '+';
-  tile.appendChild(inp); tile.appendChild(icon); return tile;
+  tile.appendChild(inp); tile.appendChild(icon);
+  return tile;
 }
 
 function syncPreviewState() {
   const n = fileMap.size;
   previewGrid.classList.toggle('has-files', n > 0);
-  dropTitle.textContent = n ? `${n} fotoğraf seçildi` : 'Fotoğraf Seç veya Sürükle';
+  dropTitle.textContent = n ? (n + ' fotoğraf seçildi') : 'Fotoğraf Seç veya Sürükle';
   checkSubmit();
 }
-function checkSubmit() { submitBtn.disabled = !(fileMap.size > 0 && nameInput.value.trim()); }
+
+function checkSubmit() {
+  submitBtn.disabled = !(fileMap.size > 0 && nameInput.value.trim());
+}
 
 fileInput.addEventListener('change', function() { addFiles(this.files); this.value = ''; });
 nameInput.addEventListener('input', checkSubmit);
@@ -684,32 +721,57 @@ dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.class
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
 dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); });
 
-function showStatus(type, msg) { statusMsg.className = 'status-msg ' + type; statusMsg.textContent = msg; }
-function hideStatus() { statusMsg.className = 'status-msg'; }
+function showStatus(type, msg, withRetry) {
+  statusMsg.className = 'status-msg ' + type;
+  statusMsg.innerHTML = '';
+  const txt = document.createElement('div');
+  txt.textContent = msg;
+  statusMsg.appendChild(txt);
+  if (type === 'error' && withRetry) {
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'btn-retry';
+    retryBtn.textContent = '↺ Yeniden Dene';
+    retryBtn.addEventListener('click', function() { hideStatus(); doUpload(); });
+    statusMsg.appendChild(retryBtn);
+  }
+}
 
-async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+function hideStatus() {
+  statusMsg.className = 'status-msg';
+  statusMsg.innerHTML = '';
+}
+
+async function fetchWithRetry(url, options) {
   let lastErr;
-  for (let attempt = 1; attempt <= retries; attempt++) {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       const res = await fetch(url, options);
       if (res.ok) return res;
       if (res.status >= 400 && res.status < 500) {
-        throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status, fatal: true });
+        const err = new Error('HTTP ' + res.status);
+        err.status = res.status; err.fatal = true;
+        throw err;
       }
-      lastErr = new Error(`HTTP ${res.status}`);
+      lastErr = new Error('HTTP ' + res.status);
     } catch(err) {
       if (err.fatal) throw err;
       lastErr = err;
-      if (attempt < retries) await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt - 1)));
+      if (attempt < MAX_RETRIES) {
+        await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt - 1)));
+      }
     }
   }
   throw lastErr;
 }
 
-submitBtn.addEventListener('click', async () => {
+submitBtn.addEventListener('click', doUpload);
+
+async function doUpload() {
   if (!fileMap.size || !nameInput.value.trim()) return;
-  submitBtn.disabled = true; hideStatus();
-  progressWrap.style.display = 'block'; progressLabel.style.display = 'block';
+  submitBtn.disabled = true;
+  hideStatus();
+  progressWrap.style.display = 'block';
+  progressLabel.style.display = 'block';
   progressFill.style.width = '0%';
 
   const name    = nameInput.value.trim();
@@ -718,179 +780,230 @@ submitBtn.addEventListener('click', async () => {
   const total   = entries.length;
   const uploaded = [];
 
+  // Phase 1: Storage
   for (let i = 0; i < total; i++) {
-    const [, { file }] = entries[i];
-    progressLabel.textContent = `Yükleniyor ${i + 1} / ${total}…`;
+    const file = entries[i][1].file;
+    progressLabel.textContent = 'Yükleniyor ' + (i + 1) + ' / ' + total + '…';
     progressFill.style.width = ((i / total) * 65 + 5) + '%';
     const mime = resolveMime(file);
     const ext  = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const uid  = crypto.randomUUID();
-    const path = `${uid}.${ext}`;
+    const path = uid + '.' + ext;
     try {
-      await fetchWithRetry(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+      await fetchWithRetry(SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path, {
         method: 'POST',
-        headers: { ...SB_H, 'Content-Type': mime, 'x-upsert': 'true', 'Cache-Control': '3600' },
+        headers: Object.assign({}, SB_H, { 'Content-Type': mime, 'x-upsert': 'true', 'Cache-Control': '3600' }),
         body: file,
       });
-      uploaded.push({ uid, publicUrl: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}` });
+      uploaded.push({ uid: uid, publicUrl: SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + path });
     } catch(err) {
       progressFill.style.width = '0%';
-      setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
-      showStatus('error', `${i + 1}. fotoğraf yüklenemedi (${err.status || 'bağlantı hatası'}). Lütfen tekrar deneyin.`);
-      submitBtn.disabled = false; checkSubmit(); return;
+      setTimeout(function() { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
+      showStatus('error', (i + 1) + '. fotoğraf yüklenemedi (' + (err.status || 'bağlantı hatası') + '). Lütfen tekrar deneyin.', true);
+      submitBtn.disabled = false; checkSubmit();
+      return;
     }
   }
 
-  progressLabel.textContent = 'Kaydediliyor…'; progressFill.style.width = '82%';
-  const rows = uploaded.map(({ uid, publicUrl }) => ({ id: uid, url: publicUrl, name, comment }));
+  // Phase 2: DB insert
+  progressLabel.textContent = 'Kaydediliyor…';
+  progressFill.style.width = '82%';
+  const rows = uploaded.map(function(u) { return { id: u.uid, url: u.publicUrl, name: name, comment: comment }; });
   try {
-    await fetchWithRetry(`${SUPABASE_URL}/rest/v1/photos`, {
+    await fetchWithRetry(SUPABASE_URL + '/rest/v1/photos', {
       method: 'POST',
-      headers: { ...SB_H, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      headers: Object.assign({}, SB_H, { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
       body: JSON.stringify(rows),
     });
   } catch(err) {
     progressFill.style.width = '0%';
-    setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
-    showStatus('error', 'Fotoğraflar yüklendi ancak kaydedilemedi. Lütfen tekrar deneyin.');
-    submitBtn.disabled = false; checkSubmit(); return;
+    setTimeout(function() { progressWrap.style.display='none'; progressLabel.style.display='none'; }, 400);
+    showStatus('error', 'Fotoğraflar yüklendi ancak kaydedilemedi. Lütfen tekrar deneyin.', true);
+    submitBtn.disabled = false; checkSubmit();
+    return;
   }
 
-  progressFill.style.width = '100%'; progressLabel.textContent = 'Tamamlandı!';
-  showStatus('success', `✓ ${total} fotoğraf başarıyla paylaşıldı! Teşekkürler ♡`);
-  setTimeout(() => { progressWrap.style.display='none'; progressLabel.style.display='none'; progressFill.style.width='0%'; }, 900);
+  // Success
+  progressFill.style.width = '100%';
+  progressLabel.textContent = 'Tamamlandı!';
+  showStatus('success', '✓ ' + total + ' fotoğraf başarıyla paylaşıldı! Teşekkürler ♡', false);
+  setTimeout(function() {
+    progressWrap.style.display = 'none';
+    progressLabel.style.display = 'none';
+    progressFill.style.width = '0%';
+  }, 900);
 
-  fileMap.forEach(e => URL.revokeObjectURL(e.objectUrl));
+  fileMap.forEach(function(e) { URL.revokeObjectURL(e.objectUrl); });
   fileMap.clear(); fileIdCounter = 0;
   previewGrid.innerHTML = ''; previewGrid.classList.remove('has-files');
   nameInput.value = ''; commentInput.value = ''; fileInput.value = '';
-  dropTitle.textContent = 'Fotoğraf Seç veya Sürükle'; checkSubmit();
+  dropTitle.textContent = 'Fotoğraf Seç veya Sürükle';
+  checkSubmit();
 
   await loadPhotos();
-});
 
-/* ═══════════════════════════
+  // Scroll to gallery after reload
+  setTimeout(function() {
+    var galleryEl = document.querySelector('.gallery-section');
+    if (galleryEl) galleryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 400);
+}
+
+/* ═══════════════════════════════════
    GALLERY + SLIDESHOW
-═══════════════════════════ */
-let photos       = [];
-let currentSlide = 0;
-let currentView  = 'slide';
-let isPlaying    = true;
-let autoTimer    = null;
+   rAF-based progress bar (no CSS anim)
+═══════════════════════════════════ */
+var photos       = [];
+var currentSlide = 0;
+var currentView  = 'slide';
+var isPlaying    = true;
 
-const slideshowWrap  = document.getElementById('slideshowWrap');
-const progressFillEl = document.getElementById('slideProgressFill');
-const playPauseBtn   = document.getElementById('playPauseBtn');
-const iconPlay       = document.getElementById('iconPlay');
-const iconPause      = document.getElementById('iconPause');
-const lightboxEl     = document.getElementById('lightbox');
+var slideshowWrap  = document.getElementById('slideshowWrap');
+var progressFillEl = document.getElementById('slideProgressFill');
+var playPauseBtn   = document.getElementById('playPauseBtn');
+var iconPlay       = document.getElementById('iconPlay');
+var iconPause      = document.getElementById('iconPause');
+var lightboxEl     = document.getElementById('lightbox');
+
+var _rafId     = null;
+var _progStart = null;
+var _resumeTimer = null;
 
 function startAutoPlay() {
   if (!photos.length || photos.length < 2) return;
-  isPlaying = true; iconPlay.style.display = 'none'; iconPause.style.display = '';
-  scheduleNext(); startProgressAnim();
+  isPlaying = true;
+  iconPlay.style.display  = 'none';
+  iconPause.style.display = '';
+  runProgress();
 }
+
 function pauseAutoPlay() {
-  isPlaying = false; iconPlay.style.display = ''; iconPause.style.display = 'none';
-  clearTimeout(autoTimer); stopProgressAnim();
+  isPlaying = false;
+  iconPlay.style.display  = '';
+  iconPause.style.display = 'none';
+  stopProgress();
 }
-function scheduleNext() {
-  clearTimeout(autoTimer);
-  autoTimer = setTimeout(() => {
-    if (!isPlaying) return;
-    currentSlide = (currentSlide + 1) % photos.length;
-    updateSlideUI(); scheduleNext(); startProgressAnim();
-  }, AUTO_SLIDE_MS);
+
+function runProgress() {
+  stopProgress();
+  _progStart = performance.now();
+  progressFillEl.style.width = '0%';
+
+  function tick(now) {
+    var elapsed = now - _progStart;
+    var pct = Math.min((elapsed / AUTO_SLIDE_MS) * 100, 100);
+    progressFillEl.style.width = pct + '%';
+    if (pct < 100) {
+      _rafId = requestAnimationFrame(tick);
+    } else {
+      if (isPlaying && photos.length > 1) {
+        currentSlide = (currentSlide + 1) % photos.length;
+        updateSlideUI();
+        runProgress();
+      }
+    }
+  }
+  _rafId = requestAnimationFrame(tick);
 }
-function startProgressAnim() {
-  progressFillEl.classList.remove('running'); void progressFillEl.offsetWidth;
-  progressFillEl.classList.add('running');
+
+function stopProgress() {
+  if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
+  progressFillEl.style.width = '0%';
 }
-function stopProgressAnim() { progressFillEl.classList.remove('running'); progressFillEl.style.width = '0%'; }
-function togglePlayPause() { isPlaying ? pauseAutoPlay() : startAutoPlay(); }
-playPauseBtn.addEventListener('click', togglePlayPause);
 
 function userInteracted() {
-  if (!isPlaying) return;
   pauseAutoPlay();
-  clearTimeout(window._resumeTimer);
-  window._resumeTimer = setTimeout(() => startAutoPlay(), 8000);
+  clearTimeout(_resumeTimer);
+  _resumeTimer = setTimeout(function() {
+    if (!isPlaying && currentView === 'slide' && photos.length > 1) startAutoPlay();
+  }, 8000);
 }
 
-/* swipe on slideshow */
-let tsX = 0, tsY = 0;
-slideshowWrap.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; }, { passive: true });
-slideshowWrap.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - tsX;
-  const dy = e.changedTouches[0].clientY - tsY;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) { changeSlide(dx < 0 ? 1 : -1); userInteracted(); }
+playPauseBtn.addEventListener('click', function() {
+  if (isPlaying) pauseAutoPlay(); else startAutoPlay();
+});
+
+// Swipe on slideshow
+var tsX = 0, tsY = 0;
+slideshowWrap.addEventListener('touchstart', function(e) {
+  tsX = e.touches[0].clientX; tsY = e.touches[0].clientY;
+}, { passive: true });
+slideshowWrap.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - tsX;
+  var dy = e.changedTouches[0].clientY - tsY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36) {
+    changeSlide(dx < 0 ? 1 : -1);
+    userInteracted();
+  }
 }, { passive: true });
 
-/* swipe on lightbox */
-let ltsX = 0;
-lightboxEl.addEventListener('touchstart', e => { ltsX = e.touches[0].clientX; }, { passive: true });
-lightboxEl.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - ltsX;
+// Swipe on lightbox
+var ltsX = 0;
+lightboxEl.addEventListener('touchstart', function(e) { ltsX = e.touches[0].clientX; }, { passive: true });
+lightboxEl.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - ltsX;
   if (Math.abs(dx) > 40) lightboxNav(dx < 0 ? 1 : -1);
 }, { passive: true });
 
-document.getElementById('slideFullscreenBtn').addEventListener('click', () => openLightboxAt(currentSlide));
+document.getElementById('slideFullscreenBtn').addEventListener('click', function() { openLightboxAt(currentSlide); });
 document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-document.getElementById('lbPrev').addEventListener('click', () => lightboxNav(-1));
-document.getElementById('lbNext').addEventListener('click', () => lightboxNav(1));
+document.getElementById('lbPrev').addEventListener('click', function() { lightboxNav(-1); });
+document.getElementById('lbNext').addEventListener('click', function() { lightboxNav(1); });
 
 function changeSlide(dir) {
   if (!photos.length) return;
   currentSlide = (currentSlide + dir + photos.length) % photos.length;
   updateSlideUI();
-  if (isPlaying) { scheduleNext(); startProgressAnim(); }
+  if (isPlaying) runProgress();
 }
-function goToSlide(idx) { currentSlide = idx; updateSlideUI(); userInteracted(); }
+
+function goToSlide(idx) {
+  currentSlide = idx; updateSlideUI(); userInteracted();
+}
 
 function updateSlideUI() {
-  document.getElementById('slideTrack').style.transform = `translateX(-${currentSlide * 100}%)`;
-  document.getElementById('slideCounter').textContent   = `${currentSlide + 1} / ${photos.length}`;
-  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  document.getElementById('slideTrack').style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+  document.getElementById('slideCounter').textContent   = (currentSlide + 1) + ' / ' + photos.length;
+  document.querySelectorAll('.dot').forEach(function(d, i) { d.classList.toggle('active', i === currentSlide); });
 }
 
 function buildSlideshow() {
-  const track = document.getElementById('slideTrack');
-  const dots  = document.getElementById('slideDots');
+  var track = document.getElementById('slideTrack');
+  var dots  = document.getElementById('slideDots');
   track.innerHTML = dots.innerHTML = '';
-  photos.forEach((p, i) => {
-    const item = document.createElement('div');
+  photos.forEach(function(p, i) {
+    var item = document.createElement('div');
     item.className = 'slide-item';
-    /* [CHANGE 1] no date in caption */
-    item.innerHTML = `
-      <img src="${p.url}" alt="${esc(p.name)}" loading="lazy" draggable="false" oncontextmenu="return false" />
-      <div class="slide-caption">
-        <div class="slide-name">${esc(p.name)}</div>
-        ${p.comment ? `<div class="slide-comment">${esc(p.comment)}</div>` : ''}
-      </div>`;
+    item.innerHTML =
+      '<img src="' + p.url + '" alt="' + esc(p.name) + '" loading="lazy" draggable="false" oncontextmenu="return false" />' +
+      '<div class="slide-caption">' +
+        '<div class="slide-name">' + esc(p.name) + '</div>' +
+        (p.comment ? '<div class="slide-comment">' + esc(p.comment) + '</div>' : '') +
+      '</div>';
     track.appendChild(item);
     if (photos.length <= 30) {
-      const dot = document.createElement('div');
+      var dot = document.createElement('div');
       dot.className = 'dot' + (i === 0 ? ' active' : '');
-      dot.addEventListener('click', () => goToSlide(i));
+      dot.addEventListener('click', (function(idx) { return function() { goToSlide(idx); }; })(i));
       dots.appendChild(dot);
     }
   });
   currentSlide = 0; updateSlideUI();
-  clearTimeout(autoTimer);
+  stopProgress();
   if (photos.length > 1) startAutoPlay();
-  else { stopProgressAnim(); iconPlay.style.display = 'none'; iconPause.style.display = ''; }
+  else { iconPlay.style.display = 'none'; iconPause.style.display = ''; }
 }
 
 function buildGrid() {
-  const grid = document.getElementById('galleryGrid');
+  var grid = document.getElementById('galleryGrid');
   grid.innerHTML = '';
-  photos.forEach((p, i) => {
-    const item = document.createElement('div');
+  photos.forEach(function(p, i) {
+    var item = document.createElement('div');
     item.className = 'grid-item';
-    item.innerHTML = `
-      <img src="${p.url}" alt="${esc(p.name)}" loading="lazy" draggable="false" oncontextmenu="return false" />
-      <div class="grid-overlay"><div class="grid-item-name">${esc(p.name)}</div></div>`;
-    item.addEventListener('click', () => openLightboxAt(i));
+    item.innerHTML =
+      '<img src="' + p.url + '" alt="' + esc(p.name) + '" loading="lazy" draggable="false" oncontextmenu="return false" />' +
+      '<div class="grid-overlay"><div class="grid-item-name">' + esc(p.name) + '</div></div>';
+    item.addEventListener('click', (function(idx) { return function() { openLightboxAt(idx); }; })(i));
     grid.appendChild(item);
   });
 }
@@ -900,12 +1013,12 @@ function setView(v) {
   document.getElementById('btnSlide').classList.toggle('active', v === 'slide');
   document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
   slideshowWrap.style.display = (v === 'slide' && photos.length) ? 'block' : 'none';
-  const gg = document.getElementById('galleryGrid');
+  var gg = document.getElementById('galleryGrid');
   if (v === 'grid' && photos.length) gg.classList.add('visible'); else gg.classList.remove('visible');
   if (v === 'slide' && photos.length > 1) startAutoPlay(); else pauseAutoPlay();
 }
 
-let lbIdx = 0;
+var lbIdx = 0;
 function openLightboxAt(idx) {
   pauseAutoPlay(); lbIdx = idx; renderLightbox();
   lightboxEl.classList.add('open'); document.body.style.overflow = 'hidden';
@@ -915,19 +1028,19 @@ function lightboxNav(dir) {
   lbIdx = (lbIdx + dir + photos.length) % photos.length; renderLightbox();
 }
 function renderLightbox() {
-  const p = photos[lbIdx];
-  document.getElementById('lightboxImg').src          = p.url;
-  document.getElementById('lightboxName').textContent    = p.name;
-  document.getElementById('lightboxComment').textContent = p.comment || '';
-  document.getElementById('lightboxDate').textContent    = fmtDate(p.created_at);
-  document.getElementById('lightboxCounter').textContent = `${lbIdx + 1} / ${photos.length}`;
+  var p = photos[lbIdx];
+  document.getElementById('lightboxImg').src           = p.url;
+  document.getElementById('lightboxName').textContent     = p.name;
+  document.getElementById('lightboxComment').textContent  = p.comment || '';
+  document.getElementById('lightboxDate').textContent     = fmtDate(p.created_at);
+  document.getElementById('lightboxCounter').textContent  = (lbIdx + 1) + ' / ' + photos.length;
 }
 function closeLightbox() {
   lightboxEl.classList.remove('open'); document.body.style.overflow = '';
   if (currentView === 'slide' && photos.length > 1) startAutoPlay();
 }
 
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', function(e) {
   if (!lightboxEl.classList.contains('open')) return;
   if (e.key === 'Escape')     closeLightbox();
   if (e.key === 'ArrowRight') lightboxNav(1);
@@ -939,40 +1052,60 @@ async function loadPhotos() {
   document.getElementById('galleryEmpty').style.display   = 'none';
   slideshowWrap.style.display = 'none';
   document.getElementById('galleryGrid').classList.remove('visible');
-  clearTimeout(autoTimer); stopProgressAnim();
+  stopProgress();
 
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/photos?select=*&order=created_at.desc`,
-      { headers: { ...SB_H, 'Accept': 'application/json' } }
+    var res = await fetch(
+      SUPABASE_URL + '/rest/v1/photos?select=*&order=created_at.desc',
+      { headers: Object.assign({}, SB_H, { 'Accept': 'application/json' }) }
     );
     photos = await res.json();
     if (!Array.isArray(photos)) photos = [];
-  } catch { photos = []; }
+  } catch(e) { photos = []; }
 
   document.getElementById('galleryLoading').style.display = 'none';
-  document.getElementById('galleryCount').textContent = photos.length ? `${photos.length} fotoğraf` : '';
+  document.getElementById('galleryCount').textContent = photos.length ? photos.length + ' fotoğraf' : '';
   if (!photos.length) { document.getElementById('galleryEmpty').style.display = 'block'; return; }
   buildSlideshow(); buildGrid(); setView(currentView);
 }
 
-/* ═══════════════════════════
-   [CHANGE 3] ADMIN PANEL
-   URL: upload.html#admin
-   No button/link anywhere on the page.
-═══════════════════════════ */
-const adminPanel  = document.getElementById('adminPanel');
-const admBody     = document.getElementById('admBody');
-const admSelBar   = document.getElementById('admSelBar');
-const admSelLabel = document.getElementById('admSelLabel');
-let admPhotos  = [];
-let admSelected = new Set();
+/* ═══════════════════════════════════
+   ADMIN PANEL
+   Access: #admin — password protected
+═══════════════════════════════════ */
+var adminPanel    = document.getElementById('adminPanel');
+var adminAuthWrap = document.getElementById('adminAuthWrap');
+var adminMain     = document.getElementById('adminMain');
+var admPassInput  = document.getElementById('admPassInput');
+var admPassErr    = document.getElementById('admPassErr');
+var admBody       = document.getElementById('admBody');
+var admSelBar     = document.getElementById('admSelBar');
+var admSelLabel   = document.getElementById('admSelLabel');
+var admPhotos     = [];
+var admSelected   = new Set();
+var adminUnlocked = false;
 
 function openAdmin() {
   adminPanel.classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Always show auth screen first (unless already unlocked in this session)
+  if (adminUnlocked) {
+    showAdminMain();
+  } else {
+    adminAuthWrap.style.display = 'flex';
+    adminMain.style.display = 'none';
+    admPassInput.value = '';
+    admPassErr.classList.remove('show');
+    setTimeout(function() { admPassInput.focus(); }, 300);
+  }
+}
+
+function showAdminMain() {
+  adminAuthWrap.style.display = 'none';
+  adminMain.style.display = 'flex';
   loadAdminPhotos();
 }
+
 function closeAdmin() {
   adminPanel.classList.remove('open');
   document.body.style.overflow = '';
@@ -980,9 +1113,26 @@ function closeAdmin() {
   history.replaceState(null, '', window.location.pathname + window.location.search);
 }
 
+document.getElementById('admPassBtn').addEventListener('click', function() {
+  if (admPassInput.value === ADMIN_PASS) {
+    adminUnlocked = true;
+    admPassErr.classList.remove('show');
+    showAdminMain();
+  } else {
+    admPassErr.classList.add('show');
+    admPassInput.value = '';
+    admPassInput.focus();
+  }
+});
+admPassInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('admPassBtn').click();
+});
+document.getElementById('admAuthClose').addEventListener('click', closeAdmin);
 document.getElementById('admClose').addEventListener('click', closeAdmin);
 
-function checkAdminHash() { if (window.location.hash === '#admin') openAdmin(); }
+function checkAdminHash() {
+  if (window.location.hash === '#admin') openAdmin();
+}
 window.addEventListener('hashchange', checkAdminHash);
 checkAdminHash();
 
@@ -990,13 +1140,13 @@ async function loadAdminPhotos() {
   admBody.innerHTML = '<div class="adm-msg">Yükleniyor…</div>';
   admSelected.clear(); updateAdmSelBar();
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/photos?select=*&order=created_at.desc`,
-      { headers: { ...SB_H, 'Accept': 'application/json' } }
+    var res = await fetch(
+      SUPABASE_URL + '/rest/v1/photos?select=*&order=created_at.desc',
+      { headers: Object.assign({}, SB_H, { 'Accept': 'application/json' }) }
     );
     admPhotos = await res.json();
     if (!Array.isArray(admPhotos)) throw new Error();
-  } catch {
+  } catch(e) {
     admBody.innerHTML = '<div class="adm-msg" style="color:#f09090">Yüklenemedi.</div>'; return;
   }
   renderAdmin();
@@ -1006,129 +1156,146 @@ function renderAdmin() {
   if (!admPhotos.length) {
     admBody.innerHTML = '<div class="adm-msg">Henüz fotoğraf yok.</div>'; return;
   }
-  const total  = admPhotos.length;
-  const people = new Set(admPhotos.map(p => p.name)).size;
+  var total  = admPhotos.length;
+  var people = new Set(admPhotos.map(function(p) { return p.name; })).size;
 
-  // Group by name
-  const groups = {};
-  admPhotos.forEach(p => { if (!groups[p.name]) groups[p.name] = []; groups[p.name].push(p); });
+  var groups = {};
+  admPhotos.forEach(function(p) { if (!groups[p.name]) groups[p.name] = []; groups[p.name].push(p); });
 
-  let html = `
-    <div class="adm-stats">
-      <div class="adm-stat"><b>${total}</b> fotoğraf</div>
-      <div class="adm-stat"><b>${people}</b> kişi</div>
-    </div>
-    <div class="adm-actions">
-      <button class="adm-btn adm-btn-muted" onclick="admSelectAll()">Tümünü Seç</button>
-    </div>`;
+  var html =
+    '<div class="adm-stats">' +
+      '<div class="adm-stat"><b>' + total + '</b> fotoğraf</div>' +
+      '<div class="adm-stat"><b>' + people + '</b> kişi</div>' +
+    '</div>' +
+    '<div class="adm-actions">' +
+      '<button class="adm-btn adm-btn-muted" onclick="admSelectAll()">Tümünü Seç</button>' +
+    '</div>';
 
-  for (const [name, items] of Object.entries(groups)) {
-    html += `
-      <div class="adm-group">
-        <div class="adm-group-header">
-          <div>
-            <div class="adm-person-name">${esc(name)}</div>
-            <div class="adm-person-meta">${items.length} fotoğraf</div>
-          </div>
-          <button class="adm-btn adm-btn-muted" style="font-size:10px;padding:7px 12px"
-                  onclick="admSelectPerson('${esc(name).replace(/'/g,"\\'")}')">Seç</button>
-        </div>
-        <div class="adm-person-grid">`;
-    items.forEach(p => {
-      html += `
-          <div class="adm-thumb" id="admt-${p.id}" onclick="admToggle('${p.id}')">
-            <img src="${p.url}" alt="" loading="lazy" draggable="false" oncontextmenu="return false" />
-            <div class="adm-thumb-overlay">
-              <div class="adm-check">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-            </div>
-            <div class="adm-thumb-foot">
-              ${p.comment ? `<div class="adm-thumb-comment">${esc(p.comment)}</div>` : ''}
-              <div class="adm-thumb-date">${fmtDate(p.created_at)}</div>
-            </div>
-          </div>`;
+  Object.keys(groups).forEach(function(name) {
+    var items = groups[name];
+    html +=
+      '<div class="adm-group">' +
+        '<div class="adm-group-header">' +
+          '<div>' +
+            '<div class="adm-person-name">' + esc(name) + '</div>' +
+            '<div class="adm-person-meta">' + items.length + ' fotoğraf</div>' +
+          '</div>' +
+          '<button class="adm-btn adm-btn-muted" style="font-size:10px;padding:7px 12px" ' +
+                  'onclick="admSelectPerson(\'' + esc(name).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')">Seç</button>' +
+        '</div>' +
+        '<div class="adm-person-grid">';
+    items.forEach(function(p) {
+      html +=
+        '<div class="adm-thumb" id="admt-' + p.id + '" onclick="admToggle(\'' + p.id + '\')">' +
+          '<img src="' + p.url + '" alt="" loading="lazy" draggable="false" oncontextmenu="return false" />' +
+          '<div class="adm-thumb-overlay"><div class="adm-check">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>' +
+          '</div></div>' +
+          '<div class="adm-thumb-foot">' +
+            (p.comment ? '<div class="adm-thumb-comment">' + esc(p.comment) + '</div>' : '') +
+            '<div class="adm-thumb-date">' + fmtDate(p.created_at) + '</div>' +
+          '</div>' +
+        '</div>';
     });
-    html += `</div></div>`;
-  }
+    html += '</div></div>';
+  });
 
   admBody.innerHTML = html;
 }
 
 function admToggle(id) {
-  admSelected.has(id) ? admSelected.delete(id) : admSelected.add(id);
-  document.getElementById('admt-' + id)?.classList.toggle('selected', admSelected.has(id));
+  if (admSelected.has(id)) admSelected.delete(id); else admSelected.add(id);
+  var el = document.getElementById('admt-' + id);
+  if (el) el.classList.toggle('selected', admSelected.has(id));
   updateAdmSelBar();
 }
 function admSelectAll() {
-  admPhotos.forEach(p => { admSelected.add(p.id); document.getElementById('admt-' + p.id)?.classList.add('selected'); });
+  admPhotos.forEach(function(p) {
+    admSelected.add(p.id);
+    var el = document.getElementById('admt-' + p.id);
+    if (el) el.classList.add('selected');
+  });
   updateAdmSelBar();
 }
 function admSelectPerson(name) {
-  admPhotos.filter(p => p.name === name).forEach(p => {
-    admSelected.add(p.id); document.getElementById('admt-' + p.id)?.classList.add('selected');
+  admPhotos.filter(function(p) { return p.name === name; }).forEach(function(p) {
+    admSelected.add(p.id);
+    var el = document.getElementById('admt-' + p.id);
+    if (el) el.classList.add('selected');
   });
   updateAdmSelBar();
 }
 function updateAdmSelBar() {
-  const n = admSelected.size;
+  var n = admSelected.size;
   admSelBar.classList.toggle('visible', n > 0);
-  admSelLabel.textContent = `${n} fotoğraf seçili`;
+  admSelLabel.textContent = n + ' fotoğraf seçili';
 }
 
-document.getElementById('admDeselect').addEventListener('click', () => {
-  admSelected.forEach(id => document.getElementById('admt-' + id)?.classList.remove('selected'));
+document.getElementById('admDeselect').addEventListener('click', function() {
+  admSelected.forEach(function(id) {
+    var el = document.getElementById('admt-' + id);
+    if (el) el.classList.remove('selected');
+  });
   admSelected.clear(); updateAdmSelBar();
 });
 
-document.getElementById('admDelete').addEventListener('click', async () => {
+document.getElementById('admDelete').addEventListener('click', async function() {
   if (!admSelected.size) return;
-  if (!confirm(`${admSelected.size} fotoğrafı kalıcı olarak silmek istiyor musunuz?`)) return;
+  if (!confirm(admSelected.size + ' fotoğrafı kalıcı olarak silmek istiyor musunuz?')) return;
 
-  const ids      = Array.from(admSelected);
-  const toDelete = admPhotos.filter(p => ids.includes(p.id));
-  ids.forEach(id => document.getElementById('admt-' + id)?.classList.add('deleting'));
+  var ids      = Array.from(admSelected);
+  var toDelete = admPhotos.filter(function(p) { return ids.indexOf(p.id) !== -1; });
+  ids.forEach(function(id) { var el = document.getElementById('admt-' + id); if (el) el.classList.add('deleting'); });
   document.getElementById('admDelete').disabled = true;
 
-  let errors = 0;
-  for (const p of toDelete) {
+  var errors = 0;
+  for (var i = 0; i < toDelete.length; i++) {
+    var p = toDelete[i];
     try {
-      const pathMatch = p.url.match(/\/public\/photos\/(.+)$/);
+      var pathMatch = p.url.match(/\/public\/photos\/(.+)$/);
       if (pathMatch) {
-        await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${pathMatch[1]}`, { method: 'DELETE', headers: SB_H });
+        await fetch(SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + pathMatch[1],
+          { method: 'DELETE', headers: SB_H });
       }
-      const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/photos?id=eq.${p.id}`, { method: 'DELETE', headers: SB_H });
+      var dbRes = await fetch(SUPABASE_URL + '/rest/v1/photos?id=eq.' + p.id,
+        { method: 'DELETE', headers: SB_H });
       if (!dbRes.ok) throw new Error();
-      document.getElementById('admt-' + p.id)?.remove();
-      admPhotos = admPhotos.filter(x => x.id !== p.id);
+      var el = document.getElementById('admt-' + p.id);
+      if (el) el.remove();
+      admPhotos = admPhotos.filter(function(x) { return x.id !== p.id; });
       admSelected.delete(p.id);
-    } catch {
+    } catch(e) {
       errors++;
-      document.getElementById('admt-' + p.id)?.classList.remove('deleting');
+      var el2 = document.getElementById('admt-' + p.id);
+      if (el2) el2.classList.remove('deleting');
     }
   }
 
   document.getElementById('admDelete').disabled = false;
   updateAdmSelBar();
   if (errors === 0) { renderAdmin(); await loadPhotos(); }
-  else { alert(`${errors} fotoğraf silinemedi.`); await loadAdminPhotos(); }
+  else { alert(errors + ' fotoğraf silinemedi.'); await loadAdminPhotos(); }
 });
 
-/* ═══════════════════════════
-   HELPERS + INIT
-═══════════════════════════ */
+/* ─── HELPERS ─── */
 function fmtDate(d) {
   return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const revealIO = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); } });
+/* ─── SCROLL REVEAL ─── */
+var revealIO = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revealIO.unobserve(e.target); }
+  });
 }, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
+document.querySelectorAll('.reveal').forEach(function(el) { revealIO.observe(el); });
 
+/* ─── INIT ─── */
 loadPhotos();
 </script>
 </body>
